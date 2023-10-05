@@ -290,10 +290,10 @@ local monitor = peripheral.find("monitor")
 
 
 
-local scrollTimerID = os.startTimer(timerSleep) -- Timer triggers every 1 second for scrolling
+local scrollTimerID = os.startTimer(timerSleep) -- Timer triggers every x seconds for scrolling
 
 local function handleTimer()
-    scrollTimerID = os.startTimer(timerSleep) -- Reset the timer to 5 seconds
+    scrollTimerID = os.startTimer(timerSleep) -- Reset the timer to x seconds
 end
 
 -- Check if a monitor is connected
@@ -403,8 +403,7 @@ if monitor then
                             --print(selectedItem,selectedToggle)
                             monitor.setCursorPos(1, screenHeight)
                             monitor.clearLine()
-                            monitor.write("Button: " .. selectedItem)
-                            
+                            monitor.write("Button: " .. selectedItem)                
                             local xtable = {}
                             local ytable = {}
                             ytable["id"] = selectedItem
