@@ -128,11 +128,7 @@ local function mergetable(main,secondary)
             input["count"] = sv.count
             input["toggle"] = false
             table.insert(main,input)
-            --print("Main[id] "..tostring(si))
         end
-    end
-    for _, row in ipairs(main) do
-        --print(table.concat(row, " * \t * "))
     end
 	return main
 end
@@ -162,8 +158,6 @@ local function inputItems(filename)
 				id = id..","..tag
 			end
             input["id"] = id
-            --input["toggle"] = false
-            --print(id)
             if ytable ~= nil then
                 for i,v in pairs(ytable) do
                     if v.id == id then
@@ -181,9 +175,6 @@ local function inputItems(filename)
                 end
             end
 		end
-        --for _, row in ipairs(ytable) do
-        --    print("id:", row["id"], "count:", row["count"])
-        --end
 		if ytable ~= {}	then
 			writeCSV(filename, mergetable(prevtable,ytable))
 		end
