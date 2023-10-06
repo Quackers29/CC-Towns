@@ -32,6 +32,14 @@ function Monitor.getSize()
     return monitor.getSize()
 end
 
+local function cloneTable(t)
+    local newTable = {}
+    for k, v in pairs(t) do
+        newTable[k] = v
+    end
+    return newTable
+end
+
 -- New function to return monitor size
 function Monitor.OffsetButton(x)
     if x == 0 then
@@ -85,11 +93,11 @@ function Monitor.drawPushButton(text, identifier, x, y, width, height)
     Monitor.write(text, textX, textY)
 end
 
-function Monitor.drawButton(text, icon, identifier, x, y, position)
+function Monitor.drawOldButton(text, icon, identifier, x, y, justify)
     -- Icon is expected to be a single character
     local buttonText = "[ " .. icon .. " ]"
     
-    if position == "right" then
+    if justify == "right" then
         monitor.setCursorPos(x, y)
         monitor.write(text .. " " .. buttonText)
     else -- default to left if not explicitly set to right
@@ -133,9 +141,6 @@ function Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeigh
     
     -- Adjusting for Prev and Next buttons if needed
     local availableSlots = maxButtonsPerPage
-    --if currentOffset > 0 then
-    --    availableSlots = availableSlots - 1
-    --end
     if maxButtonsPerPage < #pushButtons then
         availableSlots = availableSlots - 2
     end
@@ -153,12 +158,7 @@ function Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeigh
         Monitor.drawPushButton(button.label, button.id, xOffset, yOffset, buttonWidth, buttonHeight)
 
         -- Store the button's position for future reference
-        button.positions = {
-            startX = xOffset,
-            endX = xOffset + buttonWidth,
-            startY = yOffset,
-            endY = yOffset + buttonHeight
-        }
+        button.positions = {startX = xOffset,endX = xOffset + buttonWidth,startY = yOffset,endY = yOffset + buttonHeight}
         buttons[button.id] = button
         
         -- Move to the next position
@@ -174,20 +174,9 @@ function Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeigh
         if currentOffset > 0 then
             Monitor.drawPushButton("Prev", "Prev", xOffset, yOffset, buttonWidth, buttonHeight) 
             -- Handle click event to decrease currentOffset and redraw
-            local positions = {
-                startX = xOffset,
-                endX = xOffset + buttonWidth,
-                startY = yOffset,
-                endY = yOffset + buttonHeight,
-            }
-            buttons["Prev"] = {
-                positions = positions,
-                enabled = true,
-                page = "all",
-                action = function()
-                    OffsetButton(-1)
-                end
-            }
+            local positions = {startX = xOffset,endX = xOffset + buttonWidth,startY = yOffset,endY = yOffset + buttonHeight}
+            buttons["Prev"] = {positions = positions,enabled = true,page = "all",action = function() OffsetButton(-1) end}
+
             xOffset = xOffset + buttonWidth + GAP
             if xOffset + buttonWidth > endX then
                 xOffset = startX
@@ -207,20 +196,8 @@ function Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeigh
         if currentOffset < maxOffset then
             Monitor.drawPushButton("Next","Next", xOffset, yOffset, buttonWidth, buttonHeight)
             -- Handle click event to increase currentOffset and redraw
-            local positions = {
-                startX = xOffset,
-                endX = xOffset + buttonWidth,
-                startY = yOffset,
-                endY = yOffset + buttonHeight,
-            }
-            buttons["Next"] = {
-                positions = positions,
-                enabled = true,
-                page = "all",
-                action = function()
-                    OffsetButton(1)
-                end
-            }      
+            local positions = {startX = xOffset,endX = xOffset + buttonWidth,startY = yOffset,endY = yOffset + buttonHeight}
+            buttons["Next"] = {positions = positions,enabled = true,page = "all",action = function() OffsetButton(1) end}      
         end
     end
 end
@@ -228,11 +205,124 @@ end
 function Monitor.isInsideButton(x, y)
     for _, button in pairs(buttons) do
         local pos = button.positions
+        --print(button.id,pos.startX,pos.endX, pos.startY, pos.endY)
+        --os.sleep(0.3)
         if pos and x >= pos.startX and x <= pos.endX and y >= pos.startY and y <= pos.endY then
             return true, button
         end
     end
     return false, nil
+end
+
+function Monitor.ClearButtons()
+    buttons = {}
+end
+
+function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight)
+    buttons = {}
+    rowHeight = rowHeight or 1
+    local maxX, maxY = Monitor.getSize()
+    local visibleItems = math.floor((endY - startY) / rowHeight)
+    local endingItemIndex = currentOffset + visibleItems - 1
+    if endingItemIndex > #items then
+        endingItemIndex = #items
+    end
+
+    -- Draw Back button TEMPORARY
+    local sButton = {id = "Back",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToMainPage() end,enabled = true, type = list}
+    local positions = {startX = maxX - 3 + 1,endX = maxX,startY = 1,endY = 1}
+    sButton.positions = positions
+    Monitor.drawButton(maxX - 3 + 1, 1, sButton)
+
+    -- Draw Back button TEMPORARY
+    local wButton = {id = "Refresh",width = 3,colorOn = colors.blue,colorOff = colors.gray,charOn = "A",action = function() RefreshFlag() end,enabled = true, type = list}
+    local positions2 = {startX = maxX - 3 -4 + 1,endX = maxX -4,startY = 1,endY = 1}
+    wButton.positions = positions2
+    Monitor.drawButton(maxX - 3 -4 + 1, 1, wButton)
+
+    -- Draw Scroll Up button
+    local sButton = {id = "ScrollUp",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "^",action = function() OffsetButton(-1) end,enabled = true, type = list}
+    local positions = {startX = 1,endX = sButton.width,startY = startY,endY = startY}
+    sButton.positions = positions
+    Monitor.drawButton(1, startY, sButton)
+    Monitor.write("+"..tostring(currentOffset), 1 + sButton.width + 1, startY)
+
+    -- Draw items based on currentOffset
+    for i = currentOffset + 1, endingItemIndex do
+        local item = items[i]
+        local currentY = startY + 1 + (i - currentOffset - 1) * rowHeight
+        
+        local xLeftOffset = 1
+        local xRightOffset = maxX
+        local output = {}
+        -- Draw associated buttons for this row and adjust offsets
+        for _, btn in ipairs(buttonsConfig) do
+            output = btn
+            if item[btn.id] ~= nil then
+                local was = btn.enabled
+                output.enabled = item[btn.id]
+                output.item = item
+            end
+            if btn.justify == "left" then
+                Monitor.drawButton(xLeftOffset, currentY, output)
+                xLeftOffset = xLeftOffset + btn.width + 1
+            elseif btn.justify == "right" then
+                Monitor.drawButton(xRightOffset - btn.width + 1, currentY, output)
+                xRightOffset = xRightOffset - btn.width - 1
+            end
+        end
+        
+        -- Draw the item text based on the new offsets
+        monitor.setTextColor(colors.white)
+        local itemD = item.count.."x "..string.sub(item.id, string.find(item.id, ":") + 1)
+        Monitor.write(string.sub(itemD,1,xRightOffset - xLeftOffset), xLeftOffset, currentY)
+
+    end
+
+    -- Draw Scroll Down button
+    local sButton = {id = "ScrollDown",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "v",action = function() OffsetButton(1) end,enabled = true, type = list}
+    local positions = {startX = 1,endX = sButton.width,startY = endY,endY = endY}
+    sButton.positions = positions
+    Monitor.drawButton(1, endY - rowHeight + 1, sButton)
+    Monitor.write("+"..tostring(#items-visibleItems-currentOffset+1), 1 + sButton.width + 1, endY - rowHeight + 1)
+end
+
+
+
+function Monitor.drawButton(x, y, button)
+    local positions = {}
+    local buttonConfig = cloneTable(button)
+    local id = buttonConfig.id.."x"..tostring(x).."y"..tostring(y)
+    local width = buttonConfig.width or 3
+    local colorOn = buttonConfig.colorOn or colors.white
+    local colorOff = buttonConfig.colorOff or colors.gray
+    local charOn = buttonConfig.charOn or " "
+    local action = buttonConfig.action
+    local enabled = buttonConfig.enabled
+    local charToDisplay = " "
+    local colorToUse = colors.gray
+    
+    if enabled then
+        charToDisplay = charOn
+        colorToUse = colorOn
+    else
+        charToDisplay = " "
+        colorToUse = colorOff
+    end
+
+    --print(buttonConfig.enabled, charToDisplay)
+    --local charToDisplay = (enabled == true) and charOn or " "
+    local text = "[" .. string.rep(" ", math.floor((width - 3)/2)) .. charToDisplay .. string.rep(" ", math.ceil((width - 3)/2)) .. "]"
+
+    monitor.setTextColor(colorToUse)
+    monitor.setBackgroundColor(colors.black) -- You can change this to whatever background color you want
+    Monitor.write(text, x, y)
+
+    -- Saving the button details for later interactions
+    positions = {startY = y,endY = y, startX = x,endX = x + width - 1}
+    buttonConfig.positions = positions
+    buttons[id] = buttonConfig
+    --print("Y MIDDLE: "..buttons[id].positions.endY.."\n")
 end
 
 return Monitor
