@@ -101,9 +101,6 @@ function handleItem(button)
     else
         selectedToggle = false
     end
-    --monitor.setCursorPos(1, screenHeight)
-    --monitor.clearLine()
-    --monitor.write("Button: " .. selectedItem)                
     local xtable = {}
     local ytable = {}
     ytable["id"] = selectedItem

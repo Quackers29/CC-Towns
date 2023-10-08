@@ -1,8 +1,8 @@
 local Manager = {}
 
 local x,y,z = gps.locate()
-local INx,INy,INz = x-1,y,z
-local EXPx,EXPy,EXPz = x-1,y+2,z
+local INx,INy,INz = x,y,z+1
+local EXPx,EXPy,EXPz = x,y+2,z+1
 local debugSleep = 0
 local filename = "RES_X"..x.."Y"..y.."Z"..z..".txt"
 local headers = {"id", "count", "toggle"}
@@ -21,8 +21,7 @@ end
 
 -- Function to write data to a CSV file with a tab delimiter
 function Manager.writeCSV(filename, data)
-    --local quotingChar = '"' -- Use double quote as the quoting character
-    local file = io.open(filename, "w") -- Open the file in write mode
+    local file = io.open(filename, "w+") -- Open the file in write mode
     if file then
         -- Write header row
         file:write(table.concat(headers, "\t") .. "\n")
@@ -44,90 +43,89 @@ function Manager.writeCSV(filename, data)
             file:write(table.concat(rowData, "\t") .. "\n")
         end
         file:close() -- Close the file when done
-        --print("CSV file created successfully.")
     else
-        print("Error: Unable to open the file.")
+        print("Error: Write, Unable to open the file.")
     end
 end
 
 -- Function to read data from a CSV file into a 2D array with a tab delimiter and handle Excel's escaped double quotes
 function Manager.readCSV(filename)
     local data = {} -- Initialize the 2D array
-    local file = io.open(filename, "r") -- Open the file in read mode
-
-    local headerRow = file:read("*line")
-    if file and headerRow ~= nil then
-        -- Read header row
-        local headerValues = {}
-        for value in headerRow:gmatch("[^,]+") do
-            table.insert(headerValues, value)
-        end
-
-        -- Read data rows
-        for line in file:lines() do
-            local row = {} -- Initialize a new row
-            local count = 1
-            -- Split the line into values using tab as the delimiter
-            for value in line:gmatch("([^\t]+)") do
-                
-                
-                --print(value)
-
-                -- Convert the value to number if it's a number, otherwise keep it as a string
-                local escapedValue = tostring(value):gsub('""', '\\"') -- Escape tab characters if found
-                -- Check if the input string has encapsulated quotes and remove them
-                local outputString = escapedValue:match('^"(.*)"$') or escapedValue
-                local numValue = tonumber(value)
-                local boolValue = value:lower()
-                if boolValue == "true" then
-                    row[headers[count]] = true
-                elseif boolValue == "false" then
-                    row[headers[count]] = false
-                elseif numValue then
-                    row[headers[count]] = numValue
-                else
-                    row[headers[count]] = outputString
-                end
-                --print("done")
-                count = count + 1
+    local file = io.open(filename, "r+") -- Open the file in read mode
+    if file then
+        local headerRow = file:read("*line")
+        if headerRow ~= nil then
+            -- Read header row
+            local headerValues = {}
+            for value in headerRow:gmatch("[^,]+") do
+                table.insert(headerValues, value)
             end
-            table.insert(data, row) -- Add the row to the 2D array
-        end
-        file:close() -- Close the file when done
-    else
-        print("Error: Unable to open the file.")
-    end
 
+            -- Read data rows
+            for line in file:lines() do
+                local row = {} -- Initialize a new row
+                local count = 1
+                -- Split the line into values using tab as the delimiter
+                for value in line:gmatch("([^\t]+)") do
+                    -- Convert the value to number if it's a number, otherwise keep it as a string
+                    local escapedValue = tostring(value):gsub('""', '\\"') -- Escape tab characters if found
+                    -- Check if the input string has encapsulated quotes and remove them
+                    local outputString = escapedValue:match('^"(.*)"$') or escapedValue
+                    local numValue = tonumber(value)
+                    local boolValue = value:lower()
+                    if boolValue == "true" then
+                        row[headers[count]] = true
+                    elseif boolValue == "false" then
+                        row[headers[count]] = false
+                    elseif numValue then
+                        row[headers[count]] = numValue
+                    else
+                        row[headers[count]] = outputString
+                    end
+                    count = count + 1
+                end
+                table.insert(data, row) -- Add the row to the 2D array
+            end
+            file:close() -- Close the file when done
+        else
+            print("Error: Unable to read file")
+        end
+    else
+    print("Error: Unableto open the file. ")
+    end
     return data
-    
 end
 
 function Manager.mergetable(main,secondary)
-	for si,sv in pairs(secondary) do
-        local checkFlag = false
-        for mi,mv in pairs(main) do
-            if mv.id == sv.id then
-                for i,v in pairs(sv) do 
-                    if i == "toggle" then
-                        -- Only update toggle if it exists in updateTable (sv)
-                        if sv.toggle ~= nil then
-                            mv.toggle = sv.toggle
+    if main[1] ~= nil then
+        for si,sv in pairs(secondary) do
+            local checkFlag = false
+            for mi,mv in pairs(main) do
+                if mv.id == sv.id then
+                    for i,v in pairs(sv) do
+                        if i == "toggle" then
+                            -- Only update toggle if it exists in updateTable (sv)
+                            if sv.toggle ~= nil then
+                                mv.toggle = sv.toggle
+                            end
+                        elseif i == "count" then
+                            mv.count = mv.count + sv.count
                         end
-                    elseif i == "count" then
-                        mv.count = mv.count + sv.count
                     end
+                    checkFlag = true
+                    break
                 end
-                checkFlag = true
-                break
             end
-		end
-        if checkFlag == false then
-            local input ={}
-            input["id"] = sv.id
-            input["count"] = sv.count
-            input["toggle"] = false
-            table.insert(main,input)
+            if checkFlag == false then
+                local input ={}
+                input["id"] = sv.id
+                input["count"] = sv.count
+                input["toggle"] = false
+                table.insert(main,input)
+            end
         end
+    else
+        main = secondary
     end
 	return main
 end
@@ -211,20 +209,20 @@ function Manager.removeFirstLevelBrackets(input)
 			end
 		end
 	end
-
 	return result
 end
 
 function Manager.checkItems(filePath)
     local prevtable = Manager.readCSV(filePath)
     for i,v in pairs(prevtable) do
+        for _, row in ipairs(v) do
+        end
         if v.toggle == true or v.toggle == "true" then
             if v.count > 0 then
                 Manager.outputItems(filePath,prevtable[i].id)
             end
         end
     end
-    
 end
 
 local scrollTimerID = os.startTimer(timerSleep) -- Timer triggers every x seconds for scrolling
