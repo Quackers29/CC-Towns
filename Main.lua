@@ -21,7 +21,8 @@ function drawButtonsForCurrentPage()
     local pageButtons = {}
     for _, config in ipairs(buttonConfig) do
         if config.page == currentPage then
-            table.insert(pageButtons, config)
+            pageButtons[config.type] = pageButtons[config.type] or {}
+            table.insert(pageButtons[config.type], config)
         end
     end
 
@@ -43,10 +44,13 @@ function drawButtonsForCurrentPage()
     end
 
     -- Call the function to draw the grid with buttons
-    if currentPage ~= "resources" then
-        Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons)
+    if currentPage == "resources" then
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+        Monitor.drawList(2, endY, displayTable, pageButtons["list"], 1)
     else
-        Monitor.drawList(2, endY, displayTable, pageButtons, 1)
+        Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
     end
 end
 

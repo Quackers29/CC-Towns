@@ -1,8 +1,8 @@
 local Manager = {}
 
 local x,y,z = gps.locate()
-local INx,INy,INz = x,y,z+1
-local EXPx,EXPy,EXPz = x,y+2,z+1
+local INx,INy,INz = x-1,y,z
+local EXPx,EXPy,EXPz = x-1,y+2,z
 local debugSleep = 0
 local filename = "RES_X"..x.."Y"..y.."Z"..z..".txt"
 local headers = {"id", "count", "toggle"}

@@ -219,8 +219,18 @@ function Monitor.ClearButtons()
     buttons = {}
 end
 
+function Monitor.OffsetCheck(v, endi)
+    if v > 0 then
+        v = v + 1
+    elseif v < 0 then
+        v = endi + v
+    else
+        v = 1
+    end
+    return v
+end
+
 function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight)
-    buttons = {}
     rowHeight = rowHeight or 1
     local maxX, maxY = Monitor.getSize()
     local visibleItems = math.floor((endY - startY) / rowHeight)
@@ -229,22 +239,8 @@ function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight)
         endingItemIndex = #items
     end
 
-    -- Draw Back button TEMPORARY
-    local sButton = {id = "Back",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToMainPage() end,enabled = true, type = list}
-    local positions = {startX = maxX - 3 + 1,endX = maxX,startY = 1,endY = 1}
-    sButton.positions = positions
-    Monitor.drawButton(maxX - 3 + 1, 1, sButton)
-
-    -- Draw Back button TEMPORARY
-    local wButton = {id = "Refresh",width = 3,colorOn = colors.blue,colorOff = colors.gray,charOn = "A",action = function() RefreshFlag() end,enabled = true, type = list}
-    local positions2 = {startX = maxX - 3 -4 + 1,endX = maxX -4,startY = 1,endY = 1}
-    wButton.positions = positions2
-    Monitor.drawButton(maxX - 3 -4 + 1, 1, wButton)
-
     -- Draw Scroll Up button
     local sButton = {id = "ScrollUp",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "^",action = function() OffsetButton(-1) end,enabled = true, type = list}
-    local positions = {startX = 1,endX = sButton.width,startY = startY,endY = startY}
-    sButton.positions = positions
     Monitor.drawButton(1, startY, sButton)
     Monitor.write("+"..tostring(currentOffset), 1 + sButton.width + 1, startY)
 
@@ -282,13 +278,9 @@ function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight)
 
     -- Draw Scroll Down button
     local sButton = {id = "ScrollDown",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "v",action = function() OffsetButton(1) end,enabled = true, type = list}
-    local positions = {startX = 1,endX = sButton.width,startY = endY,endY = endY}
-    sButton.positions = positions
     Monitor.drawButton(1, endY - rowHeight + 1, sButton)
     Monitor.write("+"..tostring(#items-visibleItems-currentOffset+1), 1 + sButton.width + 1, endY - rowHeight + 1)
 end
-
-
 
 function Monitor.drawButton(x, y, button)
     local positions = {}

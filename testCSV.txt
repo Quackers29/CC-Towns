@@ -1,0 +1,5 @@
+key	Cost:key	Cost	Prerequisites	Duration
+Logging_upgrade	Wood	100	Forestry	5
+	Iron	5	Production1	
+			Production2	
+tests	Wood	100	Forestry	5
