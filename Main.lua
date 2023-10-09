@@ -1,9 +1,11 @@
 local Monitor = require("Monitor")
 local Manager = require("Manager")
+local CSV2D = require("CSV2D")
 local buttonConfig = require("ButtonConfig") -- Load the external button configuration
-local currentPage = "main" -- Default page to start
+local currentPage = "upgrades" -- Default page to start
 local x,y,z = gps.locate()
 local filename = "RES_X"..x.."Y"..y.."Z"..z..".txt"
+local upgradesFile = "upgrades.txt"
 local mainflag = true
 local secondflag = true
 local wait = 1
@@ -34,21 +36,26 @@ function drawButtonsForCurrentPage()
     local endX = width - 1
     local endY = height -- -1
 
-    local prevtable = Manager.readCSV(filename)
-
-    local displayTable = {}
-    for i,v in pairs(prevtable) do
-        if v.count > 0 then
-            table.insert(displayTable,v)
-        end
-    end
-
     -- Call the function to draw the grid with buttons
     if currentPage == "resources" then
+        local prevtable = Manager.readCSV(filename)
+        local displayTable = {}
+        for i,v in pairs(prevtable) do
+            if v.count > 0 then
+                table.insert(displayTable,v)
+            end
+        end
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
         Monitor.drawList(2, endY, displayTable, pageButtons["list"], 1)
+    elseif currentPage == "upgrades" then
+        local displayTable = CSV2D.readCSV2D(upgradesFile)
+        print(displayTable)
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+        Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
     else
         Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
     end
@@ -59,20 +66,9 @@ Monitor.init()
 drawButtonsForCurrentPage()
 
 -- An example function (e.g., inside a button action) to transition to the "settings" page:
-function goToSettingsPage()
-    currentPage = "settings"
-    Monitor.OffsetButton(0)
-    drawButtonsForCurrentPage()
-end
 
-function goToResourcesPage()
-    currentPage = "resources"
-    Monitor.OffsetButton(0)
-    drawButtonsForCurrentPage()
-end
-
-function goToMainPage()
-    currentPage = "main"
+function goToPage(x)
+    currentPage = x
     Monitor.OffsetButton(0)
     drawButtonsForCurrentPage()
 end
@@ -85,7 +81,9 @@ end
 function RefreshButton()
     Manager.inputItems(filename)
     Manager.checkItems(filename)
-    drawButtonsForCurrentPage()
+    if currentPage == "resources" then
+        drawButtonsForCurrentPage()     
+    end
 end
 
 function RefreshFlag()
@@ -111,6 +109,22 @@ function handleItem(button)
     ytable["toggle"]  = selectedToggle
     table.insert(xtable,ytable)
     Manager.writeCSV(filename, Manager.mergetable(prevtable,xtable))
+    drawButtonsForCurrentPage()
+end
+
+function handleCSVItem(button)
+    local displayTable = CSV2D.readCSV2D(upgradesFile)
+    local selectedToggle = button.item.toggle
+    --print(selectedToggle)
+    if selectedToggle == "false" or selectedToggle == "FALSE" or selectedToggle == false then
+        selectedToggle = true
+    else
+        selectedToggle = false
+    end
+    --print(selectedToggle)
+    displayTable[button.item.key]["toggle"] = selectedToggle
+    --print("new: "..tostring(displayTable[button.item.key]["toggle"]))
+    CSV2D.writeCSV2D(displayTable,upgradesFile)
     drawButtonsForCurrentPage()
 end
 

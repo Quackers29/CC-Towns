@@ -9,6 +9,14 @@ local GAP = 4 -- This will add a space between buttons and wall
 local currentOffset = 0
 local maxButtonsPerPage
 
+function Monitor.getArraySize(arr)
+    local count = 0
+    for _ in pairs(arr) do
+        count = count + 1
+    end
+    return count
+end
+
 function Monitor.init()
     monitor = peripheral.find("monitor")
     if not monitor then
@@ -281,6 +289,70 @@ function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight)
     Monitor.drawButton(1, endY - rowHeight + 1, sButton)
     Monitor.write("+"..tostring(#items-visibleItems-currentOffset+1), 1 + sButton.width + 1, endY - rowHeight + 1)
 end
+
+
+function Monitor.drawKeyList(startY, endY, items, buttonsConfig, rowHeight)
+    rowHeight = rowHeight or 1
+    local maxX, maxY = Monitor.getSize()
+    local visibleItems = math.floor((endY - startY) / rowHeight)
+    local endingItemIndex = currentOffset + visibleItems - 1
+    if endingItemIndex > Monitor.getArraySize(items) then
+        endingItemIndex = Monitor.getArraySize(items)
+    end
+
+    -- Draw Scroll Up button
+    local sButton = {id = "ScrollUp",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "^",action = function() OffsetButton(-1) end,enabled = true, type = list}
+    Monitor.drawButton(1, startY, sButton)
+    Monitor.write("+"..tostring(currentOffset), 1 + sButton.width + 1, startY)
+
+    -- Draw items based on currentOffset
+    for i = currentOffset + 1, endingItemIndex do
+        local indexKey = 1
+        local item = nil
+        for key, value in pairs(items) do
+            if i == indexKey then
+                value["key"] = key
+                item = value
+            end
+            indexKey = indexKey + 1
+        end
+
+        local currentY = startY + 1 + (i - currentOffset - 1) * rowHeight
+        local xLeftOffset = 1
+        local xRightOffset = maxX
+        local output = {}
+        -- Draw associated buttons for this row and adjust offsets
+        for _, btn in ipairs(buttonsConfig) do
+            output = btn
+            output.item = item
+            if item[btn.id] ~= nil then
+                local was = btn.enabled
+                output.enabled = item[btn.id]
+                --print(btn.id, item[btn.id] ,output.enabled)
+            end
+            if btn.justify == "left" then
+                Monitor.drawButton(xLeftOffset, currentY, output)
+                xLeftOffset = xLeftOffset + btn.width + 1
+            elseif btn.justify == "right" then
+                Monitor.drawButton(xRightOffset - btn.width + 1, currentY, output)
+                xRightOffset = xRightOffset - btn.width - 1
+            end
+        end
+        
+        -- Draw the item text based on the new offsets
+        monitor.setTextColor(colors.white)
+        local itemD = item.key
+        Monitor.write(string.sub(itemD,1,xRightOffset - xLeftOffset), xLeftOffset, currentY)
+
+    end
+
+    -- Draw Scroll Down button
+    local sButton = {id = "ScrollDown",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "v",action = function() OffsetButton(1) end,enabled = true, type = list}
+    Monitor.drawButton(1, endY - rowHeight + 1, sButton)
+    Monitor.write("+"..tostring(#items-visibleItems-currentOffset+1), 1 + sButton.width + 1, endY - rowHeight + 1)
+end
+
+
 
 function Monitor.drawButton(x, y, button)
     local positions = {}

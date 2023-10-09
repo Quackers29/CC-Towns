@@ -1,11 +1,11 @@
-local file = "output.txt"
+local CSV2D = {}
 
 -- Helper function to trim leading and trailing whitespaces
-function trim(s)
+function CSV2D.trim(s)
     return s:match'^()%s*$' and '' or s:match'^%s*(.*%S)'
 end
 
-function isKeyValueTable(t)
+function CSV2D.isKeyValueTable(t)
     if type(t) ~= "table" then return false end
     for k, _ in pairs(t) do
         if type(k) == "number" then
@@ -15,7 +15,7 @@ function isKeyValueTable(t)
     return true
 end
 
-function parseComplexCSV(file)
+function CSV2D.readCSV2D(file)
     local data = {}
     local headers = nil
     local currentKey = nil
@@ -26,13 +26,31 @@ function parseComplexCSV(file)
     local miniTable = {}
     
     for line in io.lines(file) do
-        print("Processing line: " .. line)
+        --print("Processing line: " .. line)
         local row = {}
         local columnIndex = 1
         --os.sleep(1)
         
         for value in string.gmatch(line .. "\t", "(.-)\t") do
-            value = trim(value)  -- Trim spaces from the value
+            value = CSV2D.trim(value)  -- Trim spaces from the value
+
+            if type(value) ~= "table" then
+                -- Convert the value to number if it's a number, otherwise keep it as a string
+                local escapedValue = tostring(value):gsub('""', '\\"') -- Escape tab characters if found
+                -- Check if the input string has encapsulated quotes and remove them
+                local outputString = escapedValue:match('^"(.*)"$') or escapedValue
+                local numValue = tonumber(value)
+                local boolValue = value:lower()
+                if boolValue == "true" then
+                    value = true
+                elseif boolValue == "false" then
+                    value = false
+                elseif numValue then
+                    value = numValue
+                else
+                    value = outputString
+                end
+            end
             
             if not headers then
                 row[columnIndex] = value
@@ -46,36 +64,36 @@ function parseComplexCSV(file)
                         data[currentKey] = miniTable
                         currentKey = nil
                         subTable = nil
-                        print("Data for key added to main table.")
+                        --print("Data for key added to main table.")
                         miniTable = {}
                     end
-                    print("Found key: " .. value)
+                    --print("Found key: " .. value)
                     currentKey = value
                     subTable = {}
                     isArrayField = false
                 elseif string.match(header, ":key$") and value ~= "" then
-                    print("Found subKey under header " .. header .. ": *" .. value.."*")
+                    --print("Found subKey under header " .. header .. ": *" .. value.."*")
                     currentSubKey = value
-                    currentSubKeyHeader = header
+                    currentSubKeyHeader = string.gsub(header, ":key$","")
                 elseif currentSubKey then
                     subTable[currentSubKeyHeader] = subTable[currentSubKeyHeader] or {}
                     subTable[currentSubKeyHeader][currentSubKey] = subTable[currentSubKeyHeader][currentSubKey] or ""
                     subTable[currentSubKeyHeader][currentSubKey] = value
-                    print("Added value to subKey " .. currentSubKey .. ": " .. value)
+                    --print("Added value to subKey " .. currentSubKey .. ": " .. value)
                     currentSubKey = nil
                 elseif isArrayField and value ~= "" then
                     table.insert(miniTable[header], value)
-                    print("Appended to array under header " .. header .. ": " .. value)
+                    --print("Appended to array under header " .. header .. ": " .. value)
                 elseif currentKey and value ~= "" then
                     if miniTable[header] then
                         miniTable[header] = {miniTable[header]}
                         isArrayField = true
                         table.insert(miniTable[header], value)
-                        print("Converted to array and added value under header " .. header .. ": " .. value)
+                        --print("Converted to array and added value under header " .. header .. ": " .. value)
                     else
                         miniTable[header] = value
                         isArrayField = false
-                        print("Added value under header " .. header .. ": *" .. value.."*")
+                        --print("Added value under header " .. header .. ": *" .. value.."*")
                     end
                 end
             end
@@ -84,13 +102,13 @@ function parseComplexCSV(file)
         
         if not headers then
             headers = row
-            print("Headers set.")
+            --print("Headers set.")
         elseif currentKey and not next(subTable) then
 
             
             currentKey = nil
             subTable = nil
-            print("Data for key added to main table.")
+            --print("Data for key added to main table.")
         end
     end
 
@@ -121,7 +139,7 @@ local data = {
 }
 
 
-function writeComplexCSV(data, filename)
+function CSV2D.writeCSV2D(data, filename)
     local file = io.open(filename, "w")
 
     -- Helper function to determine if a value is a key-value table
@@ -189,9 +207,9 @@ function writeComplexCSV(data, filename)
                     table.insert(rowData, holdkeyValue)
                     holdkeyValue = nil
                 elseif type(value) == "table" then
-                    table.insert(rowData, value[i] or "")
+                    table.insert(rowData, tostring(value[i]) or "")
                 else
-                    table.insert(rowData, (i == 1) and value or "")
+                    table.insert(rowData, (i == 1) and tostring(value) or "")
                 end
             end
             file:write(table.concat(rowData, "\t") .. "\n")
@@ -211,20 +229,9 @@ function table.contains(table, element)
     return false
 end
 
+--CSV2D.writeComplexCSV(data, "output.txt")
+
+--b = CSV2D.parseComplexCSV(file)
 
 
-writeComplexCSV(data, "output.txt")
-
-
-
-
-b = parseComplexCSV(file)
-
-
-for _, row in pairs(b) do
-    print(_,row, " * \t * ")
-    for _, row in pairs(row) do
-        print(_,row, " * \t * ")
-    end
-    
-end
+return CSV2D

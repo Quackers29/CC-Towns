@@ -1,7 +1,0 @@
-key	Prerequisites	Duration	Cost:key	Cost
-Logging_upgrade2	Forestry	5	Wood	100
-	Production1		Iron	5
-	Production2			
-Logging_upgrade	Forestry	5	Wood	100
-	Production1		Iron	5
-	Production2			
