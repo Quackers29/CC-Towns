@@ -23,6 +23,7 @@ function CSV2D.readCSV2D(file)
     local subTable = nil
     local isArrayField = false
     local currentSubKeyHeader = nil
+    local currentKeyEnd = nil
     local miniTable = {}
     
     for line in io.lines(file) do
@@ -35,6 +36,7 @@ function CSV2D.readCSV2D(file)
             value = CSV2D.trim(value)  -- Trim spaces from the value
 
             if type(value) ~= "table" then
+
                 -- Convert the value to number if it's a number, otherwise keep it as a string
                 local escapedValue = tostring(value):gsub('""', '\\"') -- Escape tab characters if found
                 -- Check if the input string has encapsulated quotes and remove them
@@ -103,20 +105,22 @@ function CSV2D.readCSV2D(file)
         if not headers then
             headers = row
             --print("Headers set.")
-        elseif currentKey and not next(subTable) then
-
-            
+        elseif currentKey and not subTable then
+            currentKeyEnd = currentKey
             currentKey = nil
             subTable = nil
             --print("Data for key added to main table.")
         end
     end
 
-    if next(miniTable) then
-        for k, v in pairs(subTable) do
-            miniTable[k] = v
+    if miniTable and miniTable ~= {} then
+        if subTable then
+            for k, v in pairs(subTable) do
+                miniTable[k] = v
+            end
         end
-        data[currentKey] = miniTable    
+        print(currentKeyEnd,currentKey)
+        data[currentKeyEnd or currentKey] = miniTable    
     end
 
     print("Parsing completed.")
