@@ -1,3 +1,0 @@
-id	count	toggle
-minecraft:stripped_jungle_log	49	false
-minecraft:hopper	1	true

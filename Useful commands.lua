@@ -1,4 +1,5 @@
-commands.locate.biome("#forge:is_desert")
+boolean, tableWithString, distance = commands.locate.biome("#forge:is_desert")
+--boolean can be incorrect, search string aswell: if boolean or string.match(tableWithString[1], "(0 blocks away)") then 
 
 a,b,c = commands.data.get.entity("@p")
 c= b[1]
@@ -10,3 +11,43 @@ for _, row in ipairs(main) do
 end
 
 ipairs and pairs
+
+function fileExists(filePath)
+    return fs.exists(filePath)
+end
+
+time.query.gametime -- day, daytime, could get the time the servers been up and level up in time etc.
+
+experience.query("player", "levels") player levels or points -- tehn set points to use
+effect.give("player",effect)
+gamerule.comandBlockOutput false
+disableRaids
+doInsomnia
+doTraderSpawning
+playersSleepingPercentage
+title
+
+
+https://www.digminecraft.com/game_commands/title_command.php
+
+/title gazer29 title {"text":"The End is Near", "bold":true, "italic":true, "color":"red"}
+/title gazer29 subtitle {"text":"Run for your Life!", "italic":true, "color":"yellow"}
+/title @a actionbar {"text":"Get Ready!", "color":"light_purple"}
+/title @p times 40 120 60
+commands.title("gazer29","title","test")
+
+commands.tag("gazer29","add","test")
+commands.tag("gazer29","list")
+commands.teammsg
+commands.team
+commands.tell / tellraw
+commands.stopsound
+commands.scoreboard
+commadns.schedule --fucntion
+commands.say
+commands.playsound
+commands.particle
+commadns.msg
+commadns.list() -- all commands
+
+commands.xp("add","@a",0) -- will return a list of all online players

@@ -5,9 +5,13 @@ local CSV2D = require("CSV2D")
 local buttonConfig = require("ButtonConfig") -- Load the external button configuration
 local currentPage = "upgrades" -- Default page to start
 local x,y,z = gps.locate()
-local filename = "RES_X"..x.."Y"..y.."Z"..z..".txt"
-local upgradesFile = "upgrades.txt"
+local town = "Towns\\Town_X"..x.."Y"..y.."Z"..z.."\\"
+local filename = town.."RES_X"..x.."Y"..y.."Z"..z..".txt"
+local upgradesFile = town.."UP_X"..x.."Y"..y.."Z"..z..".txt"
+local biomeFile = town.."BIO_X"..x.."Y"..y.."Z"..z..".txt"
+local upgradesSource = "upgrades.txt"
 local covertFile = "convert.txt"
+local biomes = "biomes.txt"
 local mainflag = true
 local secondflag = true
 local wait = 1
@@ -16,6 +20,50 @@ local displayItem = nil
 
 local minWidth = 8
 local minHeight = 2
+
+-- Initialize checks / file system
+function copyFile(sourcePath, destinationPath)
+    if fs.exists(sourcePath) and not fs.isDir(sourcePath) then
+        if fs.copy(sourcePath, destinationPath) then
+            return true
+        else
+            print("Failed to copy the file.")
+            return false
+        end
+    else
+        print("Source file does not exist or is a directory.")
+        return false
+    end
+end
+
+if not fs.exists(biomeFile) then
+    local biomeslist = Manager.readCSV(biomes)
+    local newList = {}
+    local dist = 9999
+    local currentBiome = nil
+    for i,v in pairs(biomeslist) do
+        print(i,v)
+        print(v.id)
+        local boolean, tableWithString, distance = commands.locate.biome(v.id)
+        if boolean or string.match(tableWithString[1], "(0 blocks away)") then
+            if distance < dist then
+                dist = distance
+                currentBiome = v.id
+            end
+        else
+            distance = nil
+        end
+        newList[v.id] = newList[v.id] or {}
+        newList[v.id].distance = distance
+        print(distance)
+    end
+    CSV2D.writeCSV2D(newList,biomeFile)
+    print(currentBiome, dist)
+end
+
+if not fs.exists(upgradesFile) then
+    copyFile(upgradesSource,upgradesFile)    
+end
 
 function drawButtonsForCurrentPage()
     Monitor.clear()
@@ -83,7 +131,11 @@ function drawButtonsForCurrentPage()
                     d = v.count
                 end
             end
-            if d < v then
+            if d ~= nil then
+                if d < v then
+                    canUp = false
+                end
+            else
                 canUp = false
             end
             Monitor.write(i.." = "..v.."        ", 1, 4 + index)
