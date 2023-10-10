@@ -1,6 +1,5 @@
 -- Monitor.lua
 
-
 local Monitor = {}
 local monitor
 local buttons = {} -- Table to store drawn buttons

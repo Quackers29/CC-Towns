@@ -14,7 +14,8 @@ local ButtonConfig = {
     {id = "removeBtn",justify = "right",width = 3,colorOn = colors.red,colorOff = colors.gray,charOn = "-",action = function() print("Remove button pressed!") end,enabled = false, type = "list",page = "resources"},
     {id = "toggle",justify = "left",width = 3,colorOn = colors.yellow,colorOff = colors.blue,charOn = "O",action = function(x) handleItem(x) end,enabled = false, type = "list",page = "resources"},
     {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("main") end,enabled = true, type = "button",page = "upgrades"},
-    {id = "toggle",justify = "left",width = 3,colorOn = colors.yellow,colorOff = colors.blue,charOn = "O",action = function(x) handleCSVItem(x) end,enabled = false, type = "list",page = "upgrades"}
+    {id = "toggle",justify = "left",width = 3,colorOn = colors.yellow,colorOff = colors.blue,charOn = "O",action = function(x) handleCSVItem(x) end,enabled = false, type = "list",page = "upgrades"},
+    {id = "addBtn",justify = "right",width = 3,colorOn = colors.green,colorOff = colors.gray,charOn = "+",action = function() goToDisplayPage(x) end,enabled = false, type= "list",page = "resources"}
 }
 
 return ButtonConfig

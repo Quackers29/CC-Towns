@@ -1,3 +1,4 @@
+
 local Monitor = require("Monitor")
 local Manager = require("Manager")
 local CSV2D = require("CSV2D")
@@ -10,6 +11,7 @@ local mainflag = true
 local secondflag = true
 local wait = 1
 local refreshflag = true
+local displayItem = nil
 
 local minWidth = 8
 local minHeight = 2
@@ -72,6 +74,12 @@ function goToPage(x)
     Monitor.OffsetButton(0)
     drawButtonsForCurrentPage()
 end
+
+function goToDisplayPage(x)
+    displayItem = x.item
+    currentPage = "display"
+end
+
 
 function OffsetButton(x)
     Monitor.OffsetButton(x)
