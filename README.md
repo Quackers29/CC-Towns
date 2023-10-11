@@ -9,7 +9,7 @@
   List all upgrades, can set Possible upgrades per town type, can set default Base upgrades per town,
   Each Possible upgrade is listed in the Upgrades page, each can be selected to its own Display page,
   Display pages show requirements of the upgrade and list the resource Cost and Prerequisites.
-  Display shows if each item is fufilled and allows the upgrade to be made. The Duration sets the time in seconds to complete the upgrade.
+  Display shows if each item is fulfilled and allows the upgrade to be made. The Duration sets the time in seconds to complete the upgrade.
   
   ![2023-10-11_19 57 47](https://github.com/Quackers29/CC-Towns/assets/11053436/a5042ac2-e79b-4756-8205-915d98789c07)
   
@@ -46,7 +46,7 @@
   # Settings
   Generic settings for the town, town name etc and possibly Company takeover - Player pays to capture the town under a team name.
   # Map 
-  Rudimentry map of towns location compared to surrounding towns, can zoom in and out.
+  Rudimentary map of towns location compared to surrounding towns, can zoom in and out.
 
   # Misc
   Slow auto trading of each town to surrounding towns, slow development of towns over time.
