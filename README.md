@@ -4,8 +4,7 @@
 
 
 # Current State
-  # Upgrades:
-  Completed
+  ### Upgrades: Completed
   List all upgrades, can set Possible upgrades per town type, can set default Base upgrades per town,
   Each Possible upgrade is listed in the Upgrades page, each can be selected to its own Display page,
   Display pages show requirements of the upgrade and list the resource Cost and Prerequisites.
@@ -17,8 +16,7 @@
   
   ![2023-10-11_19 58 42](https://github.com/Quackers29/CC-Towns/assets/11053436/161fb0db-8682-42e2-97d0-442987e2d2ba)
   
-  # Resources:
-  Completed
+  ### Resources: Completed
   Lists town resources, Pull in entire chest worth of resources into the town at a time, Output a stack of resources until resource depleted.
   A - Auto, inputs all and outputs selected items once a second 
 
@@ -28,25 +26,25 @@
 
   ![2023-10-11_20 01 16](https://github.com/Quackers29/CC-Towns/assets/11053436/dc3bc76c-f860-4293-8403-b4b03477226c)
 
-  # Misc:
+  ### Misc: Completed
   Randomly selected town name, town biome search (to weigh town type probability), Auto scaling of Monitor (2x3 min)
   
   ![2023-10-11_20 30 47](https://github.com/Quackers29/CC-Towns/assets/11053436/e9445970-13e2-4374-b3dc-0b42e6deeed8)
 
 
 # Plans
-  # Production
+  ### Production
   List of a productions, town specific production, the resources required, amount produced, rate of production and required upgrades
-  # Trade
+  ### Trade
   List of trade items from town to player between the accessible Resources and an internal list of Town Resources.
-  # Contracts
+  ### Contracts
   List of all contracts possible, town randomly selects contracts to other nearby towns, generates town trade points for the town as requirements for future upgrades
-  # Stats
+  ### Stats
   Statistics of the town, trades completed, points earned, population etc
-  # Settings
+  ### Settings
   Generic settings for the town, town name etc and possibly Company takeover - Player pays to capture the town under a team name.
-  # Map 
+  ### Map 
   Rudimentary map of towns location compared to surrounding towns, can zoom in and out.
-
-  # Misc
+  
+  ### Misc
   Slow auto trading of each town to surrounding towns, slow development of towns over time.
