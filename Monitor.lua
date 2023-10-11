@@ -5,7 +5,7 @@ local monitor
 local buttons = {} -- Table to store drawn buttons
 
 local GAP = 4 -- This will add a space between buttons and wall
-local currentOffset = 0
+local ListOffset = {}
 local maxButtonsPerPage
 
 function Monitor.getArraySize(arr)
@@ -30,8 +30,10 @@ function Monitor.clear()
 end
 
 -- Function to write text on the monitor
-function Monitor.write(text, x, y)
+function Monitor.write(text, x, y, color)
+    local color = color or colors.white
     monitor.setCursorPos(x, y)
+    monitor.setTextColor(color)
     monitor.write(text)
 end
 
@@ -49,18 +51,20 @@ local function cloneTable(t)
 end
 
 -- New function to return monitor size
-function Monitor.OffsetButton(x)
+function Monitor.OffsetButton(x,y)
+    local ListIndex = y or 0
     if x == 0 then
-        currentOffset = 0
+        ListOffset[ListIndex] = 0
     else
-        if currentOffset > 0 or x > 0 then
-            currentOffset = currentOffset + x
+        if ListOffset[ListIndex] > 0 or x > 0 then
+            ListOffset[ListIndex] = ListOffset[ListIndex] + x
         end
     end
 end
 
 -- New function to return monitor size
-function Monitor.PrevButton()
+function Monitor.PrevButton(y)
+    local currentOffset = y or 0
     if currentOffset > 0 then
         currentOffset = currentOffset -1
     end
@@ -124,6 +128,9 @@ function Monitor.drawOldButton(text, icon, identifier, x, y, justify)
 end
 
 function Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, buttonsx)
+    local ListIndex = 0
+    ListOffset[ListIndex] = ListOffset[ListIndex] or 0
+    local currentOffset = ListOffset[ListIndex]
     buttons = {}
     -- Filter for only 'push' type buttons
     local pushButtons = {}
@@ -237,7 +244,10 @@ function Monitor.OffsetCheck(v, endi)
     return v
 end
 
-function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight)
+function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight, ListIndex)
+    local ListIndex = ListIndex or 0
+    ListOffset[ListIndex] = ListOffset[ListIndex]
+    local currentOffset = ListOffset[ListIndex]
     rowHeight = rowHeight or 1
     local maxX, maxY = Monitor.getSize()
     local visibleItems = math.floor((endY - startY) / rowHeight)
@@ -289,8 +299,11 @@ function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight)
     Monitor.write("+"..tostring(#items-visibleItems-currentOffset+1), 1 + sButton.width + 1, endY - rowHeight + 1)
 end
 
-
-function Monitor.drawKeyList(startY, endY, items, buttonsConfig, rowHeight)
+-- UPDATE, Merge buttonConfig and items together at the SOURCE, per item there is an array of buttons, so that the buttons can be enabled BEFORE here
+function Monitor.drawKeyList(startY, endY, items, buttonsConfig, rowHeight, ListIndex)
+    local ListIndex = ListIndex or 0
+    ListOffset[ListIndex] = ListOffset[ListIndex] or 0
+    local currentOffset = ListOffset[ListIndex]
     rowHeight = rowHeight or 1
     local maxX, maxY = Monitor.getSize()
     local visibleItems = math.floor((endY - startY) / rowHeight)
@@ -300,7 +313,7 @@ function Monitor.drawKeyList(startY, endY, items, buttonsConfig, rowHeight)
     end
 
     -- Draw Scroll Up button
-    local sButton = {id = "ScrollUp",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "^",action = function() OffsetButton(-1) end,enabled = true, type = list}
+    local sButton = {id = "ScrollUp",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "^",action = function() OffsetButton(-1,ListIndex) end,enabled = true, type = list}
     Monitor.drawButton(1, startY, sButton)
     Monitor.write("+"..tostring(currentOffset), 1 + sButton.width + 1, startY)
 
@@ -340,13 +353,14 @@ function Monitor.drawKeyList(startY, endY, items, buttonsConfig, rowHeight)
         
         -- Draw the item text based on the new offsets
         monitor.setTextColor(colors.white)
-        local itemD = item.key
+        local extra = item.extra or ""
+        local itemD = item.key..extra
         Monitor.write(string.sub(itemD,1,xRightOffset - xLeftOffset), xLeftOffset, currentY)
 
     end
 
     -- Draw Scroll Down button
-    local sButton = {id = "ScrollDown",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "v",action = function() OffsetButton(1) end,enabled = true, type = list}
+    local sButton = {id = "ScrollDown",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "v",action = function() OffsetButton(1, ListIndex) end,enabled = true, type = list}
     Monitor.drawButton(1, endY - rowHeight + 1, sButton)
     Monitor.write("+"..tostring(#items-visibleItems-currentOffset+1), 1 + sButton.width + 1, endY - rowHeight + 1)
 end
@@ -378,9 +392,8 @@ function Monitor.drawButton(x, y, button)
     --local charToDisplay = (enabled == true) and charOn or " "
     local text = "[" .. string.rep(" ", math.floor((width - 3)/2)) .. charToDisplay .. string.rep(" ", math.ceil((width - 3)/2)) .. "]"
 
-    monitor.setTextColor(colorToUse)
     monitor.setBackgroundColor(colors.black) -- You can change this to whatever background color you want
-    Monitor.write(text, x, y)
+    Monitor.write(text, x, y, colorToUse)
 
     -- Saving the button details for later interactions
     positions = {startY = y,endY = y, startX = x,endX = x + width - 1}

@@ -1,0 +1,33 @@
+{
+  "general": {
+    "item": {
+      "biomeDist": 0,
+      "biome": "desert"
+    }
+  },
+  "trade": {
+    "item": {
+      "willingness": 0.8,
+      "favorable": "{\\\\\\\\\"food\\\\\\\\\",\\\\\\\\\"iron\\\\\\\\\"}"
+    }
+  },
+  "upgrades": {
+    "item": {
+      "base": "{Logging_upgrade1}",
+      "possible": "{\"Logging_upgrade2\"}"
+    }
+  },
+  "town": {
+    "item": {
+      "name": "Silverby",
+      "baseType": "Logging_Town",
+      "description": "A town specialized in logging activities."
+    }
+  },
+  "production": {
+    "item": {
+      "wood": "{\\\\\\\\\"rate\\\\\\\\\" = 10, \\\\\\\\\"max_storage\\\\\\\\\" = 500, \\\\\\\\\"consumes\\\\\\\\\" = {\\\\\\\\\"food\\\\\\\\\" = 5}, \\\\\\\\\"available\\\\\\\\\" = true, \\\\\\\\\"enabled\\\\\\\\\" = true}",
+      "sapplings": "{\\\\\\\\\"rate\\\\\\\\\" = 1, \\\\\\\\\"max_storage\\\\\\\\\" = 100, \\\\\\\\\"consumes\\\\\\\\\" = {\\\\\\\\\"food\\\\\\\\\" = 1}, \\\\\\\\\"available\\\\\\\\\" = true, \\\\\\\\\"enabled\\\\\\\\\" = true}"
+    }
+  }
+}

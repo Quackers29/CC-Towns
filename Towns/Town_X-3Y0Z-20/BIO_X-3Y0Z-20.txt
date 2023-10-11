@@ -1,30 +1,30 @@
 key	distance
 #forge:is_desert	0
-#forge:is_lush	nil
-#forge:is_taiga	nil
-#forge:is_savanna	nil
-#forge:is_water	nil
-#forge:is_forest	nil
-#forge:is_wasteland	nil
-#forge:is_jungle	nil
-#forge:is_dense	nil
-#forge:is_plateau	nil
-#forge:is_swamp	nil
-#forge:is_sparse	nil
-#forge:is_hill	nil
-#forge:is_overworld	nil
-#forge:is_deep_ocean	nil
-#forge:is_spooky	nil
-#forge:is_snowy	nil
-#forge:is_slope	nil
+#forge:is_lush	
+#forge:is_taiga	
+#forge:is_savanna	
+#forge:is_water	
+#forge:is_forest	
+#forge:is_wasteland	
+#forge:is_jungle	
+#forge:is_dense	
+#forge:is_plateau	
+#forge:is_swamp	
+#forge:is_sparse	
+#forge:is_hill	
+#forge:is_overworld	
+#forge:is_deep_ocean	
+#forge:is_spooky	
+#forge:is_snowy	
+#forge:is_slope	
 #forge:is_sandy	0
-#forge:is_mushroom	nil
-#forge:is_plains	nil
+#forge:is_mushroom	
+#forge:is_plains	
 #forge:is_hot	0
-#forge:is_peak	nil
+#forge:is_peak	
 #forge:is_dry	0
-#forge:is_mountain	nil
-#forge:is_coniferous	nil
-#forge:is_cold	nil
-#forge:is_ocean	nil
-#forge:is_river	nil
+#forge:is_mountain	
+#forge:is_coniferous	
+#forge:is_cold	
+#forge:is_ocean	
+#forge:is_river	

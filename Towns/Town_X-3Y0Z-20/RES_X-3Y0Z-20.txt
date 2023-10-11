@@ -1,2 +1,4 @@
 id	count	toggle
-minecraft:iron_pickaxe,Damage: 2	1	nil
+minecraft:oak_log	202	false
+minecraft:iron_ingot	78	false
+minecraft:iron_pickaxe,Damage: 2	2	false

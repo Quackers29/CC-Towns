@@ -1,0 +1,5 @@
+key	item:key	item	PreReqs
+general	biomeDist	0	1
+	biome	desert	2
+town	name	Falcondell	3
+	baseType	nil	4

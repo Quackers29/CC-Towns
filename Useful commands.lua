@@ -16,6 +16,10 @@ function fileExists(filePath)
     return fs.exists(filePath)
 end
 
+local t = {1, 2, 3, 4, 5}
+a = math.random(1, #t)
+print(a)
+
 time.query.gametime -- day, daytime, could get the time the servers been up and level up in time etc.
 
 experience.query("player", "levels") player levels or points -- tehn set points to use
@@ -26,7 +30,6 @@ doInsomnia
 doTraderSpawning
 playersSleepingPercentage
 title
-
 
 https://www.digminecraft.com/game_commands/title_command.php
 
@@ -47,7 +50,12 @@ commadns.schedule --fucntion
 commands.say
 commands.playsound
 commands.particle
-commadns.msg
-commadns.list() -- all commands
+commands.msg
+commands.list() -- all commands
 
 commands.xp("add","@a",0) -- will return a list of all online players
+
+os.day()
+os.time()
+os.clock()
+os.date()

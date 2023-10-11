@@ -1,6 +1,0 @@
-key	Prerequisites	Duration	toggle	Cost:key	Cost
-Logging_upgrade1	Forestry	5	false	Wood	100
-	Production1			Iron	10
-	Production2				
-Logging_upgrade2	Forestry	10	false	Iron	100
-	Production1				

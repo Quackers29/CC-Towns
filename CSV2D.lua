@@ -15,6 +15,14 @@ function CSV2D.isKeyValueTable(t)
     return true
 end
 
+function CSV2D.getArraySize(arr)
+    local count = 0
+    for _ in pairs(arr) do
+        count = count + 1
+    end
+    return count
+end
+
 function CSV2D.readCSV2D(file)
     local data = {}
     local headers = nil
@@ -119,29 +127,11 @@ function CSV2D.readCSV2D(file)
                 miniTable[k] = v
             end
         end
-        print(currentKeyEnd,currentKey)
         data[currentKeyEnd or currentKey] = miniTable    
     end
 
-    print("Parsing completed.")
     return data
 end
-      
-
-local data = {
-    Logging_upgrade = {
-        Cost = {Wood = 100, Iron = 5},
-        Prerequisites = {"Forestry", "Production1", "Production2"},
-        Duration = 5
-    },
-    Logging_upgrade2 = {
-        Cost = {Wood = 100, Iron = 5},
-        Prerequisites = {"Forestry", "Production1", "Production2"},
-        Duration = 5
-    },
-    -- ... (other data)
-}
-
 
 function CSV2D.writeCSV2D(data, filename)
     local file = io.open(filename, "w")
@@ -180,7 +170,7 @@ function CSV2D.writeCSV2D(data, filename)
         local holdkeyValue = nil
         for _, v in pairs(values) do
             if type(v) == "table" then
-                maxRows = math.max(maxRows, #v)
+                maxRows = math.max(maxRows, CSV2D.getArraySize(v))
             end
         end
 
@@ -211,9 +201,17 @@ function CSV2D.writeCSV2D(data, filename)
                     table.insert(rowData, holdkeyValue)
                     holdkeyValue = nil
                 elseif type(value) == "table" then
-                    table.insert(rowData, tostring(value[i]) or "")
+                    local temp = tostring(value[i]) or ""
+                    if temp == "nil" or temp == nil then
+                        temp = ""
+                    end
+                    table.insert(rowData, temp or "")
                 else
-                    table.insert(rowData, (i == 1) and tostring(value) or "")
+                    local temp = tostring(value) or ""
+                    if temp == "nil" or temp == nil then
+                        temp = ""
+                    end
+                    table.insert(rowData, (i == 1) and temp or "")
                 end
             end
             file:write(table.concat(rowData, "\t") .. "\n")
