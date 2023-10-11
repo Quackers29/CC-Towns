@@ -5,15 +5,15 @@ local buttonConfig = require("ButtonConfig")
 local currentPage = "main" -- Default page to start
 local x,y,z = gps.locate()
 local town = "Towns\\Town_X"..x.."Y"..y.."Z"..z.."\\"
-local filename = town.."RES_X"..x.."Y"..y.."Z"..z..".txt"
-local upgradesFile = town.."UP_X"..x.."Y"..y.."Z"..z..".txt"
+local resFile = town.."RES_X"..x.."Y"..y.."Z"..z..".txt"
+local upgradesFile = town.."UP_X"..x.."Y"..y.."Z"..z..".json"
 local biomeFile = town.."BIO_X"..x.."Y"..y.."Z"..z..".txt"
-local SettingsFile = town.."SET_X"..x.."Y"..y.."Z"..z..".txt"
-local upgradesSource = "upgrades.txt"
-local covertFile = "convert.txt"
-local biomes = "biomes.txt"
-local townNames = "townNames.txt"
-local defaultSettingsFile = "defaultSettings.txt"
+local SettingsFile = town.."SET_X"..x.."Y"..y.."Z"..z..".json"
+local defaultSettingsFile = "Defaults\\defaultSettings.json"
+local upgradesSource = "Defaults\\upgrades.json"
+local covertFile = "Defaults\\convert.txt"
+local biomes = "Defaults\\biomes.txt"
+local townNames = "Defaults\\townNames.txt"
 local mainflag = true
 local secondflag = true
 local wait = 1
@@ -46,9 +46,41 @@ if not fs.exists(SettingsFile) then
     copyFile(defaultSettingsFile,SettingsFile)
 end
 
-local Settings = CSV2D.readCSV2D(SettingsFile)
+function readJsonFile(filePath)
+    local file = fs.open(filePath, "r")
 
-if Settings.general.item.biome == "nil" then
+    if file then
+        local serializedData = file.readAll()
+        file.close()
+
+        local luaTable = textutils.unserializeJSON(serializedData)
+
+        if luaTable then
+            return luaTable  -- Successfully parsed JSON
+        else
+            return nil  -- Failed to parse JSON
+        end
+    else
+        return nil  -- Failed to open file
+    end
+end
+
+function saveTableToJsonFile(filePath, luaTable)
+    local serializedData = textutils.serializeJSON(luaTable)
+    local file = fs.open(filePath, "w")
+
+    if file then
+        file.write(serializedData)
+        file.close()
+        return true  -- Successfully saved to file
+    else
+        return false  -- Failed to open file
+    end
+end
+
+local Settings = readJsonFile(SettingsFile)
+
+if Settings.general.biome == nil then
     local currentBiome = nil
     local dist = 9999
     if not fs.exists(biomeFile) then
@@ -74,53 +106,38 @@ if Settings.general.item.biome == "nil" then
         print("Out: ",currentBiome, dist)
     end
     currentBiome = currentBiome:match("_(.*)$") or currentBiome
-    Settings.general.item.biome = currentBiome or nil
-    Settings.general.item.biomeDist = dist or nil
+    Settings.general.biome = currentBiome or nil
+    Settings.general.biomeDist = dist or nil
 end
 
-if Settings.town.item.name == "nil" then
+if Settings.town.name == nil then
     local townnameslist = Manager.readCSV(townNames)
     local randomIndex = math.random(1, #townnameslist)
     print(randomIndex)
     local townName = townnameslist[randomIndex].id
-    Settings.town.item.name = townName
+    Settings.town.name = townName
     print(townName)
 end
 
-function saveTableToJsonFile(filePath, luaTable)
-    local serializedData = textutils.serializeJSON(luaTable)
-    local file = fs.open(filePath, "w")
+saveTableToJsonFile(SettingsFile,Settings)
 
-    if file then
-        file.write(serializedData)
-        file.close()
-        return true  -- Successfully saved to file
-    else
-        return false  -- Failed to open file
-    end
-end
-
-saveTableToJsonFile("testJSON.json",Settings)
-
-CSV2D.writeCSV2D(Settings,SettingsFile)
 if not fs.exists(upgradesFile) then
-    print("no")
-    local upgradeTable = CSV2D.readCSV2D(upgradesSource)
+    local upgradeTable = readJsonFile(upgradesSource)
     local newTable = {}
-    print("2")
-    print("no")
-    print(Settings.upgrades.item.possible)
-    local test = textutils.unserialize(Settings.upgrades.item.possible)
+    local test = Settings.upgrades.possible
+    local autoCompleted = Settings.upgrades.base
     for i,v in ipairs(test) do
-        print("3")
         local temp = upgradeTable[v]
-        print(i,v,temp)
         if temp then
-            print("4")
+            for x,y in ipairs(autoCompleted) do
+                if y == v then
+                    temp.toggle = true                   
+                end
+            end
             newTable[v] = temp
         end
     end
-    CSV2D.writeCSV2D(newTable,upgradesFile)
+    saveTableToJsonFile(upgradesFile,newTable)
 end
 
 function drawButtonsForCurrentPage()
@@ -146,7 +163,7 @@ function drawButtonsForCurrentPage()
     -- Call the function to draw the grid with buttons
     if currentPage == "resources" then
         Monitor.write("Resources!", 1, 1)
-        local prevtable = Manager.readCSV(filename)
+        local prevtable = Manager.readCSV(resFile)
         local displayTable = {}
         for i,v in pairs(prevtable) do
             if v.count > 0 then
@@ -160,15 +177,15 @@ function drawButtonsForCurrentPage()
     elseif currentPage == "upgrades" then
         displayItem = nil
         Monitor.write("Upgrades!", 1, 1)
-        local displayTable = CSV2D.readCSV2D(upgradesFile)
+        local displayTable = readJsonFile(upgradesFile)
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
         Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
     elseif currentPage == "display" then
         local canUp = true
-        local prevtable = Manager.readCSV(filename)
-        local displayTable = CSV2D.readCSV2D(upgradesFile)
+        local prevtable = Manager.readCSV(resFile)
+        local displayTable = readJsonFile(upgradesFile)
         Monitor.write("Upgrade: "..(displayItem.key or ""), 1, 1)
         Monitor.write("Duration: "..(displayItem.Duration or ""), 10, 2)
         Monitor.write("Cost: ", 10, 3)
@@ -246,7 +263,7 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
     else
-        Monitor.write("Welcome to "..Settings.town.item.name.."!  @"..Settings.general.item.biome, 1, 1, colors.white)
+        Monitor.write("Welcome to "..Settings.town.name.."!  @"..Settings.general.biome, 1, 1, colors.white)
         Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
     end
 end
@@ -277,8 +294,8 @@ function OffsetButton(x,y)
 end
 
 function RefreshButton()
-    Manager.inputItems(filename)
-    Manager.checkItems(filename)
+    Manager.inputItems(resFile)
+    Manager.checkItems(resFile)
     if currentPage == "resources" or currentPage == "display" then
         drawButtonsForCurrentPage()     
     end
@@ -293,7 +310,7 @@ function RefreshFlag()
 end
 
 function adjustItems(button)
-    local prevtable = Manager.readCSV(filename)
+    local prevtable = Manager.readCSV(resFile)
     for i,v in pairs(button.item.Cost) do
         local convertTable = CSV2D.readCSV2D(covertFile)
         local c = nil
@@ -310,12 +327,12 @@ function adjustItems(button)
             end
         end
     end
-    Manager.writeCSV(filename, prevtable)
+    Manager.writeCSV(resFile, prevtable)
     drawButtonsForCurrentPage()
 end
 
 function handleItem(button)
-    local prevtable = Manager.readCSV(filename)
+    local prevtable = Manager.readCSV(resFile)
     local selectedItem = button.item.id
     local selectedToggle = button.item.toggle
     if selectedToggle == false then
@@ -328,7 +345,7 @@ function handleItem(button)
     ytable["id"] = selectedItem
     ytable["toggle"]  = selectedToggle
     table.insert(xtable,ytable)
-    Manager.writeCSV(filename, Manager.mergetable(prevtable,xtable))
+    Manager.writeCSV(resFile, Manager.mergetable(prevtable,xtable))
     drawButtonsForCurrentPage()
 end
 
@@ -336,7 +353,7 @@ function handleCSVItem(button)
     if button then
         if button.enabled then
             adjustItems(button)
-            local displayTable = CSV2D.readCSV2D(upgradesFile)
+            local displayTable = readJsonFile(upgradesFile)
             local selectedToggle = button.item.toggle
             --print(selectedToggle)
             if selectedToggle == "false" or selectedToggle == "FALSE" or selectedToggle == false then
@@ -347,7 +364,7 @@ function handleCSVItem(button)
             --print(selectedToggle)
             displayTable[button.item.key]["toggle"] = selectedToggle
             --print("new: "..tostring(displayTable[button.item.key]["toggle"]))
-            CSV2D.writeCSV2D(displayTable,upgradesFile)
+            saveTableToJsonFile(upgradesFile,displayTable)
         end
         drawButtonsForCurrentPage()
     end

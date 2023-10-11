@@ -1,5 +1,0 @@
-key	PreReqs	item:key	item
-general	1	biome	nil
-    	2	biomeDist	nil
-town	3	name	nil
-	4	baseType	nil

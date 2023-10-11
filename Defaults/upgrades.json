@@ -1,0 +1,20 @@
+{
+  "Logging_upgrade1": {
+    "toggle": false,
+    "Duration": 10,
+    "Cost": {
+      "Wood": 100,
+      "Iron": 10
+    }
+  },
+  "Logging_upgrade2": {
+    "Prerequisites": [
+      "Logging_upgrade1"
+    ],
+    "Duration": 60,
+    "toggle": false,
+    "Cost": {
+      "Iron": 100
+    }
+  }
+}

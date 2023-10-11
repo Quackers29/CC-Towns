@@ -1,9 +1,0 @@
-{
-  [ "bios.use_multishell" ] = true,
-  [ "shell.autocomplete" ] = true,
-  [ "shell.allow_disk_startup" ] = true  --# (for all Computer types except Command Computers),
-  [ "shell.allow_startup" ] = true,
-  [ "lua.autocomplete" ] = true,
-  [ "list.show_hidden" ] = false,
-  [ "edit.autocomplete" ] = true,
-}

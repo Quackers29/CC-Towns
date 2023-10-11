@@ -1,2 +1,0 @@
-key	Prerequisites	Duration	toggle	Cost:key	Cost
-Logging_upgrade2	Logging_upgrade1	60	false	Iron	100

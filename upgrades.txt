@@ -1,4 +1,0 @@
-key	Prerequisites	Duration	toggle	Cost:key	Cost
-Logging_upgrade1		10	FALSE	Wood	100
-				Iron	10
-Logging_upgrade2	Logging_upgrade1	60	FALSE	Iron	100

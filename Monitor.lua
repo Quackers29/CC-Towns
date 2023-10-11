@@ -296,7 +296,7 @@ function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight, ListInd
     -- Draw Scroll Down button
     local sButton = {id = "ScrollDown",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "v",action = function() OffsetButton(1) end,enabled = true, type = list}
     Monitor.drawButton(1, endY - rowHeight + 1, sButton)
-    Monitor.write("+"..tostring(#items-visibleItems-currentOffset+1), 1 + sButton.width + 1, endY - rowHeight + 1)
+    Monitor.write("+"..tostring(math.max(#items-visibleItems-currentOffset+1,0)), 1 + sButton.width + 1, endY - rowHeight + 1)
 end
 
 -- UPDATE, Merge buttonConfig and items together at the SOURCE, per item there is an array of buttons, so that the buttons can be enabled BEFORE here
@@ -362,7 +362,7 @@ function Monitor.drawKeyList(startY, endY, items, buttonsConfig, rowHeight, List
     -- Draw Scroll Down button
     local sButton = {id = "ScrollDown",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "v",action = function() OffsetButton(1, ListIndex) end,enabled = true, type = list}
     Monitor.drawButton(1, endY - rowHeight + 1, sButton)
-    Monitor.write("+"..tostring(#items-visibleItems-currentOffset+1), 1 + sButton.width + 1, endY - rowHeight + 1)
+    Monitor.write("+"..tostring(math.max(#items-visibleItems-currentOffset+1,0)), 1 + sButton.width + 1, endY - rowHeight + 1)
 end
 
 
