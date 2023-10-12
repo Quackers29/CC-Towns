@@ -9,14 +9,17 @@ local resFile = town.."RES_X"..x.."Y"..y.."Z"..z..".txt"
 local upgradesFile = town.."UP_X"..x.."Y"..y.."Z"..z..".json"
 local biomeFile = town.."BIO_X"..x.."Y"..y.."Z"..z..".txt"
 local SettingsFile = town.."SET_X"..x.."Y"..y.."Z"..z..".json"
+local productionFile = town.."PRO_X"..x.."Y"..y.."Z"..z..".json"
 local defaultSettingsFile = "Defaults\\defaultSettings.json"
 local upgradesSource = "Defaults\\upgrades.json"
-local covertFile = "Defaults\\convert.txt"
+local productionSource = "Defaults\\production.json"
+local covertFile = "Defaults\\convert.json"
 local biomes = "Defaults\\biomes.txt"
 local townNames = "Defaults\\townNames.txt"
 local mainflag = true
 local secondflag = true
 local wait = 1
+local productionWait = 10
 local refreshflag = true
 local displayItem = nil
 
@@ -140,6 +143,11 @@ if not fs.exists(upgradesFile) then
     saveTableToJsonFile(upgradesFile,newTable)
 end
 
+if not fs.exists(productionFile) then
+    local productionTable = readJsonFile(productionSource)
+    saveTableToJsonFile(productionFile,productionTable)
+end
+
 function drawButtonsForCurrentPage()
     Monitor.clear()
     Monitor.ClearButtons()
@@ -182,23 +190,31 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
         Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
+    elseif currentPage == "production" then
+        displayItem = nil
+        Monitor.write("Production!", 1, 1)
+        local displayTable = readJsonFile(productionFile)
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+        Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
     elseif currentPage == "display" then
         local canUp = true
         local prevtable = Manager.readCSV(resFile)
         local displayTable = readJsonFile(upgradesFile)
         Monitor.write("Upgrade: "..(displayItem.key or ""), 1, 1)
-        Monitor.write("Duration: "..(displayItem.Duration or ""), 10, 2)
+        Monitor.write("duration: "..(displayItem.duration or ""), 10, 2)
         Monitor.write("Cost: ", 10, 3)
         Monitor.write("Prerequisites: ", 10, ((endY-2)/2)+3)
         local index = 1
         local costTable = {}
         local PreRecTable = {}
-        if type(displayItem.Prerequisites) ~= "table" then
-            displayItem.Prerequisites ={displayItem.Prerequisites}
+        if type(displayItem.requires) ~= "table" then
+            displayItem.requires ={displayItem.requires}
         end
 
-        if displayItem.Prerequisites then
-            for i,v in ipairs(displayItem.Prerequisites) do --
+        if displayItem.requires then
+            for i,v in ipairs(displayItem.requires) do --
                 --print(v)
                 local currentUp = false
                 for x,y in pairs(displayTable) do
@@ -219,20 +235,21 @@ function drawButtonsForCurrentPage()
             Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
         end
 
-        local convertTable = CSV2D.readCSV2D(covertFile)
-        for i,v in pairs(displayItem.Cost) do
+        local convertTable = readJsonFile(covertFile)
+        for i,v in pairs(displayItem.cost) do
             local currentUp = true
             local c = nil
-            local d = nil
+            local d = 0
             for a,b in pairs(convertTable) do
                 --print(i,v, a,b.convert)
                 if i == a then
-                    c = b.convert
+                    c = b
+                    --print(c)
                 end
             end
             for i,v in ipairs(prevtable) do
                 if v.id == c then
-                    d = v.count
+                    d = v.count or 0
                 end
             end
             if d ~= nil then
@@ -311,8 +328,8 @@ end
 
 function adjustItems(button)
     local prevtable = Manager.readCSV(resFile)
-    for i,v in pairs(button.item.Cost) do
-        local convertTable = CSV2D.readCSV2D(covertFile)
+    for i,v in pairs(button.item.cost) do
+        local convertTable = readJsonFile(covertFile)
         local c = nil
         local d = nil
         for a,b in pairs(convertTable) do
@@ -378,7 +395,7 @@ end
 
 function UpgradeSchedule(x)
     local y = x
-    scheduleAction(x.item.Duration, function() handleCSVItem(y) end)
+    scheduleAction(x.item.duration, function() handleCSVItem(y) end)
 end
 
 -- Event loop remains the same
@@ -403,6 +420,92 @@ function second()
     end
 end
 
+function productionCheck()
+    local productionTable = readJsonFile(productionFile)
+    local resTable = Manager.readCSV(resFile)
+    local convertTable = readJsonFile(covertFile)
+    local upgradesTable = readJsonFile(upgradesFile)
+    local updateRes = false
+    if productionTable then
+        for i,v in pairs(productionTable) do
+            local gotRequires = true
+            for l,m in ipairs(v.requires) do
+                local checkUp = upgradesTable[m].toggle or nil
+                if checkUp == nil or checkUp == false then
+                    gotRequires = false                     
+                end
+            end
+            if v.toggle and v.available and gotRequires then
+                local currentItemLong = convertTable[i] or nil -- short, long
+                if currentItemLong then
+                    local currentItemKey = nil
+                    for c,b in ipairs(resTable) do
+                        if b.id == currentItemLong then
+                            currentItemKey = c
+                        end
+                    end
+                    if currentItemKey then
+                        if resTable[currentItemKey].count < v.max_storage - v.output and v.timer >= 0 then
+                            if v.timer < 1 then
+                                updateRes = true
+                                resTable[currentItemKey].count = resTable[currentItemKey].count + v.output
+                                local takeRes = true
+                                for x,y in pairs(v.cost) do
+                                    local currentItemLong = convertTable[x] or nil
+                                    local currentItemKey = nil
+                                    for c,b in ipairs(resTable) do
+                                        if b.id == currentItemLong then
+                                            currentItemKey = c
+                                        end
+                                    end
+                                    if not currentItemKey then
+                                        takeRes = false
+                                        v.toggle = false
+                                    end
+                                end
+                                if takeRes then
+                                    for x,y in pairs(v.cost) do
+                                        local currentItemLong = convertTable[x] or nil
+                                        local currentItemKey = nil
+                                        for c,b in ipairs(resTable) do
+                                            if b.id == currentItemLong then
+                                                currentItemKey = c
+                                            end
+                                        end
+                                        if currentItemKey then
+                                            if resTable[currentItemKey].count > y then
+                                                resTable[currentItemKey].count = resTable[currentItemKey].count - y
+                                            else
+                                                v.toggle = false
+                                            end
+                                        else
+                                            v.toggle = false
+                                        end
+                                    end
+                                end
+                                v.timer = v.duration
+                            else
+                                v.timer = v.timer - productionWait -- check if res met to decrease timer
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if updateRes then
+        Manager.writeCSV(resFile,resTable)
+    end
+    saveTableToJsonFile(productionFile,productionTable)
+end
+
+function productionTimer()
+    while mainflag do
+            productionCheck()
+        os.sleep(productionWait)
+    end
+end
+
 -- Function to handle scheduled actions
 function handleScheduledActions()
     while mainflag do
@@ -421,7 +524,7 @@ end
 --end)
 
 -- Start the loops
-parallel.waitForAll(main, second, handleScheduledActions)
+parallel.waitForAll(main, second, handleScheduledActions, productionTimer)
 
 -- Code here continues after both loops have exited
 print("Both loops have exited.")

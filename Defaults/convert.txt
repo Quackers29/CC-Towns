@@ -1,3 +1,0 @@
-key	convert
-Wood	minecraft:oak_log
-Iron	minecraft:iron_ingot
