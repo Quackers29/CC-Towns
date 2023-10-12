@@ -31,58 +31,11 @@ local scheduledActions = {} -- A table to keep track of scheduled actions
 
 -- Initialize checks / file system
 
-function copyFile(sourcePath, destinationPath)
-    if fs.exists(sourcePath) and not fs.isDir(sourcePath) then
-        if fs.copy(sourcePath, destinationPath) then
-            return true
-        else
-            print("Failed to copy the file.")
-            return false
-        end
-    else
-        print("Source file does not exist or is a directory.")
-        return false
-    end
-end
-
-
 if not fs.exists(SettingsFile) then
-    copyFile(defaultSettingsFile,SettingsFile)
+    Utility.copyFile(defaultSettingsFile,SettingsFile)
 end
 
-function readJsonFile(filePath)
-    local file = fs.open(filePath, "r")
-
-    if file then
-        local serializedData = file.readAll()
-        file.close()
-
-        local luaTable = textutils.unserializeJSON(serializedData)
-
-        if luaTable then
-            return luaTable  -- Successfully parsed JSON
-        else
-            return nil  -- Failed to parse JSON
-        end
-    else
-        return nil  -- Failed to open file
-    end
-end
-
-function saveTableToJsonFile(filePath, luaTable)
-    local serializedData = textutils.serializeJSON(luaTable)
-    local file = fs.open(filePath, "w")
-
-    if file then
-        file.write(serializedData)
-        file.close()
-        return true  -- Successfully saved to file
-    else
-        return false  -- Failed to open file
-    end
-end
-
-local Settings = readJsonFile(SettingsFile)
+local Settings = Utility.readJsonFile(SettingsFile)
 
 if Settings.general.biome == nil then
     local currentBiome = nil
@@ -123,10 +76,10 @@ if Settings.town.name == nil then
     print(townName)
 end
 
-saveTableToJsonFile(SettingsFile,Settings)
+Utility.writeJsonFile(SettingsFile,Settings)
 
 if not fs.exists(upgradesFile) then
-    local upgradeTable = readJsonFile(upgradesSource)
+    local upgradeTable = Utility.readJsonFile(upgradesSource)
     local newTable = {}
     local test = Settings.upgrades.possible
     local autoCompleted = Settings.upgrades.base
@@ -141,12 +94,12 @@ if not fs.exists(upgradesFile) then
             newTable[v] = temp
         end
     end
-    saveTableToJsonFile(upgradesFile,newTable)
+    Utility.writeJsonFile(upgradesFile,newTable)
 end
 
 if not fs.exists(productionFile) then
-    local productionTable = readJsonFile(productionSource)
-    saveTableToJsonFile(productionFile,productionTable)
+    local productionTable = Utility.readJsonFile(productionSource)
+    Utility.writeJsonFile(productionFile,productionTable)
 end
 
 function drawButtonsForCurrentPage()
@@ -186,7 +139,7 @@ function drawButtonsForCurrentPage()
     elseif currentPage == "upgrades" then
         displayItem = nil
         Monitor.write("Upgrades!", 1, 1)
-        local displayTable = readJsonFile(upgradesFile)
+        local displayTable = Utility.readJsonFile(upgradesFile)
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
@@ -194,7 +147,7 @@ function drawButtonsForCurrentPage()
     elseif currentPage == "production" then
         displayItem = nil
         Monitor.write("Production!", 1, 1)
-        local displayTable = readJsonFile(productionFile)
+        local displayTable = Utility.readJsonFile(productionFile)
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
@@ -202,7 +155,7 @@ function drawButtonsForCurrentPage()
     elseif currentPage == "display" then
         local canUp = true
         local prevtable = Manager.readCSV(resFile)
-        local displayTable = readJsonFile(upgradesFile)
+        local displayTable = Utility.readJsonFile(upgradesFile)
         Monitor.write("Upgrade: "..(displayItem.key or ""), 1, 1)
         Monitor.write("duration: "..(displayItem.duration or ""), 10, 2)
         Monitor.write("Cost: ", 10, 3)
@@ -236,7 +189,7 @@ function drawButtonsForCurrentPage()
             Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
         end
 
-        local convertTable = readJsonFile(covertFile)
+        local convertTable = Utility.readJsonFile(covertFile)
         for i,v in pairs(displayItem.cost) do
             local currentUp = true
             local c = nil
@@ -330,7 +283,7 @@ end
 function adjustItems(button)
     local prevtable = Manager.readCSV(resFile)
     for i,v in pairs(button.item.cost) do
-        local convertTable = readJsonFile(covertFile)
+        local convertTable = Utility.readJsonFile(covertFile)
         local c = nil
         local d = nil
         for a,b in pairs(convertTable) do
@@ -371,7 +324,7 @@ function handleCSVItem(button)
     if button then
         if button.enabled then
             adjustItems(button)
-            local displayTable = readJsonFile(upgradesFile)
+            local displayTable = Utility.readJsonFile(upgradesFile)
             local selectedToggle = button.item.toggle
             --print(selectedToggle)
             if selectedToggle == "false" or selectedToggle == "FALSE" or selectedToggle == false then
@@ -382,7 +335,7 @@ function handleCSVItem(button)
             --print(selectedToggle)
             displayTable[button.item.key]["toggle"] = selectedToggle
             --print("new: "..tostring(displayTable[button.item.key]["toggle"]))
-            saveTableToJsonFile(upgradesFile,displayTable)
+            Utility.writeJsonFile(upgradesFile,displayTable)
         end
         drawButtonsForCurrentPage()
     end
@@ -422,10 +375,10 @@ function second()
 end
 
 function productionCheck()
-    local productionTable = readJsonFile(productionFile)
+    local productionTable = Utility.readJsonFile(productionFile)
     local resTable = Manager.readCSV(resFile)
-    local convertTable = readJsonFile(covertFile)
-    local upgradesTable = readJsonFile(upgradesFile)
+    local convertTable = Utility.readJsonFile(covertFile)
+    local upgradesTable = Utility.readJsonFile(upgradesFile)
     local updateRes = false
     if productionTable then
         for i,v in pairs(productionTable) do
@@ -497,7 +450,7 @@ function productionCheck()
     if updateRes then
         Manager.writeCSV(resFile,resTable)
     end
-    saveTableToJsonFile(productionFile,productionTable)
+    Utility.writeJsonFile(productionFile,productionTable)
 end
 
 function productionTimer()

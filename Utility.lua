@@ -1,6 +1,52 @@
 local Utility = {}
 
-function ParseMcItemString(itemString)
+function Utility.readJsonFile(filePath)
+    local file = fs.open(filePath, "r")
+
+    if file then
+        local serializedData = file.readAll()
+        file.close()
+
+        local luaTable = textutils.unserializeJSON(serializedData)
+
+        if luaTable then
+            return luaTable  -- Successfully parsed JSON
+        else
+            return nil  -- Failed to parse JSON
+        end
+    else
+        return nil  -- Failed to open file
+    end
+end
+
+function Utility.writeJsonFile(filePath, data)
+    local serializedData = textutils.serializeJSON(data)
+    local file = fs.open(filePath, "w")
+
+    if file then
+        file.write(serializedData)
+        file.close()
+        return true  -- Successfully saved to file
+    else
+        return false  -- Failed to open file
+    end
+end
+
+function Utility.copyFile(sourcePath, destinationPath)
+    if fs.exists(sourcePath) and not fs.isDir(sourcePath) then
+        if fs.copy(sourcePath, destinationPath) then
+            return true
+        else
+            print("Failed to copy the file.")
+            return false
+        end
+    else
+        print("Source file does not exist or is a directory.")
+        return false
+    end
+end
+
+function Utility.ParseMcItemString(itemString)
     local mod, item, attributes = itemString:match("(.-):(.-),(.*)")
     if not attributes then
         mod, item = itemString:match("(.-):(.-)")
@@ -13,7 +59,7 @@ function ParseMcItemString(itemString)
     }
 end
 
-function AddMcItemToTable(itemString, itemTable, count)
+function Utility.AddMcItemToTable(itemString, itemTable, count)
     -- Parse the item string
     local parsedData = ParseMcItemString(itemString)
 
