@@ -6,7 +6,7 @@ local buttonConfig = require("ButtonConfig")
 local currentPage = "main" -- Default page to start
 local x,y,z = gps.locate()
 local town = "Towns\\Town_X"..x.."Y"..y.."Z"..z.."\\"
-local resFile = town.."RES_X"..x.."Y"..y.."Z"..z..".txt"
+local resFile = town.."RES_X"..x.."Y"..y.."Z"..z..".json"
 local upgradesFile = town.."UP_X"..x.."Y"..y.."Z"..z..".json"
 local biomeFile = town.."BIO_X"..x.."Y"..y.."Z"..z..".txt"
 local SettingsFile = town.."SET_X"..x.."Y"..y.."Z"..z..".json"
@@ -125,17 +125,21 @@ function drawButtonsForCurrentPage()
     -- Call the function to draw the grid with buttons
     if currentPage == "resources" then
         Monitor.write("Resources!", 1, 1)
-        local prevtable = Manager.readCSV(resFile)
+        local prevtable = Utility.readJsonFile(resFile)
         local displayTable = {}
-        for i,v in pairs(prevtable) do
-            if v.count > 0 then
-                table.insert(displayTable,v)
+        if prevtable then
+            for i,v in pairs(prevtable) do
+                for e,r in pairs(v) do
+                    if r.count > 0 then
+                        table.insert(displayTable,r)
+                    end
+                end
             end
+            Monitor.drawList(2, endY, displayTable, pageButtons["list"], 1)
         end
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
-        Monitor.drawList(2, endY, displayTable, pageButtons["list"], 1)
     elseif currentPage == "upgrades" then
         displayItem = nil
         Monitor.write("Upgrades!", 1, 1)
@@ -154,7 +158,7 @@ function drawButtonsForCurrentPage()
         Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
     elseif currentPage == "display" then
         local canUp = true
-        local prevtable = Manager.readCSV(resFile)
+        local prevtable = Utility.readJsonFile(resFile)
         local displayTable = Utility.readJsonFile(upgradesFile)
         Monitor.write("Upgrade: "..(displayItem.key or ""), 1, 1)
         Monitor.write("duration: "..(displayItem.duration or ""), 10, 2)
@@ -201,19 +205,24 @@ function drawButtonsForCurrentPage()
                     --print(c)
                 end
             end
-            for i,v in ipairs(prevtable) do
-                if v.id == c then
-                    d = v.count or 0
+            if prevtable then
+                for i,v in ipairs(prevtable) do
+                    if v.id == c then
+                        d = v.count or 0
+                    end
                 end
-            end
-            if d ~= nil then
-                if d < v then
+                if d ~= nil then
+                    if d < v then
+                        canUp = false
+                        currentUp = false
+                    end
+                else
                     canUp = false
                     currentUp = false
                 end
             else
-                canUp = false
                 currentUp = false
+                canUp = false
             end
             --Monitor.write(i.." = "..v.."        ", 1, 4 + index)
             --Monitor.write((d or "0"), 20, 4 + index)
@@ -281,7 +290,7 @@ function RefreshFlag()
 end
 
 function adjustItems(button)
-    local prevtable = Manager.readCSV(resFile)
+    local prevtable = Utility.readJsonFile(resFile)
     for i,v in pairs(button.item.cost) do
         local convertTable = Utility.readJsonFile(covertFile)
         local c = nil
@@ -298,12 +307,12 @@ function adjustItems(button)
             end
         end
     end
-    Manager.writeCSV(resFile, prevtable)
+    Utility.writeJsonFile(resFile, prevtable)
     drawButtonsForCurrentPage()
 end
 
 function handleItem(button)
-    local prevtable = Manager.readCSV(resFile)
+    local prevtable = Utility.readJsonFile(resFile)
     local selectedItem = button.item.id
     local selectedToggle = button.item.toggle
     if selectedToggle == false then
@@ -316,7 +325,7 @@ function handleItem(button)
     ytable["id"] = selectedItem
     ytable["toggle"]  = selectedToggle
     table.insert(xtable,ytable)
-    Manager.writeCSV(resFile, Manager.mergetable(prevtable,xtable))
+    Utility.writeJsonFile(resFile, Manager.mergetable(prevtable,xtable))
     drawButtonsForCurrentPage()
 end
 
@@ -376,7 +385,7 @@ end
 
 function productionCheck()
     local productionTable = Utility.readJsonFile(productionFile)
-    local resTable = Manager.readCSV(resFile)
+    local resTable = Utility.readJsonFile(resFile)
     local convertTable = Utility.readJsonFile(covertFile)
     local upgradesTable = Utility.readJsonFile(upgradesFile)
     local updateRes = false
@@ -393,9 +402,11 @@ function productionCheck()
                 local currentItemLong = convertTable[i] or nil -- short, long
                 if currentItemLong then
                     local currentItemKey = nil
-                    for c,b in ipairs(resTable) do
-                        if b.id == currentItemLong then
-                            currentItemKey = c
+                    if resTable then
+                        for c,b in ipairs(resTable) do
+                            if b.id == currentItemLong then
+                                currentItemKey = c
+                            end
                         end
                     end
                     if currentItemKey then
@@ -448,7 +459,7 @@ function productionCheck()
         end
     end
     if updateRes then
-        Manager.writeCSV(resFile,resTable)
+        Utility.writeJsonFile(resFile,resTable)
     end
     Utility.writeJsonFile(productionFile,productionTable)
 end

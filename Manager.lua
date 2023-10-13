@@ -1,4 +1,5 @@
 local Manager = {}
+local Utility = require("Utility")
 
 local x,y,z = gps.locate()
 local INx,INy,INz = x-1,y,z
@@ -95,7 +96,7 @@ function Manager.readCSV(filename)
 end
 
 function Manager.mergetable(main,secondary)
-    if main[1] ~= nil then
+    if main ~= nil then
         for si,sv in pairs(secondary) do
             local checkFlag = false
             for mi,mv in pairs(main) do
@@ -133,7 +134,7 @@ function Manager.outputItems(filename,item)
 	local r3 = string.find(r2[1],"Items: %[%]")
 	if r1 == true then
 		if r3 ~= nil then
-			local prevtable = Manager.readCSV(filename)
+			local prevtable = Utility.readJsonFile(filename)
 			if prevtable ~= {} then
 				local flag = true
 				local outputID = ""
@@ -166,7 +167,7 @@ function Manager.outputItems(filename,item)
                     end
                 end
                 if flag == false then
-                    Manager.writeCSV(filename, prevtable)
+                    Utility.writeJsonFile(filename, prevtable)
                     local temp = ""
                     if outputTag ~= nil then
                         temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,tag: {%s}}',0,outputID,count,outputTag))
@@ -211,13 +212,15 @@ function Manager.removeFirstLevelBrackets(input)
 end
 
 function Manager.checkItems(filePath)
-    local prevtable = Manager.readCSV(filePath)
-    for i,v in pairs(prevtable) do
-        for _, row in ipairs(v) do
-        end
-        if v.toggle == true or v.toggle == "true" then
-            if v.count > 0 then
-                Manager.outputItems(filePath,prevtable[i].id)
+    local prevtable = Utility.readJsonFile(filePath)
+    if prevtable then
+        for i,v in pairs(prevtable) do
+            for _, row in ipairs(v) do
+            end
+            if v.toggle == true or v.toggle == "true" then
+                if v.count > 0 then
+                    Manager.outputItems(filePath,prevtable[i].id)
+                end
             end
         end
     end
@@ -230,50 +233,29 @@ function Manager.handleTimer()
 end
 
 function Manager.inputItems(filename)
-	local prevtable = Manager.readCSV(filename)
+	local itemTable = Utility.readJsonFile(filename)
 	local INq,INw = commands.data.get.block(INx,INy,INz,"Items")
 	if INq then
 		-- Move chest using clone to preserve contents when reading it. 
-        commands.clone(INx,INy,INz,INx,INy,INz,INx,(cloneHeight),INz, "replace", "move")
-        local INa,INb = commands.data.get.block(INx,(cloneHeight),INz,"Items")
-		commands.data.modify.block(INx,(cloneHeight),INz, "Items set value []")
-        commands.clone(INx,(cloneHeight),INz,INx,(cloneHeight),INz,INx,INy,INz, "replace", "move")
+        commands.clone(INx,INy,INz,INx,INy,INz,INx,cloneHeight,INz, "replace", "move")
+        local INa,INb = commands.data.get.block(INx,cloneHeight,INz,"Items")
+		commands.data.modify.block(INx,cloneHeight,INz, "Items set value []")
+        commands.clone(INx,cloneHeight,INz,INx,cloneHeight,INz,INx,INy,INz, "replace", "move")
 
-		local ytable = {}
-		
 		local output = Manager.removeFirstLevelBrackets(INb[1])
 		for _, k in ipairs(output) do
 			local slot = string.match(k,"Slot: (%d+)")
 			local id = string.sub(string.match(k,"id: (.-.),"),2,-2)
 			local count = tonumber(string.match(k,"Count: (%d+)"))
 			local tag = string.match(k,"tag: {(.*).")
-            local input ={}
-            local saveFlag = false
 
 			if tag ~= nil then
 				id = id..","..tag
 			end
-            input["id"] = id
-            if ytable ~= nil then
-                for i,v in pairs(ytable) do
-                    if v.id == id then
-                        ytable[i].count = ytable[i].count+count
-                    else
-                        input["count"] = count
-                        saveFlag = true
-                    end
-                end
-                if saveFlag == true then
-                    table.insert(ytable,input)
-                else
-                    input["count"] = count
-                    table.insert(ytable,input)
-                end
-            end
+            --start new parse here
+            itemTable = Utility.AddMcItemToTable(id,itemTable,count)
 		end
-		if ytable ~= {}	then
-			Manager.writeCSV(filename, Manager.mergetable(prevtable,ytable))
-		end
+		Utility.writeJsonFile(filename, itemTable)
 	end
 end
 

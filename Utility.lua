@@ -20,7 +20,9 @@ function Utility.readJsonFile(filePath)
 end
 
 function Utility.writeJsonFile(filePath, data)
-    local serializedData = textutils.serializeJSON(data)
+    local serializedData = {}
+    if data then serializedData = textutils.serializeJSON(data) end
+    
     local file = fs.open(filePath, "w")
 
     if file then
@@ -49,9 +51,9 @@ end
 function Utility.ParseMcItemString(itemString)
     local mod, item, attributes = itemString:match("(.-):(.-),(.*)")
     if not attributes then
-        mod, item = itemString:match("(.-):(.-)")
+        mod, item = itemString:match("(.-):(.*)")
     end
-
+    
     return {
         mod = mod,
         item = item,
@@ -61,42 +63,45 @@ end
 
 function Utility.AddMcItemToTable(itemString, itemTable, count)
     -- Parse the item string
-    local parsedData = ParseMcItemString(itemString)
-
+    local parsedData = Utility.ParseMcItemString(itemString)
+    local itemTable = itemTable or {}
     -- Check if the entry exists in the table
     local exists = false
-    for key, items in pairs(itemTable) do
-        local index = nil
-        if key == parsedData.item then
-            for index, item in pairs(items) do
+    local key, index = nil, nil
+    for k, items in pairs(itemTable) do
+        if k == parsedData.item then
+            for i, item in pairs(items) do
                 if item.string == itemString then
                     exists = true
+                    key, index = k,i
                     break
                 end
             end
+            if exists then break end
         end
-
-        if not exists then
-            -- Add to dataTable
-            if not itemTable[parsedData.item] then
-                itemTable[parsedData.item] = {}
-            end
-            table.insert(itemTable[parsedData.item], {
-                string = itemString,
-                attributes = parsedData.attributes,
-                count = count,
-                toggle = false
-            })
-        else
-            -- modify itemTable
-            if count then
-                itemTable[key][index].count = itemTable[key][index].count + count
-                if table[key][index].count < 1 then
-                    table.remove(itemTable[key], index)
-                end
+    end
+    if not exists then
+        -- Add to dataTable
+        if not itemTable[parsedData.item] then
+            itemTable[parsedData.item] = {}
+        end
+        table.insert(itemTable[parsedData.item], {
+            string = itemString,
+            attributes = parsedData.attributes,
+            count = count,
+            toggle = false
+        })
+    else
+        -- modify itemTable
+        if count then
+            itemTable[key][index].count = itemTable[key][index].count + count
+            if itemTable[key][index].count < 1 then
+                table.remove(itemTable[key], index)
             end
         end
     end
+
+    return itemTable
 end
 
 return Utility
