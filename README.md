@@ -1,7 +1,5 @@
 # CC-Towns
-
-![2023-10-11_19 57 38](https://github.com/Quackers29/CC-Towns/assets/11053436/7e05e753-e534-4fab-860f-e2009811ab0c)
-
+![2023-10-11_19 57 38](https://github.com/Quackers29/CC-Towns/assets/11053436/10cdbb2f-fdda-4f29-a7a4-6d07c8116f14)
 
 # Current State
   ### Upgrades: Completed
@@ -10,26 +8,26 @@
   Display pages show requirements of the upgrade and list the resource Cost and Prerequisites.
   Display shows if each item is fulfilled and allows the upgrade to be made. The Duration sets the time in seconds to complete the upgrade.
   
-  ![2023-10-11_19 57 47](https://github.com/Quackers29/CC-Towns/assets/11053436/a5042ac2-e79b-4756-8205-915d98789c07)
-  
-  ![2023-10-11_19 57 58](https://github.com/Quackers29/CC-Towns/assets/11053436/2190166d-7577-46fa-8f2b-46205ae4c8cf)
-  
-  ![2023-10-11_19 58 42](https://github.com/Quackers29/CC-Towns/assets/11053436/161fb0db-8682-42e2-97d0-442987e2d2ba)
+![2023-10-11_19 57 47](https://github.com/Quackers29/CC-Towns/assets/11053436/b2893b65-7fda-4a2b-bc7b-bdf9ee95a086)
+
+![2023-10-11_19 57 58](https://github.com/Quackers29/CC-Towns/assets/11053436/daea7423-d0cf-433d-a174-69ab5b4949c8)
+
+![2023-10-11_19 58 42](https://github.com/Quackers29/CC-Towns/assets/11053436/cef4b9c9-e137-48b4-9a01-58a5632feb06)
   
   ### Resources: Completed
   Lists town resources, Pull in entire chest worth of resources into the town at a time, Output a stack of resources until resource depleted.
   A - Auto, inputs all and outputs selected items once a second 
+  
+![2023-10-11_19 59 18](https://github.com/Quackers29/CC-Towns/assets/11053436/b423425e-9673-4e9b-8cc5-58d5bea5bf74)
 
-  ![2023-10-11_19 59 18](https://github.com/Quackers29/CC-Towns/assets/11053436/5aa262e8-0e38-4e7c-a4ab-d02a60fedaab)
+![2023-10-11_20 00 27](https://github.com/Quackers29/CC-Towns/assets/11053436/aa749481-3984-4151-8a08-3c0a7168f2f0)
 
-  ![2023-10-11_20 00 27](https://github.com/Quackers29/CC-Towns/assets/11053436/0766631c-e3f7-44bc-8c26-8ebe65a435da)
-
-  ![2023-10-11_20 01 16](https://github.com/Quackers29/CC-Towns/assets/11053436/dc3bc76c-f860-4293-8403-b4b03477226c)
+![2023-10-11_20 01 16](https://github.com/Quackers29/CC-Towns/assets/11053436/1defc039-2001-420e-a595-b782ed4b472d)
 
   ### Misc: Completed
   Randomly selected town name, town biome search (to weigh town type probability), Auto scaling of Monitor (2x3 min)
   
-  ![2023-10-11_20 30 47](https://github.com/Quackers29/CC-Towns/assets/11053436/e9445970-13e2-4374-b3dc-0b42e6deeed8)
+![2023-10-11_20 30 47](https://github.com/Quackers29/CC-Towns/assets/11053436/8b2deb60-fbae-4249-9b1e-10cf7921101d)
 
 
 # Plans
