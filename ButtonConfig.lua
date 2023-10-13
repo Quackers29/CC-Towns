@@ -17,7 +17,7 @@ local ButtonConfig = {
     {id = "toggle",justify = "left",width = 3,colorOn = colors.yellow,colorOff = colors.blue,charOn = "O",enabled = false, type = "list",page = "upgrades"},
     {id = "addBtn",justify = "right",width = 3,colorOn = colors.green,colorOff = colors.gray,charOn = "+",action = function(x) goToDisplayPage(x) end,enabled = true, type= "list",page = "upgrades"},
     {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("upgrades") end,enabled = true, type = "button",page = "display"},
-    {id = "Up",width = 3,x = -1,y = 1,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) UpgradeSchedule(x) goToPage("upgrades") end,enabled = false, type = "button",page = "display"},
+    {id = "Up",width = 3,x = -1,y = 1,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) UpgradeSchedule(x) goToPage("upgrades") if x.enabled then adjustItems(x) end end,enabled = false, type = "button",page = "display"},
     {id = "toggle",justify = "right",width = 3,colorOn = colors.green,colorOff = colors.gray,charOn = "+",enabled = true, type= "list",page = "display"},
     {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("main") end,enabled = true, type = "button",page = "production"},
     {id = "toggle",justify = "left",width = 3,colorOn = colors.yellow,colorOff = colors.blue,charOn = "O",enabled = false, type = "list",page = "production"},

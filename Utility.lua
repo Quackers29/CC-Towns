@@ -1,4 +1,5 @@
 local Utility = {}
+local covertFile = "Defaults\\convert.json"
 
 function Utility.readJsonFile(filePath)
     local file = io.open(filePath, "r+")
@@ -59,6 +60,17 @@ function Utility.ParseMcItemString(itemString)
         item = item,
         attributes = attributes or ""
     }
+end
+
+function Utility.convertItem(itemShort)
+    local convertTable = Utility.readJsonFile(covertFile)
+    local itemString = nil
+    if convertTable then
+        if convertTable[itemShort] then
+            itemString = convertTable[itemShort]
+        end
+    end
+    return itemString
 end
 
 function Utility.AddMcItemToTable(itemString, itemTable, count)

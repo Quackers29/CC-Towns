@@ -192,23 +192,16 @@ function drawButtonsForCurrentPage()
             end
             Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
         end
-
-        local convertTable = Utility.readJsonFile(covertFile)
         for i,v in pairs(displayItem.cost) do
             local currentUp = true
-            local c = nil
+            local c = Utility.convertItem(i)
             local d = 0
-            for a,b in pairs(convertTable) do
-                --print(i,v, a,b.convert)
-                if i == a then
-                    c = b
-                    --print(c)
-                end
-            end
             if prevtable then
-                for i,v in ipairs(prevtable) do
-                    if v.id == c then
-                        d = v.count or 0
+                for i,v in pairs(prevtable) do
+                    for e,r in ipairs(v) do
+                        if r.string == c then
+                            d = r.count or 0
+                        end
                     end
                 end
                 if d ~= nil then
@@ -231,9 +224,9 @@ function drawButtonsForCurrentPage()
             costTable[i]["key"] = i
             costTable[i]["extra"] = " = "..v.." : "..d
             costTable[i]["toggle"] = currentUp
+            costTable[i]["string"] = c
         end
         Monitor.drawKeyList(4, ((endY-2)/2)+2, costTable, pageButtons["list"], 1, 0)
-
 
         for i,v in ipairs(pageButtons["button"]) do
             if v.id == "Up" then
@@ -292,18 +285,12 @@ end
 function adjustItems(button)
     local prevtable = Utility.readJsonFile(resFile)
     for i,v in pairs(button.item.cost) do
-        local convertTable = Utility.readJsonFile(covertFile)
-        local c = nil
-        local d = nil
-        for a,b in pairs(convertTable) do
-            --print(i,v, a,b.convert)
-            if i == a then
-                c = b.convert
-            end
-        end
-        for x,y in ipairs(prevtable) do
-            if y.id == c then
-                prevtable[x]["count"] = prevtable[x]["count"] - v
+        local c = Utility.convertItem(i)
+        for x,y in pairs(prevtable) do
+            for a,b in ipairs(y) do
+                if b.string == c then
+                    prevtable[x][a]["count"] = prevtable[x][a]["count"] - v
+                end
             end
         end
     end
@@ -329,22 +316,17 @@ end
 function handleCSVItem(button)
     if button then
         if button.enabled then
-            adjustItems(button)
+            --adjustItems(button)
             local displayTable = Utility.readJsonFile(upgradesFile)
-            local selectedItem = button.item
-            local item, table = next(selectedItem)
-            local itemstring = table.string
-            local selectedToggle = table.toggle
-
-            print(selectedToggle)
+            local selectedToggle = button.item.toggle
+            --print(selectedToggle)
             if selectedToggle == "false" or selectedToggle == "FALSE" or selectedToggle == false then
                 selectedToggle = true
             else
                 selectedToggle = false
             end
-            print(selectedToggle)
-            displayTable[item]["toggle"] = selectedToggle
-            Utility.ModifyMcItemInTable(itemstring, displayTable, selectedToggle)
+            --print(selectedToggle)
+            displayTable[button.item.key]["toggle"] = selectedToggle
             --print("new: "..tostring(displayTable[button.item.key]["toggle"]))
             Utility.writeJsonFile(upgradesFile,displayTable)
         end
@@ -388,10 +370,9 @@ end
 function productionCheck()
     local productionTable = Utility.readJsonFile(productionFile)
     local resTable = Utility.readJsonFile(resFile)
-    local convertTable = Utility.readJsonFile(covertFile)
     local upgradesTable = Utility.readJsonFile(upgradesFile)
     local updateRes = false
-    if productionTable and upgradesTable and convertTable and resTable then
+    if productionTable and upgradesTable and resTable then
         for i,v in pairs(productionTable) do
             local gotRequires = true
             for l,m in ipairs(v.requires) do
@@ -406,7 +387,7 @@ function productionCheck()
                 end
             end
             if v.toggle and v.available and gotRequires then
-                local currentItemLong = convertTable[i] or nil -- short, long
+                local currentItemLong = Utility.convertItem(i) -- short, long
                 if currentItemLong then
                     local currentItemKey = nil
                     if resTable then
@@ -423,7 +404,7 @@ function productionCheck()
                                 resTable[currentItemKey].count = resTable[currentItemKey].count + v.output
                                 local takeRes = true
                                 for x,y in pairs(v.cost) do
-                                    local currentItemLong = convertTable[x] or nil
+                                    local currentItemLong = Utility.convertItem(i)
                                     local currentItemKey = nil
                                     for c,b in ipairs(resTable) do
                                         if b.id == currentItemLong then
@@ -437,7 +418,7 @@ function productionCheck()
                                 end
                                 if takeRes then
                                     for x,y in pairs(v.cost) do
-                                        local currentItemLong = convertTable[x] or nil
+                                        local currentItemLong = Utility.convertItem(i)
                                         local currentItemKey = nil
                                         for c,b in ipairs(resTable) do
                                             if b.id == currentItemLong then
