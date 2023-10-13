@@ -129,7 +129,7 @@ function Manager.mergetable(main,secondary)
 	return main
 end
 
-function Manager.outputItems(filename,item)
+function Manager.outputItems(filename,itemString)
 	local r1,r2 = commands.data.get.block(EXPx,EXPy,EXPz)
 	local r3 = string.find(r2[1],"Items: %[%]")
 	if r1 == true then
@@ -140,29 +140,31 @@ function Manager.outputItems(filename,item)
 				local outputID = ""
 				local outputTag = ""
 				local count = 0
-				for i,v in pairs(prevtable) do
-                    if v.id == item then
-                        while flag do
-                            local flagTag = string.match(v.id,"(.-.),")
-                            if flagTag ~= nil then
-                                outputTag = string.match(v.id,',(.*)')
-                                outputID = flagTag
-                            else
-                                outputID = v.id
-                                outputTag = nil
-                            end
-                            if v.count > 64 then
-                                v.count = v.count-64
-                                count = 64
-                            else
-                                count = v.count
-                                v.count = 0
-                                if v.toggle == false or v.toggle == "false" then
-                                    table.remove(prevtable,i)
+				for key,items in pairs(prevtable) do
+                    for index, item in ipairs(items) do
+                        if item.string == itemString then
+                            while flag do
+                                local flagTag = string.match(item.string,"(.-.),")
+                                if flagTag ~= nil then
+                                    outputTag = string.match(item.string,',(.*)')
+                                    outputID = flagTag
+                                else
+                                    outputID = item.string
+                                    outputTag = nil
                                 end
-                                table.remove(prevtable,i)  -- removes infinite toggle on for now
+                                if item.count > 64 then
+                                    item.count = item.count-64
+                                    count = 64
+                                else
+                                    count = item.count
+                                    item.count = 0
+                                    if item.toggle == false or item.toggle == "false" then
+                                        table.remove(prevtable[key],index)
+                                    end
+                                    table.remove(prevtable[key],index)  -- removes infinite toggle on for now
+                                end
+                                flag = false
                             end
-                            flag = false
                         end
                     end
                 end
@@ -214,14 +216,15 @@ end
 function Manager.checkItems(filePath)
     local prevtable = Utility.readJsonFile(filePath)
     if prevtable then
-        for i,v in pairs(prevtable) do
-            for _, row in ipairs(v) do
-            end
-            if v.toggle == true or v.toggle == "true" then
-                if v.count > 0 then
-                    Manager.outputItems(filePath,prevtable[i].id)
+        for key,items in pairs(prevtable) do
+            for index, item in ipairs(items) do
+                if item.toggle == true or item.toggle == "true" then
+                    if item.count > 0 then
+                        Manager.outputItems(filePath,item.string)
+                    end
                 end
             end
+
         end
     end
 end

@@ -313,19 +313,16 @@ end
 
 function handleItem(button)
     local prevtable = Utility.readJsonFile(resFile)
-    local selectedItem = button.item.id
-    local selectedToggle = button.item.toggle
+    local selectedItem = button.item
+    local itemstring = selectedItem.string
+    local selectedToggle = selectedItem.toggle
     if selectedToggle == false then
         selectedToggle = true
     else
         selectedToggle = false
     end
-    local xtable = {}
-    local ytable = {}
-    ytable["id"] = selectedItem
-    ytable["toggle"]  = selectedToggle
-    table.insert(xtable,ytable)
-    Utility.writeJsonFile(resFile, Manager.mergetable(prevtable,xtable))
+    Utility.ModifyMcItemInTable(itemstring, prevtable, selectedToggle)
+    Utility.writeJsonFile(resFile,prevtable)
     drawButtonsForCurrentPage()
 end
 
@@ -334,15 +331,20 @@ function handleCSVItem(button)
         if button.enabled then
             adjustItems(button)
             local displayTable = Utility.readJsonFile(upgradesFile)
-            local selectedToggle = button.item.toggle
-            --print(selectedToggle)
+            local selectedItem = button.item
+            local item, table = next(selectedItem)
+            local itemstring = table.string
+            local selectedToggle = table.toggle
+
+            print(selectedToggle)
             if selectedToggle == "false" or selectedToggle == "FALSE" or selectedToggle == false then
                 selectedToggle = true
             else
                 selectedToggle = false
             end
-            --print(selectedToggle)
-            displayTable[button.item.key]["toggle"] = selectedToggle
+            print(selectedToggle)
+            displayTable[item]["toggle"] = selectedToggle
+            Utility.ModifyMcItemInTable(itemstring, displayTable, selectedToggle)
             --print("new: "..tostring(displayTable[button.item.key]["toggle"]))
             Utility.writeJsonFile(upgradesFile,displayTable)
         end
@@ -389,13 +391,18 @@ function productionCheck()
     local convertTable = Utility.readJsonFile(covertFile)
     local upgradesTable = Utility.readJsonFile(upgradesFile)
     local updateRes = false
-    if productionTable then
+    if productionTable and upgradesTable and convertTable and resTable then
         for i,v in pairs(productionTable) do
             local gotRequires = true
             for l,m in ipairs(v.requires) do
-                local checkUp = upgradesTable[m].toggle or nil
-                if checkUp == nil or checkUp == false then
-                    gotRequires = false                     
+                print(l,m)
+                if upgradesTable[m] then
+                    local checkUp = upgradesTable[m].toggle or nil
+                    if checkUp == nil or checkUp == false then
+                        gotRequires = false
+                    end
+                else
+                    gotRequires = false
                 end
             end
             if v.toggle and v.available and gotRequires then

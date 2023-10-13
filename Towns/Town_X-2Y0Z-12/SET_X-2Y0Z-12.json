@@ -1,1 +1,29 @@
-{"general":{"biomeDist":0,"biome":"desert"},"trade":{"willingness":0.8,"favorable":["food","iron"]},"upgrades":{"base":["Logging_upgrade1"],"possible":["Logging_upgrade2","Logging_upgrade1"]},"town":{"name":"Linhaven","description":"A town specialized in logging activities.","baseType":"Logging_Town"},"production":{"wood":{"enabled":true,"max_storage":500,"available":true,"rate":10,"consumes":{"food":5}},"sapplings":{"enabled":true,"max_storage":100,"available":true,"rate":1,"consumes":{"food":1}}}}
+{
+  "general": { "biomeDist": 0, "biome": "desert" },
+  "trade": { "willingness": 0.8, "favorable": ["food", "iron"] },
+  "upgrades": {
+    "base": ["Logging_upgrade1"],
+    "possible": ["Logging_upgrade2", "Logging_upgrade1"]
+  },
+  "town": {
+    "baseType": "Logging_Town",
+    "description": "A town specialized in logging activities.",
+    "name": "Linhaven"
+  },
+  "production": {
+    "wood": {
+      "enabled": true,
+      "max_storage": 500,
+      "available": true,
+      "rate": 10,
+      "consumes": { "food": 5 }
+    },
+    "sapplings": {
+      "enabled": true,
+      "max_storage": 100,
+      "available": true,
+      "rate": 1,
+      "consumes": { "food": 1 }
+    }
+  }
+}

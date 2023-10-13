@@ -1,11 +1,11 @@
 local Utility = {}
 
 function Utility.readJsonFile(filePath)
-    local file = fs.open(filePath, "r")
+    local file = io.open(filePath, "r+")
 
     if file then
-        local serializedData = file.readAll()
-        file.close()
+        local serializedData = file:read("*a")
+        file:close()
 
         local luaTable = textutils.unserializeJSON(serializedData)
 
@@ -23,11 +23,11 @@ function Utility.writeJsonFile(filePath, data)
     local serializedData = {}
     if data then serializedData = textutils.serializeJSON(data) end
     
-    local file = fs.open(filePath, "w")
+    local file = io.open(filePath, "w+")
 
     if file then
-        file.write(serializedData)
-        file.close()
+        file:write(serializedData)
+        file:close()
         return true  -- Successfully saved to file
     else
         return false  -- Failed to open file
@@ -89,7 +89,8 @@ function Utility.AddMcItemToTable(itemString, itemTable, count)
             string = itemString,
             attributes = parsedData.attributes,
             count = count,
-            toggle = false
+            toggle = false,
+            key = parsedData.item
         })
     else
         -- modify itemTable
@@ -98,6 +99,41 @@ function Utility.AddMcItemToTable(itemString, itemTable, count)
             if itemTable[key][index].count < 1 then
                 table.remove(itemTable[key], index)
             end
+        end
+    end
+
+    return itemTable
+end
+
+function Utility.ModifyMcItemInTable(itemString, itemTable, toggle)
+    -- Parse the item string
+    local parsedData = Utility.ParseMcItemString(itemString)
+    local itemTable = itemTable or {}
+    -- Check if the entry exists in the table
+    local exists = false
+    local key, index = nil, nil
+    for k, items in pairs(itemTable) do
+        if k == parsedData.item then
+            for i, item in pairs(items) do
+                if item.string == itemString then
+                    exists = true
+                    key, index = k,i
+                    break
+                end
+            end
+            if exists then break end
+        end
+    end
+    print(itemTable[key][index].toggle)
+    if not exists then
+        -- Add to dataTable
+        print("no item in table, itemstring: ", itemString)
+    else
+        -- modify itemTable
+        if toggle ~= nil then
+            print(itemTable[key][index].toggle)
+            itemTable[key][index].toggle = toggle
+            print(itemTable[key][index].toggle)
         end
     end
 
