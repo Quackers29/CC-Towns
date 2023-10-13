@@ -8,7 +8,7 @@ local x,y,z = gps.locate()
 local town = "Towns\\Town_X"..x.."Y"..y.."Z"..z.."\\"
 local resFile = town.."RES_X"..x.."Y"..y.."Z"..z..".json"
 local upgradesFile = town.."UP_X"..x.."Y"..y.."Z"..z..".json"
-local biomeFile = town.."BIO_X"..x.."Y"..y.."Z"..z..".txt"
+local biomeFile = town.."BIO_X"..x.."Y"..y.."Z"..z..".json"
 local SettingsFile = town.."SET_X"..x.."Y"..y.."Z"..z..".json"
 local productionFile = town.."PRO_X"..x.."Y"..y.."Z"..z..".json"
 local defaultSettingsFile = "Defaults\\defaultSettings.json"
@@ -19,7 +19,7 @@ local biomes = "Defaults\\biomes.txt"
 local townNames = "Defaults\\townNames.txt"
 local mainflag = true
 local secondflag = true
-local wait = 1
+local wait = 5
 local productionWait = 10
 local refreshflag = true
 local displayItem = nil
@@ -46,7 +46,11 @@ if Settings.general.biome == nil then
         for i,v in pairs(biomeslist) do
             print(i,v)
             print(v.id)
+            local listItem = {}
             local boolean, tableWithString, distance = commands.locate.biome(v.id)
+            --local mod, key, x, y, z = string.match(tableWithString[1],"([^:]+):([^%s]+).*%[([^,]+),([^,]+),([^%]]+)%]")
+            local mod, key = string.match(tableWithString[1], "%((.-):(.-)%)")
+            local x, y, z = string.match(tableWithString[1], "%[([^,]+),([^,]+),([^%]]+)%]")
             if boolean or string.match(tableWithString[1], "(0 blocks away)") then
                 if distance < dist then
                     dist = distance
@@ -55,11 +59,11 @@ if Settings.general.biome == nil then
             else
                 distance = nil
             end
-            newList[v.id] = newList[v.id] or {}
-            newList[v.id].distance = distance
+            listItem = {mod = mod,key = key,x = tonumber(x),y = tonumber(y),z = tonumber(z),distance = distance}
+            table.insert(newList,listItem)
             print(distance)
         end
-        CSV2D.writeCSV2D(newList,biomeFile)
+        Utility.writeJsonFile(biomeFile,newList)
         print("Out: ",currentBiome, dist)
     end
     currentBiome = currentBiome:match("_(.*)$") or currentBiome
