@@ -388,27 +388,35 @@ function productionCheck()
             end
             if v.toggle and v.available and gotRequires then
                 local currentItemLong = Utility.convertItem(i) -- short, long
-                if currentItemLong then
+                if currentItemLong then  
                     local currentItemKey = nil
+                    local currentItemIndex = nil
                     if resTable then
-                        for c,b in ipairs(resTable) do
-                            if b.id == currentItemLong then
-                                currentItemKey = c
+                        for c,b in pairs(resTable) do
+                            for d,e in ipairs(b) do
+                                if e.string == currentItemLong then
+                                    currentItemKey = c
+                                    currentItemIndex = d
+                                end
                             end
                         end
                     end
-                    if currentItemKey then
-                        if resTable[currentItemKey].count < v.max_storage - v.output and v.timer >= 0 then
+                    if currentItemKey and currentItemIndex then
+                        if resTable[currentItemKey][currentItemIndex].count < v.max_storage - v.output and v.timer >= 0 then
                             if v.timer < 1 then
                                 updateRes = true
-                                resTable[currentItemKey].count = resTable[currentItemKey].count + v.output
+                                -- NEED TO CHANGE THIS TO ADDMCITEMTO DATA (MERGED WITH MODIFY) AS item might not exist
+                                resTable[currentItemKey][currentItemIndex].count = resTable[currentItemKey][currentItemIndex].count + v.output
                                 local takeRes = true
                                 for x,y in pairs(v.cost) do
-                                    local currentItemLong = Utility.convertItem(i)
+                                    local currentItemLong = Utility.convertItem(x)
                                     local currentItemKey = nil
-                                    for c,b in ipairs(resTable) do
-                                        if b.id == currentItemLong then
-                                            currentItemKey = c
+                                    for c,b in pairs(resTable) do
+                                        for d,e in ipairs(b) do
+                                            if e.string == currentItemLong then
+                                                currentItemKey = c
+                                                currentItemIndex = d
+                                            end
                                         end
                                     end
                                     if not currentItemKey then
@@ -418,16 +426,20 @@ function productionCheck()
                                 end
                                 if takeRes then
                                     for x,y in pairs(v.cost) do
-                                        local currentItemLong = Utility.convertItem(i)
+                                        local currentItemLong = Utility.convertItem(x)
                                         local currentItemKey = nil
-                                        for c,b in ipairs(resTable) do
-                                            if b.id == currentItemLong then
-                                                currentItemKey = c
+                                        local currentItemIndex = nil
+                                        for c,b in pairs(resTable) do
+                                            for d,e in ipairs(b) do
+                                                if e.string == currentItemLong then
+                                                    currentItemKey = c
+                                                    currentItemIndex = d
+                                                end
                                             end
                                         end
                                         if currentItemKey then
-                                            if resTable[currentItemKey].count > y then
-                                                resTable[currentItemKey].count = resTable[currentItemKey].count - y
+                                            if resTable[currentItemKey][currentItemIndex].count > y then
+                                                resTable[currentItemKey][currentItemIndex].count = resTable[currentItemKey][currentItemIndex].count - y
                                             else
                                                 v.toggle = false
                                             end

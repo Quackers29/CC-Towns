@@ -1,1 +1,1 @@
-{"Logging_upgrade1":{"toggle":true,"duration":10,"cost":{"Wood":100,"Iron":10}},"Logging_upgrade2":{"toggle":false,"duration":60,"requires":["Logging_upgrade1"],"cost":{"Iron":100}}}
+{"Logging_upgrade1":{"toggle":true,"duration":10,"cost":{"Wood":100,"Iron":10}},"Logging_upgrade2":{"toggle":true,"duration":60,"requires":["Logging_upgrade1"],"cost":{"Iron":100}}}
