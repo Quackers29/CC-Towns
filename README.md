@@ -24,6 +24,14 @@
 
 ![2023-10-11_20 01 16](https://github.com/Quackers29/CC-Towns/assets/11053436/1defc039-2001-420e-a595-b782ed4b472d)
 
+  ### Production: Compelted
+  Like Upgrades, lists all production available, can select each to a Display page, 
+  Display page shows amount produced, the duration taken to make the items and the lists the resource Cost and Prerequisites.
+  Once toggled on from the Display screen, outputs items until the costs run out of the max capacity is reached.
+
+![2023-10-14_08 03 11](https://github.com/Quackers29/CC-Towns/assets/11053436/bd273309-e8aa-4f32-a724-fe69c840bd2c)
+
+  
   ### Misc: Completed
   Randomly selected town name, town biome search (to weigh town type probability), Auto scaling of Monitor (2x3 min)
   
