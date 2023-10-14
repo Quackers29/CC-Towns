@@ -136,16 +136,16 @@ function Utility.ModifyMcItemInTable(itemString, itemTable, toggle)
             if exists then break end
         end
     end
-    print(itemTable[key][index].toggle)
+    --print(itemTable[key][index].toggle)
     if not exists then
         -- Add to dataTable
         print("no item in table, itemstring: ", itemString)
     else
         -- modify itemTable
         if toggle ~= nil then
-            print(itemTable[key][index].toggle)
+            --print(itemTable[key][index].toggle)
             itemTable[key][index].toggle = toggle
-            print(itemTable[key][index].toggle)
+            --print(itemTable[key][index].toggle)
         end
     end
 
