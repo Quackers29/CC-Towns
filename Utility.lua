@@ -1,11 +1,12 @@
 local Utility = {}
+local covertFile = "Defaults\\convert.json"
 
 function Utility.readJsonFile(filePath)
-    local file = fs.open(filePath, "r")
+    local file = io.open(filePath, "r+")
 
     if file then
-        local serializedData = file.readAll()
-        file.close()
+        local serializedData = file:read("*a")
+        file:close()
 
         local luaTable = textutils.unserializeJSON(serializedData)
 
@@ -20,12 +21,14 @@ function Utility.readJsonFile(filePath)
 end
 
 function Utility.writeJsonFile(filePath, data)
-    local serializedData = textutils.serializeJSON(data)
-    local file = fs.open(filePath, "w")
+    local serializedData = {}
+    if data then serializedData = textutils.serializeJSON(data) end
+    
+    local file = io.open(filePath, "w+")
 
     if file then
-        file.write(serializedData)
-        file.close()
+        file:write(serializedData)
+        file:close()
         return true  -- Successfully saved to file
     else
         return false  -- Failed to open file
@@ -49,9 +52,9 @@ end
 function Utility.ParseMcItemString(itemString)
     local mod, item, attributes = itemString:match("(.-):(.-),(.*)")
     if not attributes then
-        mod, item = itemString:match("(.-):(.-)")
+        mod, item = itemString:match("(.-):(.*)")
     end
-
+    
     return {
         mod = mod,
         item = item,
@@ -59,44 +62,94 @@ function Utility.ParseMcItemString(itemString)
     }
 end
 
+function Utility.convertItem(itemShort)
+    local convertTable = Utility.readJsonFile(covertFile)
+    local itemString = nil
+    if convertTable then
+        if convertTable[itemShort] then
+            itemString = convertTable[itemShort]
+        end
+    end
+    return itemString
+end
+
 function Utility.AddMcItemToTable(itemString, itemTable, count)
     -- Parse the item string
-    local parsedData = ParseMcItemString(itemString)
-
+    local parsedData = Utility.ParseMcItemString(itemString)
+    local itemTable = itemTable or {}
     -- Check if the entry exists in the table
     local exists = false
-    for key, items in pairs(itemTable) do
-        local index = nil
-        if key == parsedData.item then
-            for index, item in pairs(items) do
+    local key, index = nil, nil
+    for k, items in pairs(itemTable) do
+        if k == parsedData.item then
+            for i, item in pairs(items) do
                 if item.string == itemString then
                     exists = true
+                    key, index = k,i
                     break
                 end
             end
+            if exists then break end
         end
-
-        if not exists then
-            -- Add to dataTable
-            if not itemTable[parsedData.item] then
-                itemTable[parsedData.item] = {}
-            end
-            table.insert(itemTable[parsedData.item], {
-                string = itemString,
-                attributes = parsedData.attributes,
-                count = count,
-                toggle = false
-            })
-        else
-            -- modify itemTable
-            if count then
-                itemTable[key][index].count = itemTable[key][index].count + count
-                if table[key][index].count < 1 then
-                    table.remove(itemTable[key], index)
-                end
+    end
+    if not exists then
+        -- Add to dataTable
+        if not itemTable[parsedData.item] then
+            itemTable[parsedData.item] = {}
+        end
+        table.insert(itemTable[parsedData.item], {
+            string = itemString,
+            attributes = parsedData.attributes,
+            count = count,
+            toggle = false,
+            key = parsedData.item
+        })
+    else
+        -- modify itemTable
+        if count then
+            itemTable[key][index].count = itemTable[key][index].count + count
+            if itemTable[key][index].count < 1 then
+                table.remove(itemTable[key], index)
             end
         end
     end
+
+    return itemTable
+end
+
+function Utility.ModifyMcItemInTable(itemString, itemTable, toggle)
+    -- Parse the item string
+    local parsedData = Utility.ParseMcItemString(itemString)
+    local itemTable = itemTable or {}
+    -- Check if the entry exists in the table
+    local exists = false
+    local key, index = nil, nil
+    for k, items in pairs(itemTable) do
+        if k == parsedData.item then
+            for i, item in pairs(items) do
+                if item.string == itemString then
+                    exists = true
+                    key, index = k,i
+                    break
+                end
+            end
+            if exists then break end
+        end
+    end
+    --print(itemTable[key][index].toggle)
+    if not exists then
+        -- Add to dataTable
+        print("no item in table, itemstring: ", itemString)
+    else
+        -- modify itemTable
+        if toggle ~= nil then
+            --print(itemTable[key][index].toggle)
+            itemTable[key][index].toggle = toggle
+            --print(itemTable[key][index].toggle)
+        end
+    end
+
+    return itemTable
 end
 
 return Utility

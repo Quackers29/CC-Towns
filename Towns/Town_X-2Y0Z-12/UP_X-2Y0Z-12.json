@@ -8,9 +8,7 @@
     }
   },
   "Logging_upgrade2": {
-    "requires": [
-      "Logging_upgrade1"
-    ],
+    "requires": ["Logging_upgrade1"],
     "duration": 60,
     "toggle": true,
     "cost": {

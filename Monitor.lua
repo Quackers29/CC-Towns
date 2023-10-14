@@ -288,7 +288,7 @@ function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight, ListInd
         
         -- Draw the item text based on the new offsets
         monitor.setTextColor(colors.white)
-        local itemD = item.count.."x "..string.sub(item.id, string.find(item.id, ":") + 1)
+        local itemD = item.count.."x "..string.sub(item.string, string.find(item.string, ":") + 1)
         Monitor.write(string.sub(itemD,1,xRightOffset - xLeftOffset), xLeftOffset, currentY)
 
     end
