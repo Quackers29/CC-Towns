@@ -1,3 +1,10 @@
+Startup commands
+
+pastebin get W5ZkVYSi gitget
+gitget Quackers29 CC-Towns main
+
+
+
 boolean, tableWithString, distance = commands.locate.biome("#forge:is_desert")
 --boolean can be incorrect, search string aswell: if boolean or string.match(tableWithString[1], "(0 blocks away)") then 
 
