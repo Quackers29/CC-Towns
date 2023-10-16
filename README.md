@@ -54,3 +54,24 @@
   
   ### Misc
   Slow auto trading of each town to surrounding towns, slow development of towns over time.
+
+
+  # Installation instructions
+
+  Server settings: command block use to true, command block output to false
+  
+  Place down a command computer, only accessable through /give command
+  
+  On the command computer, edit a file and save it so it creates a folder
+  
+  In this new folder locate the github repo clone
+  
+  Add a chest to the West side of the computer and another two blocks higher
+  
+  Add a monitor to the setup
+  
+  Restart the computer
+  
+  Duplicate this computer with the same id to create more towns.
+
+
