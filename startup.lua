@@ -29,6 +29,8 @@ if AdminSettings then
             shell.run("gitget Quackers29 CC-Towns main") --https://www.computercraft.info/forums2/index.php?/topic/17387-gitget-version-2-release/
 
             os.sleep(20)
+        else
+            print("Not Auto-Updating")
         end
         print("Setting Towns to startup")
         os.sleep(2)
