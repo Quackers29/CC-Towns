@@ -473,7 +473,7 @@ function productionCheck()
         for i,v in pairs(productionTable) do
             local gotRequires = true
             for l,m in ipairs(v.requires) do
-                print(l,m)
+                --print(l,m)
                 if upgradesTable[m] then
                     local checkUp = upgradesTable[m].toggle or nil
                     if checkUp == nil or checkUp == false then
