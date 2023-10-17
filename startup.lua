@@ -20,14 +20,16 @@ if AdminSettings then
         term.clear()
         term.setCursorPos(1,1)
         print("This is the control PC")
-        print("Setting Towns to wait for command")
-        AdminSettings.Town.Startup = false
-        Utility.writeJsonFile(adminFile,AdminSettings)
-        print("Updating code from Github Repo") -- IF VERSION CHANGES (FUTURE OPERATION)
-        
-        shell.run("gitget Quackers29 CC-Towns main") --https://www.computercraft.info/forums2/index.php?/topic/17387-gitget-version-2-release/
+        if AdminSettings.Admin.ControlPC.AutoUpdate then
+            print("Setting Towns to wait for command")
+            AdminSettings.Town.Startup = false
+            Utility.writeJsonFile(adminFile,AdminSettings)
+            print("Updating code from Github Repo") -- IF VERSION CHANGES (FUTURE OPERATION)
+            
+            shell.run("gitget Quackers29 CC-Towns main") --https://www.computercraft.info/forums2/index.php?/topic/17387-gitget-version-2-release/
 
-        os.sleep(20)
+            os.sleep(20)
+        end
         print("Setting Towns to startup")
         os.sleep(2)
         AdminSettings.Town.Startup = true
