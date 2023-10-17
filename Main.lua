@@ -82,23 +82,17 @@ if Settings.town.name == nil then
     print(townName)
 end
 
-if Settings.Input then
-    if (ChestRange*-1) <= (Settings.Input.x - x) <= ChestRange and (ChestRange*-1) <= (Settings.Input.y - y) <= ChestRange then
-        INx,INy,INz = Settings.Input.x,Settings.Input.y,Settings.Input.z
-    else
-        Settings.Input.x,Settings.Input.y,Settings.Input.z = x+1,y,z
-    end
+if Settings.Input and (ChestRange*-1) <= (Settings.Input.x - x) and (Settings.Input.x - x) <= ChestRange and (ChestRange*-1) <= (Settings.Input.y - y) and (Settings.Input.y - y) <= ChestRange then
+    INx,INy,INz = Settings.Input.x,Settings.Input.y,Settings.Input.z
 else
+    Settings.Input = {}
     Settings.Input.x,Settings.Input.y,Settings.Input.z = x+1,y,z
 end
 
-if Settings.Output then
-    if (ChestRange*-1) <= (Settings.Output.x - x) <= ChestRange and (ChestRange*-1) <= (Settings.Output.y - y) <= ChestRange then
-        OUTx,OUTy,OUTz = Settings.Output.x,Settings.Output.y,Settings.Output.z
-    else
-        Settings.Output.x,Settings.Output.y,Settings.Output.z = x+1,y+2,z
-    end
+if Settings.Output and (ChestRange*-1) <= (Settings.Output.x - x) and (Settings.Output.x - x) <= ChestRange and (ChestRange*-1) <= (Settings.Output.y - y) and (Settings.Output.y - y) <= ChestRange then
+    OUTx,OUTy,OUTz = Settings.Output.x,Settings.Output.y,Settings.Output.z
 else
+    Settings.Output = {}
     Settings.Output.x,Settings.Output.y,Settings.Output.z = x+1,y+2,z
 end
 

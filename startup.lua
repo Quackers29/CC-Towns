@@ -6,7 +6,7 @@ term.clear()
 term.setCursorPos(1,1)
 
 print("Starting up (Waiting for Server)")
-os.sleep(30)
+os.sleep(10)
 
 local adminFile = "AdminSettings.json"
 local AdminSettings = Utility.readJsonFile(adminFile)
@@ -42,7 +42,7 @@ if AdminSettings then
         term.clear()
         term.setCursorPos(1,1)
         print("This is a Town PC, waiting for command to startup")
-        os.sleep(30)
+        os.sleep(20)
         local flag = true
         while flag do
             local AdminSettings = Utility.readJsonFile(adminFile)
