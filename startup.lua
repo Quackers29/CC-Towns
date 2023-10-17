@@ -13,7 +13,8 @@ local AdminSettings = Utility.readJsonFile(adminFile)
 local x,y,z = gps.locate()
 
 --Add a control PC initialisation step if xyz has not been set in the Admin file
---Add a skip step
+
+--Add a Town restart command, sets a time that the event occured and if a town has not restarted based on that time, it does.
 
 if AdminSettings then
     if AdminSettings.Admin.ControlPC.x == x and AdminSettings.Admin.ControlPC.y == y and AdminSettings.Admin.ControlPC.z == z then

@@ -159,6 +159,19 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
         Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
+        
+    elseif currentPage == "settings_InputChest" then
+        Monitor.write("Settings - Input Chest!", 1, 1, colors.white)
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+
+    elseif currentPage == "settings_OutputChest" then
+        Monitor.write("Settings - Output Chest!", 1, 1, colors.white)
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+
     elseif currentPage == "display_upgrade" then
         local canUp = true
         local prevtable = Utility.readJsonFile(resFile)
@@ -319,7 +332,7 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
     else
-        Monitor.write("Welcome to "..Settings.town.name.."!  @"..Settings.general.biome, 1, 1, colors.white)
+        Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
         Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
     end
 end
