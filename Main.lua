@@ -82,14 +82,14 @@ if Settings.town.name == nil then
     print(townName)
 end
 
-if Settings.Input and (ChestRange*-1) <= (Settings.Input.x - x) and (Settings.Input.x - x) <= ChestRange and (ChestRange*-1) <= (Settings.Input.y - y) and (Settings.Input.y - y) <= ChestRange then
+if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then
     INx,INy,INz = Settings.Input.x,Settings.Input.y,Settings.Input.z
 else
     Settings.Input = {}
     Settings.Input.x,Settings.Input.y,Settings.Input.z = x+1,y,z
 end
 
-if Settings.Output and (ChestRange*-1) <= (Settings.Output.x - x) and (Settings.Output.x - x) <= ChestRange and (ChestRange*-1) <= (Settings.Output.y - y) and (Settings.Output.y - y) <= ChestRange then
+if Settings.Output and math.abs(Settings.Output.x - x) <= ChestRange and math.abs(Settings.Output.y - y) <= ChestRange then
     OUTx,OUTy,OUTz = Settings.Output.x,Settings.Output.y,Settings.Output.z
 else
     Settings.Output = {}
@@ -180,12 +180,14 @@ function drawButtonsForCurrentPage()
         
     elseif currentPage == "settings_InputChest" then
         Monitor.write("Settings - Input Chest!", 1, 1, colors.white)
+        Monitor.write("X: "..INx.." Y: "..INy.." Z: "..INz,1, 5, colors.white)
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
 
     elseif currentPage == "settings_OutputChest" then
         Monitor.write("Settings - Output Chest!", 1, 1, colors.white)
+        Monitor.write("X: "..OUTx.." Y: "..OUTy.." Z: "..OUTz,1, 5, colors.white)
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
