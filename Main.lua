@@ -83,17 +83,19 @@ if Settings.town.name == nil then
 end
 
 if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then
-    INx,INy,INz = Settings.Input.x,Settings.Input.y,Settings.Input.z
+    INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
 else
     Settings.Input = {}
-    Settings.Input.x,Settings.Input.y,Settings.Input.z = x+1,y,z
+    Settings.Input.x, Settings.Input.y, Settings.Input.z = x+1,y,z
+    INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
 end
 
 if Settings.Output and math.abs(Settings.Output.x - x) <= ChestRange and math.abs(Settings.Output.y - y) <= ChestRange then
-    OUTx,OUTy,OUTz = Settings.Output.x,Settings.Output.y,Settings.Output.z
+    OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
 else
     Settings.Output = {}
-    Settings.Output.x,Settings.Output.y,Settings.Output.z = x+1,y+2,z
+    Settings.Output.x, Settings.Output.y, Settings.Output.z = x+1,y+2,z
+    OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
 end
 
 Utility.writeJsonFile(SettingsFile,Settings)
