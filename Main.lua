@@ -181,6 +181,8 @@ function drawButtonsForCurrentPage()
     elseif currentPage == "settings_InputChest" then
         Monitor.write("Settings - Input Chest!", 1, 1, colors.white)
         Monitor.write("X: "..INx.." Y: "..INy.." Z: "..INz,1, 5, colors.white)
+        commands.particle("block_marker", "chest", INx, INy, INz, 0, 0, 0, 0.1, 10, "normal")
+        commands.particle("end_rod", INx, INy, INz, 0, 0, 0, 0.03, 100, "normal")
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
@@ -188,6 +190,8 @@ function drawButtonsForCurrentPage()
     elseif currentPage == "settings_OutputChest" then
         Monitor.write("Settings - Output Chest!", 1, 1, colors.white)
         Monitor.write("X: "..OUTx.." Y: "..OUTy.." Z: "..OUTz,1, 5, colors.white)
+        commands.particle("block_marker", "chest", OUTx, OUTy, OUTz, 0, 0, 0, 0.1, 10, "normal")
+        commands.particle("end_rod", OUTx, OUTy, OUTz, 0, 0, 0, 0.03, 100, "normal")
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
@@ -379,6 +383,16 @@ end
 function OffsetButton(x,y)
     --print(x,y)
     Monitor.OffsetButton(x,y)
+    drawButtonsForCurrentPage()
+end
+
+function ChangeInputChest(x,y,z)
+    Settings = Utility.readJsonFile(SettingsFile)
+    INx = INx + x
+    INy = INy + y
+    INz = INz + z
+    Settings.Input.x,Settings.Input.y,Settings.Input.z = INx,INy,INz
+    Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
 end
 
