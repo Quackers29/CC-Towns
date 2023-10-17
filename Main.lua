@@ -25,7 +25,7 @@ local refreshflag = true
 local displayItem = nil
 local INx,INy,INz = nil,nil,nil
 local OUTx,OUTy,OUTz = nil,nil,nil
-local ChestRange = 5 --blocks
+local ChestRange = 5 -- blocks away from the Town PC
 
 local minWidth = 8
 local minHeight = 2
@@ -82,14 +82,22 @@ if Settings.town.name == nil then
     print(townName)
 end
 
-if Settings.Input and (ChestRange*-1) <= (Settings.Input.x - x) <= ChestRange and (ChestRange*-1) <= (Settings.Input.y - y) <= ChestRange then
-    INx,INy,INz = Settings.Input.x,Settings.Input.y,Settings.Input.z
+if Settings.Input then
+    if (ChestRange*-1) <= (Settings.Input.x - x) <= ChestRange and (ChestRange*-1) <= (Settings.Input.y - y) <= ChestRange then
+        INx,INy,INz = Settings.Input.x,Settings.Input.y,Settings.Input.z
+    else
+        Settings.Input.x,Settings.Input.y,Settings.Input.z = x+1,y,z
+    end
 else
     Settings.Input.x,Settings.Input.y,Settings.Input.z = x+1,y,z
 end
 
-if Settings.Output and (ChestRange*-1) <= (Settings.Output.x - x) <= ChestRange and (ChestRange*-1) <= (Settings.Output.y - y) <= ChestRange then
-    OUTx,OUTy,OUTz = Settings.Output.x,Settings.Output.y,Settings.Output.z
+if Settings.Output then
+    if (ChestRange*-1) <= (Settings.Output.x - x) <= ChestRange and (ChestRange*-1) <= (Settings.Output.y - y) <= ChestRange then
+        OUTx,OUTy,OUTz = Settings.Output.x,Settings.Output.y,Settings.Output.z
+    else
+        Settings.Output.x,Settings.Output.y,Settings.Output.z = x+1,y+2,z
+    end
 else
     Settings.Output.x,Settings.Output.y,Settings.Output.z = x+1,y+2,z
 end
