@@ -2,11 +2,12 @@ local Manager = {}
 local Utility = require("Utility")
 
 local x,y,z = gps.locate()
-local INx,INy,INz = x-1,y,z
-local EXPx,EXPy,EXPz = x-1,y+2,z
+--local INx,INy,INz = x-1,y,z
+--local EXPx,EXPy,EXPz = x-1,y+2,z
 local headers = {"id", "count", "toggle"}
 local cloneHeight = -64 -- where to place the clone chest, -64 is in the bedrock layer just before the void
 local timerSleep = 1
+
 
 function Manager.isFileInUse(filename)
     local file = io.open(filename, "a+") -- Try to open the file in write mode
@@ -129,7 +130,7 @@ function Manager.mergetable(main,secondary)
 	return main
 end
 
-function Manager.outputItems(filename,itemString)
+function Manager.outputItems(filename,itemString,EXPx,EXPy,EXPz)
 	local r1,r2 = commands.data.get.block(EXPx,EXPy,EXPz)
 	local r3 = string.find(r2[1],"Items: %[%]")
 	if r1 == true then
@@ -213,14 +214,14 @@ function Manager.removeFirstLevelBrackets(input)
 	return result
 end
 
-function Manager.checkItems(filePath)
+function Manager.checkItems(filePath,OUTx,OUTy,OUTz)
     local prevtable = Utility.readJsonFile(filePath)
     if prevtable then
         for key,items in pairs(prevtable) do
             for index, item in ipairs(items) do
                 if item.toggle == true or item.toggle == "true" then
                     if item.count > 0 then
-                        Manager.outputItems(filePath,item.string)
+                        Manager.outputItems(filePath,item.string,OUTx,OUTy,OUTz)
                     end
                 end
             end
@@ -235,7 +236,7 @@ function Manager.handleTimer()
     scrollTimerID = os.startTimer(timerSleep) -- Reset the timer to x seconds
 end
 
-function Manager.inputItems(filename)
+function Manager.inputItems(filename,INx,INy,INz)
 	local itemTable = Utility.readJsonFile(filename)
 	local INq,INw = commands.data.get.block(INx,INy,INz,"Items")
 	if INq then

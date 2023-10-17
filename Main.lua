@@ -81,6 +81,9 @@ end
 
 Utility.writeJsonFile(SettingsFile,Settings)
 
+local INx,INy,INz = Settings.Input.x,Settings.Input.y,Settings.Input.z
+local OUTx,OUTy,OUTz = Settings.Output.x,Settings.Output.y,Settings.Output.z
+
 if not fs.exists(upgradesFile) then
     local upgradeTable = Utility.readJsonFile(upgradesSource)
     local newTable = {}
@@ -363,8 +366,8 @@ function OffsetButton(x,y)
 end
 
 function RefreshButton()
-    Manager.inputItems(resFile)
-    Manager.checkItems(resFile)
+    Manager.inputItems(resFile,INx,INy,INz)
+    Manager.checkItems(resFile,OUTx,OUTy,OUTz)
     if currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" then
         drawButtonsForCurrentPage()     
     end

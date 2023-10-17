@@ -17,6 +17,8 @@
     "baseType": "Logging_Town",
     "description": "A town specialized in logging activities."
   },
+    "Input": {"x":0,"y":0,"z":0},
+    "Output": {"x":0,"y":0,"z":0},
   "production": {
     "wood": {"rate" : 10, "max_storage" : 500, "consumes" : {"food" : 5}, "available" : true, "enabled" : true},
     "sapplings": {"rate" : 1, "max_storage" : 100, "consumes" : {"food" : 1}, "available" : true, "enabled" : true}
