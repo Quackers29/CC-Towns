@@ -21,15 +21,8 @@ function Utility.readJsonFile(filePath)
 end
 
 function Utility.writeJsonFile(filePath, data)
-    local serializedData = {}
-    if data then serializedData = textutils.serializeJSON(data) end
+    local serializedData = textutils.serializeJSON(data)
     
-    if type(serializedData) == "table" then
-        for i,v in pairs(serializedData) do
-            print(i,v)
-        end
-    end
-
     local file = io.open(filePath, "w+")
 
     if file then
