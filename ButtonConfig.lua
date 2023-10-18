@@ -31,8 +31,12 @@ local ButtonConfig = {
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_InputChest"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_OutputChest"},
 
-{id = "Add",width = 3,x = 2,y = 4,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeInputChest(1,0,0) end,enabled = true, type = "button",page = "settings_InputChest"},
+{id = "Add",width = 3,x = 2,y = 1,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeInputChest(1,0,0) end,enabled = true, type = "button",page = "settings_InputChest"},
 {id = "Subtract",width = 3,x = 2,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeInputChest(-1,0,0) end,enabled = true, type = "button",page = "settings_InputChest"},
+{id = "Add",width = 3,x = 8,y = 1,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeInputChest(0,1,0) end,enabled = true, type = "button",page = "settings_InputChest"},
+{id = "Subtract",width = 3,x = 8,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeInputChest(0,-1,0) end,enabled = true, type = "button",page = "settings_InputChest"},
+{id = "Add",width = 3,x = 14,y = 1,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeInputChest(0,0,1) end,enabled = true, type = "button",page = "settings_InputChest"},
+{id = "Subtract",width = 3,x = 14,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeInputChest(0,0,-1) end,enabled = true, type = "button",page = "settings_InputChest"},
 } 
 
 return ButtonConfig
