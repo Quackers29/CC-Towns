@@ -390,9 +390,9 @@ end
 
 function ChangeInputChest(ax,ay,az)
     Settings = Utility.readJsonFile(SettingsFile)
-    INx = math.max(math.min(INz + ax, x - ChestRange),x + ChestRange)
-    INy = math.max(math.min(INz + ay, x - ChestRange),x + ChestRange)
-    INz = math.max(math.min(INz + az, x - ChestRange),x + ChestRange)
+    INx = math.max(x - ChestRange, math.min(INx + ax, x + ChestRange))
+    INy = math.max(y - ChestRange, math.min(INy + ay, y + ChestRange))
+    INz = math.max(z - ChestRange, math.min(INz + az, z + ChestRange))
     Settings.Input.x,Settings.Input.y,Settings.Input.z = INx,INy,INz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
@@ -401,8 +401,8 @@ end
 function ChangeOutputChest(ax,ay,az)
     Settings = Utility.readJsonFile(SettingsFile)
     OUTx = math.max(x - ChestRange, math.min(OUTx + ax, x + ChestRange))
-    OUTy = math.max(x - ChestRange, math.min(OUTx + ay, x + ChestRange))
-    OUTz = math.max(x - ChestRange, math.min(OUTx + az, x + ChestRange))
+    OUTy = math.max(y - ChestRange, math.min(OUTy + ay, y + ChestRange))
+    OUTz = math.max(z - ChestRange, math.min(OUTz + az, z + ChestRange))
     Settings.Output.x,Settings.Output.y,Settings.Output.z = OUTx,OUTy,OUTz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
