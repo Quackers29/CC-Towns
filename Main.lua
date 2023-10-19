@@ -28,6 +28,7 @@ local OUTx,OUTy,OUTz = nil,nil,nil
 local ChestRange = 5 -- blocks away from the Town PC
 local LastX,LastY = 1,1 -- use for map coordinates
 local adminFile = "AdminSettings.json"
+local currentZoom = 1 -- 1 for 1
 -- PushButtons
 local minWidth = 8
 local minHeight = 2
@@ -281,7 +282,7 @@ function drawButtonsForCurrentPage()
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
-        Monitor.displayMap(NearbyTowns, currentTown, topLeftX, topLeftY, mapWidth, mapHeight, zoom)
+        Monitor.displayMap(NearbyTowns, currentTown, topLeftX, topLeftY, mapWidth, mapHeight, currentZoom)
     elseif currentPage == "display_upgrade" then
         local canUp = true
         local prevtable = Utility.readJsonFile(resFile)
@@ -465,10 +466,13 @@ function goToDisplayPage(x, todisplay)
     drawButtonsForCurrentPage()
 end
 
-
 function OffsetButton(x,y)
-    --print(x,y)
     Monitor.OffsetButton(x,y)
+    drawButtonsForCurrentPage()
+end
+
+function OffsetZoom(x)
+    currentZoom = math.min((currentZoom + x),1)
     drawButtonsForCurrentPage()
 end
 
