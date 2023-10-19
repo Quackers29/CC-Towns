@@ -403,7 +403,7 @@ function ChangeOutputChest(x,y,z)
     OUTx = OUTx + x
     OUTy = OUTy + y
     OUTz = OUTz + z
-    Settings.Output.x,Settings.Output.y,Settings.Output.z = INx,INy,INz
+    Settings.Output.x,Settings.Output.y,Settings.Output.z = OUTx,OUTy,OUTz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
 end
