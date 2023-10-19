@@ -388,21 +388,21 @@ function OffsetButton(x,y)
     drawButtonsForCurrentPage()
 end
 
-function ChangeInputChest(x,y,z)
+function ChangeInputChest(ax,ay,az)
     Settings = Utility.readJsonFile(SettingsFile)
-    INx = INx + x
-    INy = INy + y
-    INz = INz + z
+    INx = math.max(x - ChestRange, math.min(INx + ax, x + ChestRange))
+    INy = math.max(x - ChestRange, math.min(INy + ay, x + ChestRange))
+    INz = math.max(x - ChestRange, math.min(INz + az, x + ChestRange))
     Settings.Input.x,Settings.Input.y,Settings.Input.z = INx,INy,INz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
 end
 
-function ChangeOutputChest(x,y,z)
+function ChangeOutputChest(ax,ay,az)
     Settings = Utility.readJsonFile(SettingsFile)
-    OUTx = OUTx + x
-    OUTy = OUTy + y
-    OUTz = OUTz + z
+    OUTx = math.max(x - ChestRange, math.min(OUTx + ax, x + ChestRange))
+    OUTy = math.max(x - ChestRange, math.min(OUTx + ay, x + ChestRange))
+    OUTz = math.max(x - ChestRange, math.min(OUTx + az, x + ChestRange))
     Settings.Output.x,Settings.Output.y,Settings.Output.z = OUTx,OUTy,OUTz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
