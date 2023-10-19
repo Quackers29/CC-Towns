@@ -66,3 +66,8 @@ os.day()
 os.time()
 os.clock()
 os.date()
+
+
+local boolean,table,count = commands.exec("/kill @e[type=minecraft:villager,x=12,y=-60,z=-36,distance=..10]")
+true, {"Killed Villager"}, 2
+commands.summon("minecraft:villager",12,-62,-38)

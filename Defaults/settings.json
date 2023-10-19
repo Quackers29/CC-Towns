@@ -1,0 +1,21 @@
+{
+  "general": {
+    "biomeDist": 0,
+    "biome": null
+  },
+  "trade": {
+    "willingness": 0.8,
+    "favorable": ["food", "iron"]
+  },
+  "upgrades": {
+    "base": ["Logging_upgrade1"],
+    "possible": ["Logging_upgrade2", "Logging_upgrade1"]
+  },
+  "town": {
+    "name": null,
+    "baseType": "Logging_Town",
+    "description": "A town specialized in logging activities."
+  },
+  "Input": { "x": 0, "y": 0, "z": 0 },
+  "Output": { "x": 0, "y": 0, "z": 0 }
+}

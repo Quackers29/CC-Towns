@@ -1,6 +1,5 @@
 local Monitor = require("Monitor")
 local Manager = require("Manager")
-local CSV2D = require("CSV2D")
 local Utility = require("Utility")
 local buttonConfig = require("ButtonConfig")
 local currentPage = "main" -- Default page to start
@@ -12,7 +11,7 @@ local upgradesFile = town.."UP_X"..x.."Y"..y.."Z"..z..".json"
 local biomeFile = town.."BIO_X"..x.."Y"..y.."Z"..z..".json"
 local SettingsFile = town.."SET_X"..x.."Y"..y.."Z"..z..".json"
 local productionFile = town.."PRO_X"..x.."Y"..y.."Z"..z..".json"
-local defaultSettingsFile = "Defaults\\defaultSettings.json"
+local defaultSettingsFile = "Defaults\\settings.json"
 local upgradesSource = "Defaults\\upgrades.json"
 local productionSource = "Defaults\\production.json"
 local covertFile = "Defaults\\convert.json"
@@ -20,20 +19,25 @@ local biomes = "Defaults\\biomes.txt"
 local townNames = "Defaults\\townNames.txt"
 local mainflag = true
 local secondflag = true
-local wait = 5
+local wait = 5 --IN/OUT wait timer
 local productionWait = 10
 local refreshflag = true
 local displayItem = nil
 local INx,INy,INz = nil,nil,nil
 local OUTx,OUTy,OUTz = nil,nil,nil
 local ChestRange = 5 -- blocks away from the Town PC
-local MinTownRange = 10 -- blocks away from the Town PC
-
+local LastX,LastY = 1,1 -- use for map coordinates
+local adminFile = "AdminSettings.json"
+-- PushButtons
 local minWidth = 8
 local minHeight = 2
 
 local scheduledActions = {} -- A table to keep track of scheduled actions
 
+
+function CalcDist(x1, z1, x2, z2)
+    return math.sqrt((x2 - x1)^2 + (z2 - z1)^2)
+end
 
 function InRange(value, origin, range)
     return math.max(origin - range, math.min(value, origin + range))
@@ -76,20 +80,25 @@ for i,v in ipairs(fs.list("Towns")) do
     end
 end
 
-local deleteTown = false
-if not TownFlag then
-    print("Town does not already exist")
-    for i,v in ipairs(fs.list("Towns")) do
-        local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
-        if IsInRange2DAngular(ax, az, x, z, MinTownRange) then
-            print("NewTown is within another Town, delete Computer")
-            os.sleep(10)
-            commands.fill(x,y,z,x,y,z,"cobblestone")
-            error("Program terminated, Computer deleted")
-            break
+local AdminSettings = Utility.readJsonFile(adminFile)
+
+if AdminSettings and AdminSettings.Town.MinDistance then
+    local deleteTown = false
+    if not TownFlag then
+        print("Town does not already exist")
+        for i,v in ipairs(fs.list("Towns")) do
+            local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
+            if IsInRange2DAngular(ax, az, x, z, AdminSettings.Town.MinDistance) then
+                print("NewTown is within another Town, deleting Computer")
+                os.sleep(10)
+                commands.fill(x,y,z,x,y,z,"cobblestone")
+                error("Program terminated, Computer deleted")
+                break
+            end
         end
     end
 end
+
 
 -- Initialize checks / file system
 
@@ -564,6 +573,7 @@ end
 function main()
     while mainflag do
         local event, side, x, y = os.pullEvent("monitor_touch")
+        LastX, LastY = x,y
         local clicked, button = Monitor.isInsideButton(x, y)
         if clicked and (button.page == currentPage or "all") then --and button.enabled
             if button.action then

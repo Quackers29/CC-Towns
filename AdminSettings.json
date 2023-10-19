@@ -8,5 +8,8 @@
       "AutoUpdate": false
     }
   },
-  "Town": { "Startup": true }
+  "Town": {
+    "Startup": true,
+    "MinDistance": 10
+  }
 }

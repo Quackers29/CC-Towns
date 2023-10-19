@@ -1,4 +1,4 @@
-local Monitor = require("Monitor")
+local monitor = require("Monitor")
 local Utility = require("Utility")
 local waitForControl = 10
 
@@ -6,6 +6,11 @@ term.clear()
 term.setCursorPos(1,1)
 
 print("Starting up (Waiting for Server)")
+
+if monitor then
+    monitor.clear()
+end
+
 os.sleep(10)
 
 local adminFile = "AdminSettings.json"
