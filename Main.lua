@@ -464,6 +464,9 @@ function ChangeInputChest(ax,ay,az)
     Settings.Input.x,Settings.Input.y,Settings.Input.z = INx,INy,INz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
+    local timeX = os.clock()
+    commands.summon("minecraft:villager",INx,INy,INz,"{CustomName:'{\"text\":\""..Settings.town.name.."\"}'}")
+    commands.summon("minecraft:villager",INx,INy,INz,"{CustomName:'{\"text\":\""..timeX.."\"}'}")
 end
 
 function ChangeOutputChest(ax,ay,az)
@@ -474,6 +477,8 @@ function ChangeOutputChest(ax,ay,az)
     Settings.Output.x,Settings.Output.y,Settings.Output.z = OUTx,OUTy,OUTz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
+    local boolean,table,count = commands.kill("@e[type=minecraft:villager,distance=..100,name=!Pinecastle,limit=1]")
+    print(table[1])
 end
 
 function RefreshButton()

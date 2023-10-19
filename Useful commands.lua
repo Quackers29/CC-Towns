@@ -3,8 +3,6 @@ Startup commands
 pastebin get W5ZkVYSi gitget
 gitget Quackers29 CC-Towns main
 
-
-
 boolean, tableWithString, distance = commands.locate.biome("#forge:is_desert")
 --boolean can be incorrect, search string aswell: if boolean or string.match(tableWithString[1], "(0 blocks away)") then 
 
@@ -67,7 +65,27 @@ os.time()
 os.clock()
 os.date()
 
-
-local boolean,table,count = commands.exec("/kill @e[type=minecraft:villager,x=12,y=-60,z=-36,distance=..10]")
+--Population, % will willing to emigrate (10%)
+local boolean,table,count = commands.exec("/kill @e[type=minecraft:villager,x="..PINx..",y="..PINy..",z="..PINz..",distance=..10]")
 true, {"Killed Villager"}, 2
-commands.summon("minecraft:villager",12,-62,-38)
+commands.summon("minecraft:villager",POUTx,POUTy,POUTz)
+
+local boolean,table,count = commands.exec("/summon minecraft:villager 12 -63 -38 {CustomName:"John",CustomNameVisible:1b}")
+
+commands.summon("minecraft:villager","~","~","~","{\"CustomName\":\"John\",CustomNameVisible:1b}")
+"display: {Name:'{\"test\":\"Name Ta\"}'}"
+CustomName:'{"text":"Name"}',
+CustomName:'{\"text\":\"Name\"}',
+CustomName:'{"text":"Pinecastle"}',
+
+
+
+commands.summon("minecraft:villager","~","~","~","{CustomName:'{\"text\":\"Pinecastle\"}'}")
+commands.exec("/kill @e[type=minecraft:villager,distance=..100] {CustomName:'{\"text\":\"Pinecastle\"}'}")
+commands.kill("@e[type=minecraft:villager,distance=..100] {CustomName:'{\"text\":\"Pinecastle\"}'}")
+commands.kill("@e[type=minecraft:villager,distance=..100] {CustomName:'{"text":"Pinecastle"}'}")
+
+
+
+commands.summon("minecraft:villager","~","~","~","{CustomName:'{\"text\":\"Pinecastle\"}'}")
+boolean,table,count = commands.kill("@e[type=minecraft:villager,distance=..100,name=!Pinecastle,limit=1]")
