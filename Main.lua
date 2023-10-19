@@ -5,7 +5,8 @@ local Utility = require("Utility")
 local buttonConfig = require("ButtonConfig")
 local currentPage = "main" -- Default page to start
 local x,y,z = gps.locate()
-local town = "Towns\\Town_X"..x.."Y"..y.."Z"..z.."\\"
+local townFolder = "Town_X"..x.."Y"..y.."Z"..z
+local town = "Towns\\"..townFolder.."\\"
 local resFile = town.."RES_X"..x.."Y"..y.."Z"..z..".json"
 local upgradesFile = town.."UP_X"..x.."Y"..y.."Z"..z..".json"
 local biomeFile = town.."BIO_X"..x.."Y"..y.."Z"..z..".json"
@@ -26,11 +27,69 @@ local displayItem = nil
 local INx,INy,INz = nil,nil,nil
 local OUTx,OUTy,OUTz = nil,nil,nil
 local ChestRange = 5 -- blocks away from the Town PC
+local MinTownRange = 10 -- blocks away from the Town PC
 
 local minWidth = 8
 local minHeight = 2
 
 local scheduledActions = {} -- A table to keep track of scheduled actions
+
+
+function InRange(value, origin, range)
+    return math.max(origin - range, math.min(value, origin + range))
+end
+
+function IsInRange(value, origin, range)
+    return value >= (origin - range) and value <= (origin + range)
+end
+
+function IsInRange2DAngular(X, Z, originX, originZ, range)
+    local distance = math.sqrt((X - originX)^2 + (Z - originZ)^2)
+    return distance <= range
+end
+
+function CoerceInRange2DAngular(X, Z, originX, originZ, range)
+    local dx = X - originX
+    local dz = Z - originZ
+    local distance = math.sqrt(dx^2 + dz^2)
+    
+    if distance <= range then
+        return X, Z  -- Point is within range, return it as is
+    end
+
+    -- Calculate scaling factor
+    local scale = range / distance
+
+    -- Coerce point to be on the border of the circle with radius `range`
+    local coercedX = originX + dx * scale
+    local coercedZ = originZ + dz * scale
+    
+    return coercedX, coercedZ, distance
+end
+
+-- Initialize Checks if it exists or should exist
+local TownFlag = false
+for i,v in ipairs(fs.list("Towns")) do
+    if v == townFolder then
+        print("Town already exist")
+        TownFlag = true
+    end
+end
+
+local deleteTown = false
+if not TownFlag then
+    print("Town does not already exist")
+    for i,v in ipairs(fs.list("Towns")) do
+        local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
+        if IsInRange2DAngular(ax, az, x, z, MinTownRange) then
+            print("NewTown is within another Town, delete Computer")
+            os.sleep(10)
+            commands.fill(x,y,z,x,y,z,"cobblestone")
+            error("Program terminated, Computer deleted")
+            break
+        end
+    end
+end
 
 -- Initialize checks / file system
 
