@@ -80,7 +80,7 @@ function Monitor.displayMap(towns, currentTown, topLeftX, topLeftY, mapWidth, ma
     -- Plot each town relative to the current town's centered position
     for _, town in pairs(towns) do
         local relX = math.floor((town.x - currentTown.x) / zoom)
-        local relZ = math.floor((currentTown.z) - town.z / zoom)
+        local relZ = math.floor((currentTown.z - town.z) / zoom)
 
         local screenX = centerX + relX
         local screenZ = centerY - relZ

@@ -274,7 +274,7 @@ function drawButtonsForCurrentPage()
         end
 
     elseif currentPage == "Map" then
-        Monitor.write(Settings.town.name.." - Map", 1, 1, colors.white)
+        Monitor.write(Settings.town.name.." - Map (Zoom:"..currentZoom..")", 1, 1, colors.white)
         local currentTown = {x = x, z = z}
         local topLeftX, topLeftY = 1, 2  -- x,y
         local mapWidth, mapHeight = width - topLeftX, height - topLeftY
@@ -472,8 +472,7 @@ function OffsetButton(x,y)
 end
 
 function OffsetZoom(x)
-    currentZoom = math.min((currentZoom + x),1)
-    print(currentZoom)
+    currentZoom = math.max((currentZoom + x),1)
     drawButtonsForCurrentPage()
 end
 
