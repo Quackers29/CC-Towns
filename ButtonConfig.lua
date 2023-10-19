@@ -33,8 +33,8 @@ local ButtonConfig = {
 --Settings
 {label = "InputChest",id = "settigns_inputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_InputChest") end},
 {label = "OutputChest",id = "settigns_outputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_OutputChest") end},
-{label = "InputPOP",id = "settigns_outputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    InputPOP() end},
-{label = "OutputPOP",id = "settigns_outputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputPOP() end},
+{label = "InputPOP",id = "settigns_inputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    InputPOP() end},
+{label = "OutputPOP",id = "settigns_outputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputPOP() end},
 
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_InputChest"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_OutputChest"},
