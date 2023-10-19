@@ -7,10 +7,6 @@ term.setCursorPos(1,1)
 
 print("Starting up (Waiting for Server)")
 
-if Monitor then
-    Monitor.clear()
-end
-
 os.sleep(10)
 
 local adminFile = "AdminSettings.json"

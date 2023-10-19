@@ -486,7 +486,9 @@ function OutputPOP()
 end
 
 function InputPOP()
-    local boolean,table,count = commands.kill("@e[type=minecraft:villager,x="..PINx..",y="..PINy..",z="..PINz..",distance=..5,name=!"..Settings.town.name..",limit=1]")
+    local test1 = "@e[type=minecraft:villager,x="..tostring(PINx)..",y="..tostring(PINy)..",z="..tostring(PINz)..",distance=..10,name=!"..Settings.town.name..",limit=1]"
+    print(test1)
+    local boolean,table,count = commands.kill(test1)
     local result = string.match(table[1], "Killed (.+)")
     print(result)
 end
