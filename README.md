@@ -45,6 +45,7 @@
   Currently can Import/Export "Town" Villagers, summons with a visable name based on the town, kills and records name (of origin town)
   Plan to move population around towns for increased productivity / money
   ![2023-10-20_00 02 37](https://github.com/Quackers29/CC-Towns/assets/11053436/6d087930-78ba-4e55-b544-927ed80f0f59)
+![2023-10-20_00 10 54](https://github.com/Quackers29/CC-Towns/assets/11053436/b37eff09-a103-4527-bff2-56a2c06de294)
 
 
 # Plans
