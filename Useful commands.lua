@@ -78,14 +78,9 @@ CustomName:'{"text":"Name"}',
 CustomName:'{\"text\":\"Name\"}',
 CustomName:'{"text":"Pinecastle"}',
 
-
-
 commands.summon("minecraft:villager","~","~","~","{CustomName:'{\"text\":\"Pinecastle\"}'}")
 commands.exec("/kill @e[type=minecraft:villager,distance=..100] {CustomName:'{\"text\":\"Pinecastle\"}'}")
 commands.kill("@e[type=minecraft:villager,distance=..100] {CustomName:'{\"text\":\"Pinecastle\"}'}")
-commands.kill("@e[type=minecraft:villager,distance=..100] {CustomName:'{"text":"Pinecastle"}'}")
-
-
 
 commands.summon("minecraft:villager","~","~","~","{CustomName:'{\"text\":\"Pinecastle\"}'}")
 boolean,table,count = commands.kill("@e[type=minecraft:villager,distance=..100,name=!Pinecastle,limit=1]")

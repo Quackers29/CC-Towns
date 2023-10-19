@@ -32,6 +32,9 @@ local adminFile = "AdminSettings.json"
 local minWidth = 8
 local minHeight = 2
 
+local PINx,PINy,PINz = 11,-59,-37 --population input coords
+local POUTx,POUTy,POUTz = 11,-59,-47 --population output coords
+
 local scheduledActions = {} -- A table to keep track of scheduled actions
 
 
@@ -464,9 +467,6 @@ function ChangeInputChest(ax,ay,az)
     Settings.Input.x,Settings.Input.y,Settings.Input.z = INx,INy,INz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
-    local timeX = os.clock()
-    commands.summon("minecraft:villager",INx,INy,INz,"{CustomName:'{\"text\":\""..Settings.town.name.."\"}'}")
-    commands.summon("minecraft:villager",INx,INy,INz,"{CustomName:'{\"text\":\""..timeX.."\"}'}")
 end
 
 function ChangeOutputChest(ax,ay,az)
@@ -477,8 +477,18 @@ function ChangeOutputChest(ax,ay,az)
     Settings.Output.x,Settings.Output.y,Settings.Output.z = OUTx,OUTy,OUTz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
-    local boolean,table,count = commands.kill("@e[type=minecraft:villager,distance=..100,name=!Pinecastle,limit=1]")
-    print(table[1])
+end
+
+function OutputPOP()
+    local timeX = os.clock()
+    commands.summon("minecraft:villager",POUTx,POUTy,POUTz,"{CustomName:'{\"text\":\""..Settings.town.name.."\"}'}")
+    commands.summon("minecraft:villager",POUTx,POUTy,POUTz,"{CustomName:'{\"text\":\"".."Clock"..timeX.."\"}'}")
+end
+
+function InputPOP()
+    local boolean,table,count = commands.kill("@e[type=minecraft:villager,x="..PINx..",y="..PINy..",z="..PINz..",distance=..5,name=!"..Settings.town.name..",limit=1]")
+    local result = string.match(table[1], "Killed (.+)")
+    print(result)
 end
 
 function RefreshButton()

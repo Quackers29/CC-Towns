@@ -26,13 +26,16 @@ local ButtonConfig = {
     {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("main") end,enabled = true, type = "button",page = "production"},
     {id = "toggle",justify = "left",width = 3,colorOn = colors.yellow,colorOff = colors.blue,charOn = "O",enabled = false, type = "list",page = "production"},
     {id = "addBtn",justify = "right",width = 3,colorOn = colors.green,colorOff = colors.gray,charOn = "+",action = function(x) goToDisplayPage(x,"display_production") end,enabled = true, type= "list",page = "production"},
-    
+
     {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("production") end,enabled = true, type = "button",page = "display_production"},
     {id = "Up",width = 3,x = -1,y = 1,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handleProduction(x) goToPage("production") end,enabled = false, type = "button",page = "display_production"},
     {id = "toggle",justify = "right",width = 3,colorOn = colors.green,colorOff = colors.gray,charOn = "+",enabled = true, type= "list",page = "display_production"},
 --Settings
 {label = "InputChest",id = "settigns_inputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_InputChest") end},
 {label = "OutputChest",id = "settigns_outputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_OutputChest") end},
+{label = "InputPOP",id = "settigns_outputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    InputPOP() end},
+{label = "OutputPOP",id = "settigns_outputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputPOP() end},
+
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_InputChest"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_OutputChest"},
 
