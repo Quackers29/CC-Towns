@@ -37,6 +37,15 @@
   
 ![2023-10-11_20 30 47](https://github.com/Quackers29/CC-Towns/assets/11053436/8b2deb60-fbae-4249-9b1e-10cf7921101d)
 
+  ### Map 
+  Rudimentary map of towns location compared to surrounding towns, can zoom in and out.
+  ![2023-10-20_00 01 42](https://github.com/Quackers29/CC-Towns/assets/11053436/efccdf09-ec5f-4ad9-98a2-304cce846bfe)
+
+  ### Villagers Import/Export
+  Currently can Import/Export "Town" Villagers, summons with a visable name based on the town, kills and records name (of origin town)
+  Plan to move population around towns for increased productivity / money
+  ![2023-10-20_00 02 37](https://github.com/Quackers29/CC-Towns/assets/11053436/6d087930-78ba-4e55-b544-927ed80f0f59)
+
 
 # Plans
   ### Production
@@ -49,8 +58,6 @@
   Statistics of the town, trades completed, points earned, population etc
   ### Settings
   Generic settings for the town, town name etc and possibly Company takeover - Player pays to capture the town under a team name.
-  ### Map 
-  Rudimentary map of towns location compared to surrounding towns, can zoom in and out.
   
   ### Misc
   Slow auto trading of each town to surrounding towns, slow development of towns over time.
