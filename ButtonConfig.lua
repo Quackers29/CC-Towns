@@ -33,7 +33,7 @@ local ButtonConfig = {
 --Map
     {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("main") end,enabled = true, type = "button",page = "Map"},
     {id = "Add",type = "button",page = "Map",width = 3,x = -4,y = 0,action = function() OffsetZoom(1) end,charOn = "+",colorOn = colors.yellow,colorOff = colors.gray,enabled = true},
-    {id = "Subtract",type = "button",page = "Map",width = 3,x = -7,y = 0,action = function() OffsetZoom(-1) end,charOn = "+",colorOn = colors.yellow,colorOff = colors.gray,enabled = true},
+    {id = "Subtract",type = "button",page = "Map",width = 3,x = -7,y = 0,action = function() OffsetZoom(-1) end,charOn = "-",colorOn = colors.yellow,colorOff = colors.gray,enabled = true},
     
     --Settings
 {label = "InputChest",id = "settigns_inputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_InputChest") end},

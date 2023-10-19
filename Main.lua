@@ -473,6 +473,7 @@ end
 
 function OffsetZoom(x)
     currentZoom = math.min((currentZoom + x),1)
+    print(currentZoom)
     drawButtonsForCurrentPage()
 end
 
