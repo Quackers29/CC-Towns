@@ -76,7 +76,10 @@ end
 
 -- Initialize Checks if it exists or should exist
 local TownFlag = false
+local NearbyTowns = {}
 for i,v in ipairs(fs.list("Towns")) do
+    local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
+    table.insert(NearbyTowns,{x = ax,y = ay,z = az})
     if v == townFolder then
         print("Town already exist")
         TownFlag = true
@@ -269,6 +272,16 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
 
+    elseif currentPage == "Map" then
+        Monitor.write(Settings.town.name.." - Map", 1, 1, colors.white)
+        local currentTown = {x = x, z = z}
+        local topLeftX, topLeftY = 1, 2  -- x,y
+        local mapWidth, mapHeight = width - topLeftX, height - topLeftY
+        local zoom = 1
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+        Monitor.displayMap(NearbyTowns, currentTown, topLeftX, topLeftY, mapWidth, mapHeight, zoom)
     elseif currentPage == "display_upgrade" then
         local canUp = true
         local prevtable = Utility.readJsonFile(resFile)

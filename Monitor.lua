@@ -70,6 +70,35 @@ function Monitor.PrevButton(y)
     end
 end
 
+function Monitor.displayMap(towns, currentTown, topLeftX, topLeftY, mapWidth, mapHeight, zoom)
+    local centerX = topLeftX + math.floor(mapWidth / 2)
+    local centerY = topLeftY + math.floor(mapHeight / 2)
+    
+    -- Clear previous drawings and set background
+    --monitor.setBackgroundColor(colors.black)
+
+    -- Plot each town relative to the current town's centered position
+    for _, town in pairs(towns) do
+        local relX = math.floor((town.x - currentTown.x) / zoom)
+        local relZ = math.floor((town.z - currentTown.z) / zoom)
+
+        local screenX = centerX + relX
+        local screenZ = centerY - relZ
+
+        if screenX >= topLeftX and screenX < (topLeftX + mapWidth) and screenZ >= topLeftY and screenZ < (topLeftY + mapHeight) then
+            monitor.setCursorPos(screenX, screenZ)
+            monitor.setTextColor(colors.blue)
+            monitor.write("T") -- representing a town
+        end
+    end
+
+    -- Plot the current town at the center
+    monitor.setCursorPos(centerX, centerY)
+    monitor.setTextColor(colors.red)
+    monitor.write("X") -- representing current town
+end
+
+
 -- Function to draw a button with an outline
 function Monitor.drawPushButton(text, identifier, x, y, width, height)
     -- Drawing the button box with an outline
