@@ -1,1 +1,59 @@
-[{},{},{},{},{"y":0,"mod":"minecraft","key":"desert","z":-20,"distance":0,"x":-3},{"y":0,"mod":"minecraft","key":"desert","z":-20,"distance":0,"x":-3},{},{},{"y":0,"mod":"minecraft","key":"desert","z":-20,"distance":0,"x":-3},{},{},{},{},{},{},{},{},{},{},{"y":0,"mod":"minecraft","key":"desert","z":-20,"distance":0,"x":-3},{},{},{},{},{},{},{},{},{}]
+[
+  {},
+  {},
+  {},
+  {},
+  {
+    "y": 0,
+    "mod": "minecraft",
+    "key": "desert",
+    "z": -20,
+    "distance": 0,
+    "x": -3
+  },
+  {
+    "y": 0,
+    "mod": "minecraft",
+    "key": "desert",
+    "z": -20,
+    "distance": 0,
+    "x": -3
+  },
+  {},
+  {},
+  {
+    "y": 0,
+    "mod": "minecraft",
+    "key": "desert",
+    "z": -20,
+    "distance": 0,
+    "x": -3
+  },
+  {},
+  {},
+  {},
+  {},
+  {},
+  {},
+  {},
+  {},
+  {},
+  {},
+  {
+    "y": 0,
+    "mod": "minecraft",
+    "key": "desert",
+    "z": -20,
+    "distance": 0,
+    "x": -3
+  },
+  {},
+  {},
+  {},
+  {},
+  {},
+  {},
+  {},
+  {},
+  {}
+]

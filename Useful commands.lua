@@ -63,7 +63,12 @@ commands.xp("add","@a",0) -- will return a list of all online players
 os.day()
 os.time()
 os.clock()
-os.date()
+
+os.date() -- local time
+os.date("!%c") -- utc time
+os.epoch("utc") -- unix time for timestamping
+
+os.date("%Y-%m-%d %H:%M:%S", os.epoch("utc")/1000)
 
 --Population, % will willing to emigrate (10%)
 local boolean,table,count = commands.exec("/kill @e[type=minecraft:villager,x="..PINx..",y="..PINy..",z="..PINz..",distance=..10]")

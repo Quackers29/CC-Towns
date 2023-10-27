@@ -11,6 +11,7 @@ local upgradesFile = town.."UP_X"..x.."Y"..y.."Z"..z..".json"
 local biomeFile = town.."BIO_X"..x.."Y"..y.."Z"..z..".json"
 local SettingsFile = town.."SET_X"..x.."Y"..y.."Z"..z..".json"
 local productionFile = town.."PRO_X"..x.."Y"..y.."Z"..z..".json"
+local tradeFile = town.."TRD_X"..x.."Y"..y.."Z"..z..".json"
 local defaultSettingsFile = "Defaults\\settings.json"
 local upgradesSource = "Defaults\\upgrades.json"
 local productionSource = "Defaults\\production.json"
@@ -148,13 +149,16 @@ if Settings.general.biome == nil then
     Settings.general.biomeDist = dist or nil
 end
 
-if Settings.town.name == nil then
+if Settings and Settings.town.name == nil then
     local townnameslist = Manager.readCSV(townNames)
     local randomIndex = math.random(1, #townnameslist)
     print(randomIndex)
     local townName = townnameslist[randomIndex].id
     Settings.town.name = townName
+    Settings.town.born = os.date("%Y-%m-%d %H:%M:%S", os.epoch("utc")/1000)
+    Settings.town.timestamp = os.epoch("utc")
     print(townName)
+    print("Created (utc): "..Settings.town.born)
 end
 
 if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then
@@ -452,7 +456,51 @@ end
 Monitor.init()
 drawButtonsForCurrentPage()
 
--- An example function (e.g., inside a button action) to transition to the "settings" page:
+
+
+function Offer()
+    --This Updates a Towns current Offers list 
+    --1. Check if there is space for another offer in the list
+    --2. Checks what could be a new offer and adds its
+    local trades = Utility.readJsonFile(tradeFile)
+    local settings = Utility.readJsonFile(SettingsFile)
+    local resTable = Utility.readJsonFile(resFile)
+
+    if trades and settings and resTable and trades.offers.buying then
+        -- check if there is room for an offer, only add one
+        if Utility.getArraySize(trades.offers.buying) < trades.offers.limit then
+            -- make a list of all current buying offers
+            for i,v in ipairs(settings.resources.keepInstock) do
+                local continue = true
+                for a,b in pairs(trades.offers.buying) do
+                    if i == b.srting then
+                        continue = false
+                    end
+                end
+                if continue then -- keepInstock item not in buy list, check resources
+                    local itemShort = string.match(i,":(.+)")
+                    if resTable[itemShort] then
+                        for f,g in ipairs(resTable[itemShort]) do
+                            resTable[itemShort].count
+                            -- REWORK RESTABLE, CHANGE KEY TO LONGSTRING
+                        end
+                    else
+                        -- none in stock
+                    end
+
+                end
+            end
+
+
+
+        
+        end
+    end
+
+end
+
+
+
 
 function goToPage(x)
     currentPage = x

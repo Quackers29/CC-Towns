@@ -17,5 +17,17 @@
     "description": "A town specialized in logging activities."
   },
   "Input": { "x": 0, "y": 0, "z": 0 },
-  "Output": { "x": 0, "y": 0, "z": 0 }
+  "Output": { "x": 0, "y": 0, "z": 0 },
+  "resources":{
+    "baseCapacity": 10000,
+    "currentCapacity": 10000,
+    "restockThreshold":0.4,
+    "excessThreshold":2.0,
+    "currencyHold": 1000,
+    "keepInstock":{
+      "minecraft:iron_ingot":500,
+      "minecraft:oak_log":2000
+    }
+
+  }
 }
