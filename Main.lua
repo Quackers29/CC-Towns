@@ -557,6 +557,7 @@ function Offer()
                 end
             end
         end
+        Utility.writeJsonFile(tradeFile,trades)
     end
 end
 
