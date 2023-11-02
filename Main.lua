@@ -501,6 +501,7 @@ function Offer()
                                         count = g.count
                                         }
                                       }
+                                    trades.offers.buying[itemShort] = {}
                                     table.insert(trades.offers.buying[itemShort],g)
                                 end
                                 break
@@ -537,6 +538,7 @@ function Offer()
                                         count = g.count
                                         }
                                         }
+                                    trades.offers.selling[itemShort] = {}
                                     table.insert(trades.offers.selling[itemShort],g)
                                 end
                                 break
