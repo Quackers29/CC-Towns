@@ -1,3 +1,4 @@
+
 local Monitor = require("Monitor")
 local Manager = require("Manager")
 local Utility = require("Utility")
@@ -15,6 +16,7 @@ local tradeFile = town.."TRD_X"..x.."Y"..y.."Z"..z..".json"
 local defaultSettingsFile = "Defaults\\settings.json"
 local upgradesSource = "Defaults\\upgrades.json"
 local productionSource = "Defaults\\production.json"
+local tradeSource = "Defaults\\trades.json"
 local covertFile = "Defaults\\convert.json"
 local biomes = "Defaults\\biomes.txt"
 local townNames = "Defaults\\townNames.txt"
@@ -112,6 +114,10 @@ end
 
 if not fs.exists(SettingsFile) then
     Utility.copyFile(defaultSettingsFile,SettingsFile)
+end
+
+if not fs.exists(tradeFile) then
+    Utility.copyFile(tradeSource,tradeFile)
 end
 
 local Settings = Utility.readJsonFile(SettingsFile)
@@ -466,40 +472,82 @@ function Offer()
     local settings = Utility.readJsonFile(SettingsFile)
     local resTable = Utility.readJsonFile(resFile)
 
-    if trades and settings and resTable and trades.offers.buying then
+    if trades and settings and resTable then
         -- check if there is room for an offer, only add one
         if Utility.getArraySize(trades.offers.buying) < trades.offers.limit then
             -- make a list of all current buying offers
-            for i,v in ipairs(settings.resources.keepInstock) do
+            for i,v in pairs(settings.resources.keepInstock) do
                 local continue = true
-                for a,b in pairs(trades.offers.buying) do
+                for a,b in ipairs(trades.offers.buying) do
                     if i == b.srting then
                         continue = false
                     end
                 end
                 if continue then -- keepInstock item not in buy list, check resources
                     local itemShort = string.match(i,":(.+)")
+                    local count = 0
                     if resTable[itemShort] then
                         for f,g in ipairs(resTable[itemShort]) do
-                            resTable[itemShort].count
-                            -- REWORK RESTABLE, CHANGE KEY TO LONGSTRING
+                            if i == g.string then
+                                count = g.count
+                                if count < (v*settings.resources.restockThreshold) then
+                                    -- attempt add the buying
+                                    g.count = v - count
+                                    g.price = {
+                                        emerald = {
+                                        string = "minecraft:emerald",
+                                        attributes = "",
+                                        key = "emerald",
+                                        count = g.count
+                                        }
+                                      }
+                                    table.insert(trades.offers.buying[itemShort],g)
+                                end
+                                break
+                            end
                         end
-                    else
-                        -- none in stock
                     end
-
                 end
             end
-
-
-
-        
+        end
+        if Utility.getArraySize(trades.offers.selling) < trades.offers.limit then
+            -- make a list of all current selling offers
+            for i,v in pairs(settings.resources.keepInstock) do
+                local continue = true
+                for a,b in ipairs(trades.offers.selling) do
+                    if i == b.srting then
+                        continue = false
+                    end
+                end
+                if continue then -- keepInstock item not in sell list, check resources
+                    local itemShort = string.match(i,":(.+)")
+                    local count = 0
+                    if resTable[itemShort] then
+                        for f,g in ipairs(resTable[itemShort]) do
+                            if i == g.string then
+                                count = g.count
+                                if count > (v*settings.resources.excessThreshold) then
+                                    -- attempt add the selling
+                                    g.count = ((v*settings.resources.excessThreshold)-settings.resources.excessThreshold)
+                                    g.price = {
+                                        emerald = {
+                                        string = "minecraft:emerald",
+                                        attributes = "",
+                                        key = "emerald",
+                                        count = g.count
+                                        }
+                                        }
+                                    table.insert(trades.offers.selling[itemShort],g)
+                                end
+                                break
+                            end
+                        end
+                    end
+                end
+            end
         end
     end
-
 end
-
-
 
 
 function goToPage(x)
@@ -771,6 +819,7 @@ end
 function productionTimer()
     while mainflag do
             productionCheck()
+            Offer()
         os.sleep(productionWait)
     end
 end
