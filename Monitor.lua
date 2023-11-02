@@ -8,14 +8,6 @@ local GAP = 4 -- This will add a space between buttons and wall
 local ListOffset = {}
 local maxButtonsPerPage
 
-function Monitor.getArraySize(arr)
-    local count = 0
-    for _ in pairs(arr) do
-        count = count + 1
-    end
-    return count
-end
-
 function Monitor.init()
     monitor = peripheral.find("monitor")
     if not monitor then
@@ -337,8 +329,8 @@ function Monitor.drawKeyList(startY, endY, items, buttonsConfig, rowHeight, List
     local maxX, maxY = Monitor.getSize()
     local visibleItems = math.floor((endY - startY) / rowHeight)
     local endingItemIndex = currentOffset + visibleItems - 1
-    if endingItemIndex > Monitor.getArraySize(items) then
-        endingItemIndex = Monitor.getArraySize(items)
+    if endingItemIndex > Utility.getArraySize(items) then
+        endingItemIndex = Utility.getArraySize(items)
     end
 
     -- Draw Scroll Up button

@@ -1,6 +1,14 @@
 local Utility = {}
 local covertFile = "Defaults\\convert.json"
 
+function Utility.getArraySize(arr)
+    local count = 0
+    for _ in pairs(arr) do
+        count = count + 1
+    end
+    return count
+end
+
 function Utility.readJsonFile(filePath)
     local file = io.open(filePath, "r+")
 
