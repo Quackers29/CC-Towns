@@ -493,6 +493,7 @@ function Offer()
                             print("testing: "..i.." = "..g.string)
                             if i == g.string then
                                 count = g.count
+                                print("BuyCount: "..count.." < "..(v*settings.resources.restockThreshold))
                                 if count < (v*settings.resources.restockThreshold) then
                                     -- attempt add the buying
                                     g.count = v - count
@@ -532,6 +533,7 @@ function Offer()
                         for f,g in ipairs(resTable[itemShort]) do
                             if i == g.string then
                                 count = g.count
+                                print("SellCount: "..count.." > "..((v*settings.resources.excessThreshold)-settings.resources.excessThreshold))
                                 if count > (v*settings.resources.excessThreshold) then
                                     -- attempt add the selling
                                     g.count = ((v*settings.resources.excessThreshold)-settings.resources.excessThreshold)
