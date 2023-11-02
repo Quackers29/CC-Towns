@@ -485,9 +485,12 @@ function Offer()
                 end
                 if continue then -- keepInstock item not in buy list, check resources
                     local itemShort = string.match(i,":(.+)")
+                    print("Searching: "..i.." = "..v)
+                    print("As: "..itemShort)
                     local count = 0
                     if resTable[itemShort] then
                         for f,g in ipairs(resTable[itemShort]) do
+                            print("testing: "..i.." = "..g.string)
                             if i == g.string then
                                 count = g.count
                                 if count < (v*settings.resources.restockThreshold) then
@@ -501,7 +504,9 @@ function Offer()
                                         count = g.count
                                         }
                                       }
-                                    trades.offers.buying[itemShort] = {}
+                                    if not trades.offers.buying[itemShort] then
+                                        trades.offers.buying[itemShort] = {}
+                                    end
                                     table.insert(trades.offers.buying[itemShort],g)
                                 end
                                 break
@@ -538,7 +543,9 @@ function Offer()
                                         count = g.count
                                         }
                                         }
-                                    trades.offers.selling[itemShort] = {}
+                                    if not trades.offers.selling[itemShort] then
+                                        trades.offers.selling[itemShort] = {}
+                                    end
                                     table.insert(trades.offers.selling[itemShort],g)
                                 end
                                 break
