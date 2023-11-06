@@ -509,10 +509,10 @@ function Offer()
                     local count = 0
                     if resTable[i] then
                         count = resTable[i].count
-                        print("SellCount: "..count.." > "..((v*settings.resources.excessThreshold)-settings.resources.excessThreshold))
+                        print("SellCount: "..count.." > "..(v*settings.resources.excessThreshold))
                         if count > (v*settings.resources.excessThreshold) then
                             -- attempt add the selling
-                            resTable[i].count = ((v*settings.resources.excessThreshold)-settings.resources.excessThreshold)
+                            resTable[i].count = count-v
                             resTable[i].price = {
                                 emerald = {
                                 string = "minecraft:emerald",
@@ -769,9 +769,9 @@ function productionCheck()
             end
         end
     end
-    --if updateRes then
-    --    Utility.writeJsonFile(resFile,resTable)
-    --end
+    if updateRes then
+        Utility.writeJsonFile(resFile,resTable)
+    end
     Utility.writeJsonFile(productionFile,productionTable)
 end
 
