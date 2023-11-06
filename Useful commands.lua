@@ -89,3 +89,6 @@ commands.kill("@e[type=minecraft:villager,distance=..100] {CustomName:'{\"text\"
 
 commands.summon("minecraft:villager","~","~","~","{CustomName:'{\"text\":\"Pinecastle\"}'}")
 boolean,table,count = commands.kill("@e[type=minecraft:villager,distance=..100,name=!Pinecastle,limit=1]")
+
+commands.exec("/kill @e[type=minecraft:wandering_trader,distance=..100]")
+=true,{"killled Wndering Trader"}, 1

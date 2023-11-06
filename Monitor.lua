@@ -1,4 +1,5 @@
 -- Monitor.lua
+local Utility = require("Utility")
 
 local Monitor = {}
 local monitor

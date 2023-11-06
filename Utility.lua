@@ -9,6 +9,16 @@ function Utility.getArraySize(arr)
     return count
 end
 
+function Utility.get2ArraySize(arr)
+    local count = 0
+    for i,v in pairs(arr) do
+        for _ in ipairs(v) do
+            count = count + 1
+        end
+    end
+    return count
+end
+
 function Utility.readJsonFile(filePath)
     local file = io.open(filePath, "r+")
 
