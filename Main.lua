@@ -445,10 +445,13 @@ function drawButtonsForCurrentPage()
     else
         -- Add back to main button if no buttons assigned to page
         if not pageButtons["push"] then
-            pageButtons["push"] = {{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("main") end,enabled = true, type = "button",page = "all"}}
+            Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
+            Monitor.drawButton(Monitor.OffsetCheck(-1, endX),Monitor.OffsetCheck(0, endY),{{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("main") end,enabled = true, type = "button",page = "all"}})
+        else
+            Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
+            Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
         end
-        Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
-        Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
+
     end
 end
 
