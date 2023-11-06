@@ -9,16 +9,6 @@ function Utility.getArraySize(arr)
     return count
 end
 
-function Utility.get2ArraySize(arr)
-    local count = 0
-    for i,v in pairs(arr) do
-        for _ in ipairs(v) do
-            count = count + 1
-        end
-    end
-    return count
-end
-
 function Utility.readJsonFile(filePath)
     local file = io.open(filePath, "r+")
 
@@ -96,37 +86,23 @@ function Utility.AddMcItemToTable(itemString, itemTable, count)
     local itemTable = itemTable or {}
     -- Check if the entry exists in the table
     local exists = false
-    local key, index = nil, nil
-    for k, items in pairs(itemTable) do
-        if k == parsedData.item then
-            for i, item in pairs(items) do
-                if item.string == itemString then
-                    exists = true
-                    key, index = k,i
-                    break
-                end
-            end
-            if exists then break end
-        end
+    if itemTable[itemString] ~= nil then
+        exists = true
     end
     if not exists then
         -- Add to dataTable
-        if not itemTable[parsedData.item] then
-            itemTable[parsedData.item] = {}
-        end
-        table.insert(itemTable[parsedData.item], {
-            string = itemString,
+        itemTable[itemString] = {
             attributes = parsedData.attributes,
             count = count,
             toggle = false,
             key = parsedData.item
-        })
+        }
     else
         -- modify itemTable
         if count then
-            itemTable[key][index].count = itemTable[key][index].count + count
-            if itemTable[key][index].count < 1 then
-                table.remove(itemTable[key], index)
+            itemTable[itemString].count = itemTable[itemString].count + count
+            if itemTable[itemString].count < 1 then
+                table.remove(itemTable, itemString)
             end
         end
     end
@@ -136,22 +112,11 @@ end
 
 function Utility.ModifyMcItemInTable(itemString, itemTable, toggle)
     -- Parse the item string
-    local parsedData = Utility.ParseMcItemString(itemString)
     local itemTable = itemTable or {}
     -- Check if the entry exists in the table
     local exists = false
-    local key, index = nil, nil
-    for k, items in pairs(itemTable) do
-        if k == parsedData.item then
-            for i, item in pairs(items) do
-                if item.string == itemString then
-                    exists = true
-                    key, index = k,i
-                    break
-                end
-            end
-            if exists then break end
-        end
+    if itemTable[itemString] ~= nil then
+        exists = true
     end
     --print(itemTable[key][index].toggle)
     if not exists then
@@ -160,9 +125,9 @@ function Utility.ModifyMcItemInTable(itemString, itemTable, toggle)
     else
         -- modify itemTable
         if toggle ~= nil then
-            --print(itemTable[key][index].toggle)
-            itemTable[key][index].toggle = toggle
-            --print(itemTable[key][index].toggle)
+            --print(itemTable[itemString].toggle)
+            itemTable[itemString].toggle = toggle
+            --print(itemTable[itemString].toggle)
         end
     end
 

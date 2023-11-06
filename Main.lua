@@ -232,14 +232,12 @@ function drawButtonsForCurrentPage()
     -- Call the function to draw the grid with buttons
     if currentPage == "resources" then
         Monitor.write("Resources!", 1, 1)
-        local prevtable = Utility.readJsonFile(resFile)
+        local resTable = Utility.readJsonFile(resFile)
         local displayTable = {}
-        if prevtable then
-            for i,v in pairs(prevtable) do
-                for e,r in pairs(v) do
-                    if r.count > 0 then
-                        table.insert(displayTable,r)
-                    end
+        if resTable then
+            for i,v in pairs(resTable) do
+                if v.count > 0 then
+                    table.insert(displayTable,v)
                 end
             end
             Monitor.drawList(2, endY, displayTable, pageButtons["list"], 1)
@@ -294,7 +292,7 @@ function drawButtonsForCurrentPage()
         Monitor.displayMap(NearbyTowns, currentTown, topLeftX, topLeftY, mapWidth, mapHeight, currentZoom)
     elseif currentPage == "display_upgrade" then
         local canUp = true
-        local prevtable = Utility.readJsonFile(resFile)
+        local resTable = Utility.readJsonFile(resFile)
         local displayTable = Utility.readJsonFile(upgradesFile)
         Monitor.write("Upgrade: "..(displayItem.key or ""), 1, 1)
         Monitor.write("duration: "..(displayItem.duration or ""), 10, 2)
@@ -332,13 +330,9 @@ function drawButtonsForCurrentPage()
             local currentUp = true
             local c = Utility.convertItem(i)
             local d = 0
-            if prevtable then
-                for i,v in pairs(prevtable) do
-                    for e,r in ipairs(v) do
-                        if r.string == c then
-                            d = r.count or 0
-                        end
-                    end
+            if resTable then
+                if resTable[c] ~= nil then
+                     d = resTable[c].count or 0
                 end
                 if d ~= nil then
                     if d < v then
@@ -371,9 +365,9 @@ function drawButtonsForCurrentPage()
             end
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
-    elseif currentPage == "display_production" then
+    elseif displayItem and currentPage == "display_production" then
         local canUp = true
-        local prevtable = Utility.readJsonFile(resFile)
+        local resTable = Utility.readJsonFile(resFile)
         local displayTable = Utility.readJsonFile(upgradesFile)
         local productionTable = Utility.readJsonFile(productionFile)
         Monitor.write("Produce: "..((displayItem.key.." x"..displayItem.output) or ""), 1, 1)
@@ -412,13 +406,9 @@ function drawButtonsForCurrentPage()
             local currentUp = true
             local c = Utility.convertItem(i)
             local d = 0
-            if prevtable then
-                for i,v in pairs(prevtable) do
-                    for e,r in ipairs(v) do
-                        if r.string == c then
-                            d = r.count or 0
-                        end
-                    end
+            if resTable then
+                if resTable[c] ~= nil then
+                    d = resTable[c].count or 0
                 end
                 if d ~= nil then
                     if d < v then
@@ -477,40 +467,31 @@ function Offer()
             -- make a list of all current buying offers
             for i,v in pairs(settings.resources.keepInstock) do
                 local continue = true
-                for a,b in ipairs(trades.offers.buying) do
-                    if i == b.srting then
-                        continue = false
-                    end
+                if trades.offers.buying[i] ~= nil then
+                    continue = false
                 end
                 if continue then -- keepInstock item not in buy list, check resources
-                    local itemShort = string.match(i,":(.+)")
-                    print("Searching: "..i.." = "..v)
-                    print("As: "..itemShort)
+                    --local itemShort = string.match(i,":(.+)")
+                    print("Searching: "..i)
                     local count = 0
-                    if resTable[itemShort] then
-                        for f,g in ipairs(resTable[itemShort]) do
-                            print("testing: "..i.." = "..g.string)
-                            if i == g.string then
-                                count = g.count
-                                print("BuyCount: "..count.." < "..(v*settings.resources.restockThreshold))
-                                if count < (v*settings.resources.restockThreshold) then
-                                    -- attempt add the buying
-                                    g.count = v - count
-                                    g.price = {
-                                        emerald = {
-                                        string = "minecraft:emerald",
-                                        attributes = "",
-                                        key = "emerald",
-                                        count = g.count
-                                        }
-                                      }
-                                    if not trades.offers.buying[itemShort] then
-                                        trades.offers.buying[itemShort] = {}
-                                    end
-                                    table.insert(trades.offers.buying[itemShort],g)
-                                end
-                                break
+                    if resTable[i] then
+                        count = resTable[i].count
+                        print("BuyCount: "..count.." < "..(v*settings.resources.restockThreshold))
+                        if count < (v*settings.resources.restockThreshold) then
+                            -- attempt add the buying
+                            resTable[i].count = v - count
+                            resTable[i].price = {
+                                emerald = {
+                                string = "minecraft:emerald",
+                                attributes = "",
+                                key = "emerald",
+                                count = resTable[i].count
+                                }
+                                }
+                            if not trades.offers.buying[i] then
+                                trades.offers.buying[i] = {}
                             end
+                            table.insert(trades.offers.buying[i],resTable[i])
                         end
                     end
                 end
@@ -520,37 +501,29 @@ function Offer()
             -- make a list of all current selling offers
             for i,v in pairs(settings.resources.keepInstock) do
                 local continue = true
-                for a,b in ipairs(trades.offers.selling) do
-                    if i == b.srting then
-                        continue = false
-                    end
+                if trades.offers.selling[i] ~= nil then
+                    continue = false
                 end
                 if continue then -- keepInstock item not in sell list, check resources
-                    local itemShort = string.match(i,":(.+)")
                     local count = 0
-                    if resTable[itemShort] then
-                        for f,g in ipairs(resTable[itemShort]) do
-                            if i == g.string then
-                                count = g.count
-                                print("SellCount: "..count.." > "..((v*settings.resources.excessThreshold)-settings.resources.excessThreshold))
-                                if count > (v*settings.resources.excessThreshold) then
-                                    -- attempt add the selling
-                                    g.count = ((v*settings.resources.excessThreshold)-settings.resources.excessThreshold)
-                                    g.price = {
-                                        emerald = {
-                                        string = "minecraft:emerald",
-                                        attributes = "",
-                                        key = "emerald",
-                                        count = g.count
-                                        }
-                                        }
-                                    if not trades.offers.selling[itemShort] then
-                                        trades.offers.selling[itemShort] = {}
-                                    end
-                                    table.insert(trades.offers.selling[itemShort],g)
-                                end
-                                break
+                    if resTable[i] then
+                        count = resTable[i].count
+                        print("SellCount: "..count.." > "..((v*settings.resources.excessThreshold)-settings.resources.excessThreshold))
+                        if count > (v*settings.resources.excessThreshold) then
+                            -- attempt add the selling
+                            resTable[i].count = ((v*settings.resources.excessThreshold)-settings.resources.excessThreshold)
+                            resTable[i].price = {
+                                emerald = {
+                                string = "minecraft:emerald",
+                                attributes = "",
+                                key = "emerald",
+                                count = resTable[i].count
+                                }
+                                }
+                            if not trades.offers.selling[i] then
+                                trades.offers.selling[i] = {}
                             end
+                            table.insert(trades.offers.selling[i],resTable[i])
                         end
                     end
                 end
@@ -633,33 +606,29 @@ function RefreshFlag()
 end
 
 function adjustItems(button)
-    local prevtable = Utility.readJsonFile(resFile)
+    local resTable = Utility.readJsonFile(resFile)
     for i,v in pairs(button.item.cost) do
         local c = Utility.convertItem(i)
-        for x,y in pairs(prevtable) do
-            for a,b in ipairs(y) do
-                if b.string == c then
-                    prevtable[x][a]["count"] = prevtable[x][a]["count"] - v
-                end
-            end
+        if resTable and resTable[c] ~= nil then
+            resTable[c]["count"] = resTable[c]["count"] - v
         end
     end
-    Utility.writeJsonFile(resFile, prevtable)
+    Utility.writeJsonFile(resFile, resTable)
     drawButtonsForCurrentPage()
 end
 
 function handleItem(button)
-    local prevtable = Utility.readJsonFile(resFile)
+    local resTable = Utility.readJsonFile(resFile)
     local selectedItem = button.item
-    local itemstring = selectedItem.string
+    local itemstring = selectedItem.key
     local selectedToggle = selectedItem.toggle
     if selectedToggle == false then
         selectedToggle = true
     else
         selectedToggle = false
     end
-    Utility.ModifyMcItemInTable(itemstring, prevtable, selectedToggle)
-    Utility.writeJsonFile(resFile,prevtable)
+    Utility.ModifyMcItemInTable(itemstring, resTable, selectedToggle)
+    Utility.writeJsonFile(resFile,resTable)
     drawButtonsForCurrentPage()
 end
 
@@ -736,7 +705,7 @@ function productionCheck()
     local productionTable = Utility.readJsonFile(productionFile)
     local resTable = Utility.readJsonFile(resFile)
     local upgradesTable = Utility.readJsonFile(upgradesFile)
-    local updateRes = false
+    --local updateRes = false
     if productionTable and upgradesTable and resTable then
         for i,v in pairs(productionTable) do
             local gotRequires = true
@@ -754,21 +723,9 @@ function productionCheck()
             if v.toggle and v.available and gotRequires then
                 local currentItemLong = Utility.convertItem(i) -- short, long
                 if currentItemLong then
-                    local currentItemKey = nil
-                    local currentItemIndex = nil
-                    if resTable then
-                        for c,b in pairs(resTable) do
-                            for d,e in ipairs(b) do
-                                if e.string == currentItemLong then
-                                    currentItemKey = c
-                                    currentItemIndex = d
-                                end
-                            end
-                        end
-                    end
                     local itemStop = false
-                    if currentItemKey and currentItemIndex then
-                        if resTable[currentItemKey][currentItemIndex].count < v.max_storage - v.output then
+                    if resTable[currentItemLong] ~= nil then
+                        if resTable[currentItemLong].count < v.max_storage - v.output then
                         else
                             itemStop = true
                         end
@@ -782,18 +739,8 @@ function productionCheck()
                             local canUp = true
                             for x,y in pairs(v.cost) do
                                 local currentItemLong = Utility.convertItem(x)
-                                local currentItemKey = nil
-                                local currentItemIndex = nil
-                                for c,b in pairs(resTable) do
-                                    for d,e in ipairs(b) do
-                                        if e.string == currentItemLong then
-                                            currentItemKey = c
-                                            currentItemIndex = d
-                                        end
-                                    end
-                                end
-                                if currentItemKey then
-                                    if resTable[currentItemKey][currentItemIndex].count >= y then
+                                if resTable[currentItemLong] ~= nil then
+                                    if resTable[currentItemLong].count >= y then
                                         table.insert(resourcesPull,{currentItemLong=currentItemLong,count = - y})
                                     else
                                         canUp = false
@@ -821,9 +768,9 @@ function productionCheck()
             end
         end
     end
-    if updateRes then
-        Utility.writeJsonFile(resFile,resTable)
-    end
+    --if updateRes then
+    --    Utility.writeJsonFile(resFile,resTable)
+    --end
     Utility.writeJsonFile(productionFile,productionTable)
 end
 

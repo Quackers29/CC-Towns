@@ -112,15 +112,7 @@ function Monitor.drawPushButton(text, identifier, x, y, width, height)
                 monitor.write(" ")
             end
         end
-        --table.insert(buttons, {
-        --    name = identifier,
-        --    x = x,
-        --    y = y,
-       --     width = width,
-        --    height = height
-        --})
     end
-
     -- Writing the text in the middle of the button
     local textX = x + 1 + math.floor((width - #text) / 2) -- Adjusted for outline
     local textY = y + 1 + math.floor(height / 2)          -- Adjusted for outline
@@ -140,13 +132,6 @@ function Monitor.drawOldButton(text, icon, identifier, x, y, justify)
     end
 
     local buttonWidth = #buttonText
-    --table.insert(buttons, {
-    --    name = identifier,
-    --    x = position == "right" and x + #text or x,
-    --    y = y,
-    --    width = buttonWidth,
-    --    height = 1 -- Since it's a single line button
-    --})
 end
 
 function Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, buttonsx)

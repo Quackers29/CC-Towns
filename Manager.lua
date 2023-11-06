@@ -96,7 +96,7 @@ function Manager.readCSV(filename)
     return data
 end
 
-function Manager.mergetable(main,secondary)
+function Manager.mergetable(main,secondary) --UNUSED
     if main ~= nil then
         for si,sv in pairs(secondary) do
             local checkFlag = false
@@ -135,44 +135,41 @@ function Manager.outputItems(filename,itemString,EXPx,EXPy,EXPz)
 	local r3 = string.find(r2[1],"Items: %[%]")
 	if r1 == true then
 		if r3 ~= nil then
-			local prevtable = Utility.readJsonFile(filename)
-			if prevtable ~= {} then
+			local resTable = Utility.readJsonFile(filename)
+			if resTable ~= {} then
 				local flag = true
 				local outputID = ""
 				local outputTag = ""
 				local count = 0
-				for key,items in pairs(prevtable) do
-                    for index, item in ipairs(items) do
-                        if item.string == itemString then
-                            while flag do
-                                local flagTag = string.match(item.string,"(.-.),")
-                                if flagTag ~= nil then
-                                    outputTag = string.match(item.string,',(.*)')
-                                    outputID = flagTag
-                                else
-                                    outputID = item.string
-                                    outputTag = nil
-                                end
-                                if item.count > 64 then
-                                    item.count = item.count-64
-                                    count = 64
-                                else
-                                    count = item.count
-                                    item.count = 0
-                                    if item.toggle == false or item.toggle == "false" then
-                                        table.remove(prevtable[key],index)
-                                    end
-                                    table.remove(prevtable[key],index)  -- removes infinite toggle on for now
-                                end
-                                flag = false
-                            end
+				if resTable[itemString] then
+                    local item = resTable[itemString]
+                    while flag do
+                        local flagTag = string.match(itemString,"(.-.),")
+                        if flagTag ~= nil then
+                            outputTag = string.match(itemString,',(.*)')
+                            outputID = flagTag
+                        else
+                            outputID = itemString
+                            outputTag = ""
                         end
+                        if item.count > 64 then
+                            item.count = item.count-64
+                            count = 64
+                        else
+                            count = item.count
+                            item.count = 0
+                            if item.toggle == false or item.toggle == "false" then
+                                table.remove(resTable,itemString)
+                            end
+                            table.remove(resTable,itemString)  -- removes infinite toggle on for now
+                        end
+                        flag = false
                     end
                 end
                 if flag == false then
-                    Utility.writeJsonFile(filename, prevtable)
+                    Utility.writeJsonFile(filename, resTable)
                     local temp = ""
-                    if outputTag ~= nil then
+                    if outputTag ~= "" then
                         temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,tag: {%s}}',0,outputID,count,outputTag))
                     else
                         temp = (string.format('{Slot:%sb,id: "%s",Count: %sb}',0,outputID,count))
@@ -215,17 +212,14 @@ function Manager.removeFirstLevelBrackets(input)
 end
 
 function Manager.checkItems(filePath,OUTx,OUTy,OUTz)
-    local prevtable = Utility.readJsonFile(filePath)
-    if prevtable then
-        for key,items in pairs(prevtable) do
-            for index, item in ipairs(items) do
-                if item.toggle == true or item.toggle == "true" then
-                    if item.count > 0 then
-                        Manager.outputItems(filePath,item.string,OUTx,OUTy,OUTz)
-                    end
+    local resTable = Utility.readJsonFile(filePath)
+    if resTable then
+        for key,item in pairs(resTable) do
+            if item.toggle == true or item.toggle == "true" then
+                if item.count > 0 then
+                    Manager.outputItems(filePath,key,OUTx,OUTy,OUTz)
                 end
             end
-
         end
     end
 end
