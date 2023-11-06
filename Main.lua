@@ -372,7 +372,7 @@ function drawButtonsForCurrentPage()
         local displayTable = Utility.readJsonFile(upgradesFile)
         local productionTable = Utility.readJsonFile(productionFile)
         Monitor.write("Produce: "..((displayItem.key.." x"..displayItem.output) or ""), 1, 1)
-        Monitor.write("duration: "..(displayItem.duration or ""), 10, 2)
+        Monitor.write("duration: "..(displayItem.duration or "").."("..displayItem.timer..")", 10, 2)
         Monitor.write("Cost: ", 10, 3)
         Monitor.write("Prerequisites: ", 10, ((endY-2)/2)+3)
         local index = 1
@@ -706,8 +706,9 @@ function productionCheck()
     local productionTable = Utility.readJsonFile(productionFile)
     local resTable = Utility.readJsonFile(resFile)
     local upgradesTable = Utility.readJsonFile(upgradesFile)
-    --local updateRes = false
-    if productionTable and upgradesTable and resTable then
+    local settings = Utility.readJsonFile(SettingsFile)
+    local updateRes = false
+    if productionTable and upgradesTable and resTable and settings then
         for i,v in pairs(productionTable) do
             local gotRequires = true
             for l,m in ipairs(v.requires) do
