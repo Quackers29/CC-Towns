@@ -2,8 +2,8 @@
   "offers": {
     "limit": 3,
     "deadline": 2,
-    "buying": [],
-    "selling": []
+    "buying": [{}],
+    "selling": [{}]
   },
   "proposed": [{}],
   "accepted": {},
