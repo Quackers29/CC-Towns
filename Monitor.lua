@@ -269,6 +269,12 @@ function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight, ListInd
     Monitor.write("+"..tostring(currentOffset), 1 + sButton.width + 1, startY)
 
     -- Draw items based on currentOffset
+    -- First sort the items by count (decreasing)
+    local function compare(a, b)
+        return a.count > b.count
+    end
+    table.sort(items,compare)
+
     for i = currentOffset + 1, endingItemIndex do
         local item = items[i]
         local currentY = startY + 1 + (i - currentOffset - 1) * rowHeight
