@@ -237,6 +237,7 @@ function drawButtonsForCurrentPage()
         if resTable then
             for i,v in pairs(resTable) do
                 if v.count > 0 then
+                    v.string = i
                     table.insert(displayTable,v)
                 end
             end
@@ -620,7 +621,7 @@ end
 function handleItem(button)
     local resTable = Utility.readJsonFile(resFile)
     local selectedItem = button.item
-    local itemstring = selectedItem.key
+    local itemstring = selectedItem.string
     local selectedToggle = selectedItem.toggle
     if selectedToggle == false then
         selectedToggle = true
