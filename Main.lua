@@ -492,7 +492,7 @@ function Offer()
                             if not trades.offers.buying[i] then
                                 trades.offers.buying[i] = {}
                             end
-                            table.insert(trades.offers.buying[i],resTable[i])
+                            trades.offers.buying[i] = resTable[i]
                         end
                     end
                 end
@@ -524,7 +524,7 @@ function Offer()
                             if not trades.offers.selling[i] then
                                 trades.offers.selling[i] = {}
                             end
-                            table.insert(trades.offers.selling[i],resTable[i])
+                            trades.offers.selling[i] = resTable[i]
                         end
                     end
                 end

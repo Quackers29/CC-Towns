@@ -159,9 +159,9 @@ function Manager.outputItems(filename,itemString,EXPx,EXPy,EXPz)
                             count = item.count
                             item.count = 0
                             if item.toggle == false or item.toggle == "false" then
-                                table.remove(resTable,itemString)
+                                resTable[itemString] = nil
                             end
-                            table.remove(resTable,itemString)  -- removes infinite toggle on for now
+                            resTable[itemString] = nil  -- removes infinite toggle on for now
                         end
                         flag = false
                     end

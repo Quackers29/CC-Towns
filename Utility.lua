@@ -102,7 +102,7 @@ function Utility.AddMcItemToTable(itemString, itemTable, count)
         if count then
             itemTable[itemString].count = itemTable[itemString].count + count
             if itemTable[itemString].count < 1 then
-                table.remove(itemTable, itemString)
+                itemTable[itemString] = nil
             end
         end
     end
