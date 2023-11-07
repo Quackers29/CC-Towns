@@ -444,7 +444,7 @@ function drawButtonsForCurrentPage()
         end
     else
         -- Add back to main button if no buttons assigned to page
-        if not pageButtons["push"] then
+        if pageButtons == {} then
             Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
             Monitor.drawButton(Monitor.OffsetCheck(-1, endX),Monitor.OffsetCheck(0, endY),{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("main") end,enabled = true, type = "button",page = "all"})
         else
