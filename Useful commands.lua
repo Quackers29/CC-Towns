@@ -92,3 +92,13 @@ boolean,table,count = commands.kill("@e[type=minecraft:villager,distance=..100,n
 
 commands.exec("/kill @e[type=minecraft:wandering_trader,distance=..100]")
 =true,{"killled Wndering Trader"}, 1
+
+trader_llama
+
+
+/gamerule doTraderSpawning false
+
+
+fs.getCapacity("") -- outputs cap in bytes for this computer id 
+fs.getFreeSpace("") -- gets remaining space in bytes
+

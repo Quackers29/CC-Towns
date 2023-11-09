@@ -2,7 +2,7 @@ local Monitor = require("Monitor")
 local Manager = require("Manager")
 local Utility = require("Utility")
 local buttonConfig = require("ButtonConfig")
-local currentPage = "main" -- Default page to start
+local currentPage = "Main" -- Default page to start
 local x,y,z = gps.locate()
 local townFolder = "Town_X"..x.."Y"..y.."Z"..z
 local town = "Towns\\"..townFolder.."\\"
@@ -82,10 +82,11 @@ local TownFlag = false
 local NearbyTowns = {}
 for i,v in ipairs(fs.list("Towns")) do
     local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
-    table.insert(NearbyTowns,{x = ax,y = ay,z = az})
     if v == townFolder then
         print("Town already exist")
         TownFlag = true
+    else
+        table.insert(NearbyTowns,{folderName = v,x = ax,y = ay,z = az, distance = CalcDist(x, z, ax, az)})
     end
 end
 
@@ -443,10 +444,10 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
     else
-        -- Add back to main button if no buttons assigned to page
-        if pageButtons == {} then
+        -- Add back to Main button if no buttons assigned to page
+        if pageButtons == {} or pageButtons["push"] == nil then
             Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
-            Monitor.drawButton(Monitor.OffsetCheck(-1, endX),Monitor.OffsetCheck(0, endY),{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("main") end,enabled = true, type = "button",page = "all"})
+            Monitor.drawButton(Monitor.OffsetCheck(-1, endX),Monitor.OffsetCheck(0, endY),{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "all"})
         else
             Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
             Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
@@ -459,7 +460,82 @@ end
 Monitor.init()
 drawButtonsForCurrentPage()
 
+function SearchOffers()
+    local trades = Utility.readJsonFile(tradeFile)
+    local settings = Utility.readJsonFile(SettingsFile)
+    local resTable = Utility.readJsonFile(resFile)
+    --Searches from Nearby to Far Towns for Offers
+    --Checks if offer is acceptable to current needs
+    --Removes required resource of offer
+    --Adds proposal to buyer and response to seller
 
+    --Make a list of town, sort by nearest
+    --table.insert(NearbyTowns,{folderName = v,x = ax,y = ay,z = az, distance = CalcDist(x, z, ax, az)})
+    if trades and settings and resTable then
+        local maxTradeDistance = 2000 --blocks,meters -- can be set in future
+        local function compare(a, b)
+            return a.distance > b.distance
+        end
+        table.sort(NearbyTowns,compare)
+
+        --X make a list of all the keepinstock items that are needed so resource count low
+        --X check is bid is already out for that item
+        -- then search towns against this list, adding potenial town offerings to this list
+        -- then choose best offering (closest to count needed, nearest etc)
+        -- then send bids
+        local possibleBids = {}
+        for i,v in pairs(settings.resources.keepInstock) do
+            local add = false
+            local needed = v
+            local count = 0
+            if resTable[i] then
+                --its in resources as well
+                count = resTable[i].count
+                if count < (needed*settings.resources.restockThreshold) then
+                    -- needed
+                    needed = needed - count
+                    add = true
+                end
+            else
+                --add if not in res table
+                add = true
+            end
+            if add then
+                --check bids if already bidding for item
+                if trades.proposal[i] then
+                    add = false
+                else
+                    --not in bids, add to possibleBids
+                    possibleBids[i] = {need = needed}
+                end
+            end
+        end
+
+        -- then search towns against this list, adding potenial town offerings to this list
+
+        for i,v in ipairs(NearbyTowns) do
+            if v.distance < maxTradeDistance then
+                --within trade distance
+                --access there offers file
+                local nearbyOffersFile = "Towns\\"..v.folderName.."\\".."TRD_X"..v.x.."Y"..v.y.."Z"..v.z..".json"
+                local nearbyOffers = Utility.readJsonFile(nearbyOffersFile)
+                if nearbyOffers and nearbyOffers.selling then
+                    --check if the sold item is needed
+                    for itemstring,itemdata in pairs(nearbyOffers.selling) do
+                        if possibleBids[itemstring] then
+                            --resource is in possibleBids
+                            local needed = possibleBids[itemstring].need
+                            if needed < itemdata.count then
+                                --they are selling more than needed, add to list
+                                table.insert(possibleBids[itemstring],i)--name of towns folder...
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
 
 function Offer()
     --This Updates a Towns current Offers list 
@@ -520,7 +596,15 @@ function Offer()
                         if count > (v*settings.resources.excessThreshold) then
                             -- attempt add the selling
                             resTable[i].count = count-v
-                            resTable[i].price = {
+                            resTable[i].startPrice = {
+                                emerald = {
+                                string = "minecraft:emerald",
+                                attributes = "",
+                                key = "emerald",
+                                count = resTable[i].count
+                                }
+                                }
+                            resTable[i].buyNowPrice = {
                                 emerald = {
                                 string = "minecraft:emerald",
                                 attributes = "",
@@ -686,7 +770,7 @@ function UpgradeSchedule(x)
     scheduleAction(x.item.duration, function() handleCSVItem(y) end)
 end
 
--- Event loop remains the same
+-- Event loop reMains the same
 function main()
     while mainflag do
         local event, side, x, y = os.pullEvent("monitor_touch")
