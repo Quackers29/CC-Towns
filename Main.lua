@@ -1,6 +1,7 @@
-local Monitor = require("Monitor")
-local Manager = require("Manager")
-local Utility = require("Utility")
+local Monitor   = require("Monitor")
+local Manager   = require("Manager")
+local Utility   = require("Utility")
+local TradeAPI  = require("TradeAPI")
 local buttonConfig = require("ButtonConfig")
 local currentPage = "Main" -- Default page to start
 local x,y,z = gps.locate()
@@ -162,9 +163,9 @@ if Settings and Settings.town.name == nil then
     local townName = townnameslist[randomIndex].id
     Settings.town.name = townName
     Settings.town.born = os.date("%Y-%m-%d %H:%M:%S", os.epoch("utc")/1000)
-    Settings.town.timestamp = os.epoch("utc")
+    Settings.town.timestamp = os.epoch("utc") -- milliseconds
     print(townName)
-    print("Created (utc): "..Settings.town.born)
+    print("Created (utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
 end
 
 if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then
@@ -460,172 +461,6 @@ end
 Monitor.init()
 drawButtonsForCurrentPage()
 
-function SearchOffers()
-    local trades = Utility.readJsonFile(tradeFile)
-    local settings = Utility.readJsonFile(SettingsFile)
-    local resTable = Utility.readJsonFile(resFile)
-    --Searches from Nearby to Far Towns for Offers
-    --Checks if offer is acceptable to current needs
-    --Removes required resource of offer
-    --Adds proposal to buyer and response to seller
-
-    --Make a list of town, sort by nearest
-    --table.insert(NearbyTowns,{folderName = v,x = ax,y = ay,z = az, distance = CalcDist(x, z, ax, az)})
-    if trades and settings and resTable then
-        local maxTradeDistance = 2000 --blocks,meters -- can be set in future
-        local function compare(a, b)
-            return a.distance > b.distance
-        end
-        table.sort(NearbyTowns,compare)
-
-        --X make a list of all the keepinstock items that are needed so resource count low
-        --X check is bid is already out for that item
-        -- then search towns against this list, adding potenial town offerings to this list
-        -- then choose best offering (closest to count needed, nearest etc)
-        -- then send bids
-        local possibleBids = {}
-        for i,v in pairs(settings.resources.keepInstock) do
-            local add = false
-            local needed = v
-            local count = 0
-            if resTable[i] then
-                --its in resources as well
-                count = resTable[i].count
-                if count < (needed*settings.resources.restockThreshold) then
-                    -- needed
-                    needed = needed - count
-                    add = true
-                end
-            else
-                --add if not in res table
-                add = true
-            end
-            if add then
-                --check bids if already bidding for item
-                if trades.proposal[i] then
-                    add = false
-                else
-                    --not in bids, add to possibleBids
-                    possibleBids[i] = {need = needed}
-                end
-            end
-        end
-
-        -- then search towns against this list, adding potenial town offerings to this list
-
-        for i,v in ipairs(NearbyTowns) do
-            if v.distance < maxTradeDistance then
-                --within trade distance
-                --access there offers file
-                local nearbyOffersFile = "Towns\\"..v.folderName.."\\".."TRD_X"..v.x.."Y"..v.y.."Z"..v.z..".json"
-                local nearbyOffers = Utility.readJsonFile(nearbyOffersFile)
-                if nearbyOffers and nearbyOffers.selling then
-                    --check if the sold item is needed
-                    for itemstring,itemdata in pairs(nearbyOffers.selling) do
-                        if possibleBids[itemstring] then
-                            --resource is in possibleBids
-                            local needed = possibleBids[itemstring].need
-                            if needed < itemdata.count then
-                                --they are selling more than needed, add to list
-                                table.insert(possibleBids[itemstring],i)--name of towns folder...
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-end
-
-function Offer()
-    --This Updates a Towns current Offers list 
-    --1. Check if there is space for another offer in the list
-    --2. Checks what could be a new offer and adds its
-    local trades = Utility.readJsonFile(tradeFile)
-    local settings = Utility.readJsonFile(SettingsFile)
-    local resTable = Utility.readJsonFile(resFile)
-
-    if trades and settings and resTable then
-        -- check if there is room for an offer, only add one
-        if Utility.getArraySize(trades.offers.buying) < trades.offers.limit then
-            -- make a list of all current buying offers
-            for i,v in pairs(settings.resources.keepInstock) do
-                local continue = true
-                if trades.offers.buying[i] ~= nil then
-                    continue = false
-                end
-                if continue then -- keepInstock item not in buy list, check resources
-                    --local itemShort = string.match(i,":(.+)")
-                    print("Searching: "..i)
-                    local count = 0
-                    if resTable[i] then
-                        count = resTable[i].count
-                        print("BuyCount: "..count.." < "..(v*settings.resources.restockThreshold))
-                        if count < (v*settings.resources.restockThreshold) then
-                            -- attempt add the buying
-                            resTable[i].count = v - count
-                            resTable[i].price = {
-                                emerald = {
-                                string = "minecraft:emerald",
-                                attributes = "",
-                                key = "emerald",
-                                count = resTable[i].count
-                                }
-                                }
-                            if not trades.offers.buying[i] then
-                                trades.offers.buying[i] = {}
-                            end
-                            trades.offers.buying[i] = resTable[i]
-                        end
-                    end
-                end
-            end
-        end
-        if Utility.getArraySize(trades.offers.selling) < trades.offers.limit then
-            -- make a list of all current selling offers
-            for i,v in pairs(settings.resources.keepInstock) do
-                local continue = true
-                if trades.offers.selling[i] ~= nil then
-                    continue = false
-                end
-                if continue then -- keepInstock item not in sell list, check resources
-                    local count = 0
-                    if resTable[i] then
-                        count = resTable[i].count
-                        print("SellCount: "..count.." > "..(v*settings.resources.excessThreshold))
-                        if count > (v*settings.resources.excessThreshold) then
-                            -- attempt add the selling
-                            resTable[i].count = count-v
-                            resTable[i].startPrice = {
-                                emerald = {
-                                string = "minecraft:emerald",
-                                attributes = "",
-                                key = "emerald",
-                                count = resTable[i].count
-                                }
-                                }
-                            resTable[i].buyNowPrice = {
-                                emerald = {
-                                string = "minecraft:emerald",
-                                attributes = "",
-                                key = "emerald",
-                                count = resTable[i].count
-                                }
-                                }
-                            if not trades.offers.selling[i] then
-                                trades.offers.selling[i] = {}
-                            end
-                            trades.offers.selling[i] = resTable[i]
-                        end
-                    end
-                end
-            end
-        end
-        Utility.writeJsonFile(tradeFile,trades)
-    end
-end
-
-
 function goToPage(x)
     currentPage = x
     Monitor.OffsetButton(0)
@@ -870,7 +705,8 @@ end
 function productionTimer()
     while mainflag do
             productionCheck()
-            Offer()
+            TradeAPI.UpdateOffers(tradeFile,SettingsFile,resFile)
+            TradeAPI.SearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,resFile)
         os.sleep(productionWait)
     end
 end

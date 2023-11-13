@@ -66,7 +66,7 @@ os.clock()
 
 os.date() -- local time
 os.date("!%c") -- utc time
-os.epoch("utc") -- unix time for timestamping
+os.epoch("utc") -- unix time for timestamping in milliseconds
 
 os.date("%Y-%m-%d %H:%M:%S", os.epoch("utc")/1000)
 

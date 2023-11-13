@@ -134,4 +134,66 @@ function Utility.ModifyMcItemInTable(itemString, itemTable, toggle)
     return itemTable
 end
 
+-- This function counts the number of lines with actual data (ignoring empty or whitespace-only lines) in a text file.
+function Utility.countDataLines(filePath)
+    local line_count = 0
+    local file = fs.open(filePath, "r") -- Open the file in read mode
+
+    if not file then
+        --print("Could not open file at " .. filePath)
+        return 0 -- Return 0 if the file cannot be opened
+    end
+
+    while true do
+        local line = file.readLine()
+        if line == nil then break end -- End of file
+        if string.match(line, "%S") then -- Check if line has non-whitespace characters
+            line_count = line_count + 1
+        end
+    end
+
+    file.close() -- Always close the file when done
+    return line_count
+end
+
+--how many of an item is in the resource table
+function Utility.ResCount(resTable, itemString)
+    if resTable[itemString] then
+        return resTable[itemString].count
+    else
+        -- if not in res table
+        return 0
+    end
+end
+
+-- Appends text to a file in append mode ("a").
+function Utility.appendToFile(filePath, text)
+    local file = io.open(filePath, "a")  -- Open the file in append mode ("a")
+
+    if file then
+        file:write(text)  -- Write the provided text to the file
+        file:close()      -- Close the file
+        return true       -- Return true to indicate success
+    else
+        return false      -- Return false to indicate failure
+    end
+end
+
+-- Read a text file line by line and add non-empty lines to an array
+function Utility.readTextFileToArray(filePath)
+    local lines = {}  -- Initialize an empty array to store lines
+    local file = io.open(filePath, "r")  -- Open the file in read mode
+    if file then
+        for line in file:lines() do
+            if line ~= "" then
+                table.insert(lines, line)  -- Add non-empty lines to the array
+            end
+        end
+        file:close()  -- Close the file
+    else
+        print("Failed to open the file")
+    end
+    return lines  -- Return the array of lines
+end
+
 return Utility
