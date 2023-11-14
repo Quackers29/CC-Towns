@@ -2,10 +2,10 @@
   "offers": {
     "limit": 3,
     "deadline": 60,
-    "buying": [{}],
-    "selling": [{}]
+    "buying": {},
+    "selling": {}
   },
-  "proposal": [{}],
+  "proposal": {},
   "accepted": {},
   "completed": {},
   "history": {}

@@ -43,7 +43,8 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
 
     if trades and trades.offers.selling then
         for itemString,offer in pairs(trades.offers.selling) do
-            if (offer.timeOffered + (1000*trades.offers.deadline)) < currentTime then
+            print(itemString)
+            if itemString ~= "" and (offer.timeOffered + (1000*trades.offers.deadline)) < currentTime then
                 -- Auction has ended
                 -- Delete all response file first (add other auctions after)
                 -- Are there any acceptable responses?
