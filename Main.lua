@@ -704,8 +704,8 @@ end
 function productionTimer()
     while mainflag do
             productionCheck()
-            TradeAPI.SellerUpdateOffersUpdateOffers(tradeFile,SettingsFile,resFile)
-            TradeAPI.BuyerSearchOffersSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,resFile)
+            TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
+            TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,resFile)
             TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile)
         os.sleep(productionWait)
     end
