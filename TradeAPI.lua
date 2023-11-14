@@ -151,8 +151,8 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 add = true
             end
             if add then
-                --2. Check is bid is already out for that item
-                if trades.proposal[i] then
+                --2. Check if bid is already out for that item
+                if trades.proposal and trades.proposal[i] then
                     add = false
                 else
                     --not in bids, add to possibleBids
@@ -202,47 +202,48 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
         -- 4. Choose best offering (closest to count needed, nearest etc)
         local bestBids = {}
         for itemString,itemBids in pairs(possibleBids) do
-            -- for each item to bid
+            if itemBids.offers then
+                -- for each item to bid
+                -- each offer for that item
+                -- Account for: market price (not here), X transportation distance, #past trades, X current bids made
+                
+                -- Weights (these could be dynamically adjusted based on buyer's preferences)
+                local weights = {
+                    distance_weight = -1, -- Negative because less distance is better
+                    bids_weight = -0.5, -- Assuming fewer bids are better
+                    minPrice_weight = -1, -- Negative because a lower price is better
+                    maxPrice_weight = -1, -- Negative because a lower 'buy it now' price is better
+                }
 
-            -- each offer for that item
-            -- Account for: market price (not here), X transportation distance, #past trades, X current bids made
-            
-            -- Weights (these could be dynamically adjusted based on buyer's preferences)
-            local weights = {
-                distance_weight = -1, -- Negative because less distance is better
-                bids_weight = -0.5, -- Assuming fewer bids are better
-                minPrice_weight = -1, -- Negative because a lower price is better
-                maxPrice_weight = -1, -- Negative because a lower 'buy it now' price is better
-            }
-
-            -- Function to calculate the score for an offer
-            function calculate_offer_score(offer, weights)
-                local score = 0
-                score = score + (offer.distance * weights.distance_weight)
-                score = score + (offer.bids * weights.bids_weight)
-                score = score + (offer.minPrice * weights.minPrice_weight)
-                score = score + (offer.maxPrice * weights.maxPrice_weight)
-                return score
-            end
-
-            -- Function to find the best offer
-            function find_best_offer(possibleBids, weights)
-                local bestScore = -math.huge
-                local bestOffer = nil
-                for _, offer in ipairs(possibleBids) do
-                    local score = calculate_offer_score(offer, weights)
-                    if score > bestScore then
-                        bestScore = score
-                        bestOffer = offer
-                    end
+                -- Function to calculate the score for an offer
+                function calculate_offer_score(offer, weights)
+                    local score = 0
+                    score = score + (offer.distance * weights.distance_weight)
+                    score = score + (offer.bids * weights.bids_weight)
+                    score = score + (offer.minPrice * weights.minPrice_weight)
+                    score = score + (offer.maxPrice * weights.maxPrice_weight)
+                    return score
                 end
-                return bestOffer
-            end
 
-            -- Assuming possibleBids is an array of offers with their respective data
-            local bestSellerOption = find_best_offer(itemBids.offers, weights)
-            if bestSellerOption then
-                bestBids[itemString] = bestSellerOption
+                -- Function to find the best offer
+                function find_best_offer(possibleBids, weights)
+                    local bestScore = -math.huge
+                    local bestOffer = nil
+                    for _, offer in ipairs(possibleBids) do
+                        local score = calculate_offer_score(offer, weights)
+                        if score > bestScore then
+                            bestScore = score
+                            bestOffer = offer
+                        end
+                    end
+                    return bestOffer
+                end
+
+                -- Assuming possibleBids is an array of offers with their respective data
+                local bestSellerOption = find_best_offer(itemBids.offers, weights)
+                if bestSellerOption then
+                    bestBids[itemString] = bestSellerOption
+                end
             end
         end
 
@@ -320,7 +321,7 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
             -- make a list of all current selling offers
             for i,v in pairs(settings.resources.keepInstock) do
                 local continue = true
-                if trades.offers.selling[i] ~= nil then
+                if trades.offers.selling and trades.offers.selling[i] ~= nil then
                     continue = false
                 end
                 if trades.offers.accepted and trades.offers.accepted[i] ~= nil then
