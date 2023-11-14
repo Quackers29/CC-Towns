@@ -1,1 +1,0 @@
-{"Wood":{"max_storage":5000,"cost":{"Bread":10,"Iron":1},"duration":120,"output":64,"requires":["Logging_upgrade1"],"available":true,"toggle":true,"min_threshold":1000,"timer":120},"Fence":{"max_storage":5000,"cost":{"Bread":20,"Iron":1},"duration":200,"output":200,"requires":["Logging_upgrade1","Logging_upgrade2"],"available":true,"toggle":true,"min_threshold":1000,"timer":200}}

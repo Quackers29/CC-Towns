@@ -95,10 +95,32 @@ commands.exec("/kill @e[type=minecraft:wandering_trader,distance=..100]")
 
 trader_llama
 
-
 /gamerule doTraderSpawning false
 
 
 fs.getCapacity("") -- outputs cap in bytes for this computer id 
 fs.getFreeSpace("") -- gets remaining space in bytes
 
+
+local data = {
+    origin = v.folderName,
+    distance = v.distance, --transportation distance
+    bids = Utility.countDataLines(nearbyResponsesFile), -- gets how many bids there are already
+    minPrice = itemdata.minPrice, -- starting bid
+    maxPrice = itemdata.maxPrice, -- buy it now
+    needed = needed,
+    urgencyFactor = possibleBids[itemstring].urgencyFactor,
+    quantity = itemdata.count,
+
+    transportCost = math.ceil(offer.distance * transportRate),
+
+    bidPrice = bidPrice,
+    buyerTotalCost = bidPrice + offer.transportCost,
+
+    timeResponded = os.epoch("utc"), -- unix time for timestamping, milliseconds
+    destination = townFolder,
+    timeToDestination = nil,
+
+    timeAccepted = currentTime,
+    transportStartTime = currentTime + (PreTransportTimer * 1000)  -- Wait for PreTransportTimer
+}

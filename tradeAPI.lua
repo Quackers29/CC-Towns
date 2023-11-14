@@ -1,17 +1,29 @@
 local TradeAPI = {}
 local Utility = require("Utility")
 
-function TradeAPI.checkResponses(tradeFile,townFolder) -- You are the seller
+
+function TradeAPI.AppendArray(FilePath,Array)
+-- table.insert(parsedResponses[item1],{destination=item2,timeResponded=item3,bidPrice=item4})
+    for i,v in pairs(Array) do
+        for a,b in ipairs(v) do
+            -- Add response
+            local response = i.."_"..b.destination.."_"..b.timeResponded.."_"..b.bidPrice
+            Utility.appendToFile(FilePath,response)
+        end
+    end
+end
+
+function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are the seller
     --Auction deadline ended?
     --Is there a BuyNow response?   #FUTURE ADDITION
     --Are there any acceptable responses?
-    --local response = itemString.."_"..townFolder.."_"..tostring(offer.timeResponded).."_"..tostring(offer.buyPrice)
+    --local response = itemString.."_"..townFolder.."_"..tostring(offer.timeResponded).."_"..tostring(offer.bidPrice)
 
     --Auction deadline ended?
     local currentTime = os.epoch("utc") -- milliseconds
     local trades = Utility.readJsonFile(tradeFile)
-    local RepsonsesFile = "Towns\\"..townFolder.."\\".."Responses.txt"
-    local Responses = Utility.readTextFileToArray(RepsonsesFile)
+    local ResponsesFile = "Towns\\"..townFolder.."\\".."Responses.txt"
+    local Responses = Utility.readTextFileToArray(ResponsesFile)
 
     --parse responses file and gather per item
     local parsedResponses = {}
@@ -23,38 +35,72 @@ function TradeAPI.checkResponses(tradeFile,townFolder) -- You are the seller
             if parsedResponses[item1] == nil then
                 parsedResponses[item1] = {}
             end
-            table.insert(parsedResponses[item1],{destination=item2,timeResponded=item3,buyPrice=item4})
+            table.insert(parsedResponses[item1],{destination=item2,timeResponded=item3,bidPrice=item4})
         end
     end
+
+    local deletedRepsonseFile = false
 
     if trades and trades.offers.selling then
         for itemString,offer in pairs(trades.offers.selling) do
             if offer.timeOffered + (1000*trades.deadline) > currentTime then
                 -- Auction has ended
+                -- Delete all response file first (add other auctions after)
                 -- Are there any acceptable responses?
                 -- Gather by itemString
+                if deletedRepsonseFile == false then
+                    deletedRepsonseFile = true
+                    --delete response file
+                    Utility.deleteFile(ResponsesFile) -- default 10 attempts
+                end
 
                 local function compare(a, b)
-                    return a.buyPrice > b.buyPrice
+                    return a.bidPrice > b.bidPrice
                 end
                 local currentItemResponses = parsedResponses[itemString]
                 table.sort(currentItemResponses,compare)
-                if currentItemResponses[1].buyPrice > offer.minPrice then
+                local bestResponse = currentItemResponses[1]
+
+                if bestResponse.bidPrice > offer.minPrice then
                     --Best Response is acceptable
-                    --Delete response section
-                    --Move info to offers.accepted
 
-                    
+                    --Delete response section and Seller offer
+                    parsedResponses[itemString] = nil
+                    TradeAPI.appendArray(ResponsesFile, parsedResponses)
+
+                    trades.offers.selling[itemString] = nil
+                    Utility.writeJsonFile(tradeFile,trades)
+
+                    --Move info from Buyers trades.proposal to trades.accepted
+                    local buyerX, buyerY, buyerZ = string.match(offer.destination, "X(-?%d+)Y(-?%d+)Z(-?%d+)")
+                    local buyerTradeFile = "Towns\\"..offer.destination.."\\".."TRD_X"..buyerX.."Y"..buyerY.."Z"..buyerZ..".json"
+                    local buyerTrades = Utility.readJsonFile(buyerTradeFile)
+                    local PreTransportTimer = 60 -- seconds #FUTURE configure
+                    if buyerTrades then
+                        local accepted = buyerTrades.proposal[itemString]
+                        accepted.timeAccepted = currentTime
+                        accepted.transportStartTime = currentTime + (PreTransportTimer * 1000)  -- Wait for PreTransportTimer
+                        trades.accepted[itemString] = accepted
+
+                        --Remove required resources for the trade
+                        local resTable = Utility.readJsonFile(resFile)
+                        resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.buyerTotalCost*-1))
+                        Utility.writeJsonFile(resFile,resTable)
+                    end
                 else
-                    --Not acceptable, just delete the response table
-
+                    --Not acceptable, just delete the response table and Seller offer
+                    parsedResponses[itemString] = nil
+                    TradeAPI.appendArray(ResponsesFile, parsedResponses)
+                    
+                    trades.offers.selling[itemString] = nil
+                    Utility.writeJsonFile(tradeFile,trades)
                 end
             end
         end
     end
 end
 
-function TradeAPI.SearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,resFile)
+function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,resFile)
     local trades = Utility.readJsonFile(tradeFile)
     local settings = Utility.readJsonFile(SettingsFile)
     local resTable = Utility.readJsonFile(resFile)
@@ -121,7 +167,7 @@ function TradeAPI.SearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,res
                 --within trade distance
                 --access there offers file
                 local nearbyOffersFile = "Towns\\"..v.folderName.."\\".."TRD_X"..v.x.."Y"..v.y.."Z"..v.z..".json"
-                local nearbyRepsonsesFile = "Towns\\"..v.folderName.."\\".."Responses.txt"
+                local nearbyResponsesFile = "Towns\\"..v.folderName.."\\".."Responses.txt"
                 local nearbyOffers = Utility.readJsonFile(nearbyOffersFile)
                 if nearbyOffers and nearbyOffers.selling then
                     --check if the sold item is needed
@@ -137,7 +183,7 @@ function TradeAPI.SearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,res
                                 local data = {
                                     origin = v.folderName,
                                     distance = v.distance, --transportation distance
-                                    bids = Utility.countDataLines(nearbyRepsonsesFile), -- gets how many bids there are already
+                                    bids = Utility.countDataLines(nearbyResponsesFile), -- gets how many bids there are already
                                     minPrice = itemdata.minPrice, -- starting bid
                                     maxPrice = itemdata.maxPrice, -- buy it now
                                     needed = needed,
@@ -236,7 +282,8 @@ function TradeAPI.SearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,res
                 --1. X Remove Resources
                 --2. X Add to trade.proposal with extra data, time etc
                 --3. X Add to Responses.txt
-                Utility.AddMcItemToTable(itemString,resTable,(offer.buyerTotalCost*-1))
+
+                resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.buyerTotalCost*-1))
 
                 offer.timeResponded = os.epoch("utc") -- unix time for timestamping, milliseconds
                 offer.destination = townFolder
@@ -245,18 +292,20 @@ function TradeAPI.SearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,res
                 trades.proposal[itemString] = offer
 
                 -- Add response
-                local RepsonsesFile = "Towns\\"..offer.origin.."\\".."Responses.txt"
-                local response = itemString.."_"..townFolder.."_"..tostring(offer.timeResponded).."_"..tostring(offer.buyPrice)
-                Utility.appendToFile(RepsonsesFile,response)
+                local ResponsesFile = "Towns\\"..offer.origin.."\\".."Responses.txt"
+                local response = itemString.."_"..townFolder.."_"..tostring(offer.timeResponded).."_"..tostring(offer.bidPrice)
+                Utility.appendToFile(ResponsesFile,response)
             end
         end
         --Update trades
         Utility.writeJsonFile(tradeFile,trades)
+        --Update Resources
+        Utility.writeJsonFile(resFile,resTable)
     end
 end
 
 
-function TradeAPI.UpdateOffers(tradeFile,SettingsFile,resFile)
+function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
 
     --This Updates a Towns current Offers list 
     --1. Check if there is space for another offer in the list
@@ -271,7 +320,7 @@ function TradeAPI.UpdateOffers(tradeFile,SettingsFile,resFile)
             -- make a list of all current selling offers
             for i,v in pairs(settings.resources.keepInstock) do
                 local continue = true
-                if trades.offers.selling[i] ~= nil then
+                if trades.offers.selling[i] ~= nil or trades.offers.accepted[i] ~= nil then
                     continue = false
                 end
                 if continue then -- keepInstock item not in sell list, check resources
@@ -291,7 +340,7 @@ function TradeAPI.UpdateOffers(tradeFile,SettingsFile,resFile)
                                 maxPrice = math.abs((count-v)*1.2),
                                 timeOffered = os.epoch("utc") -- milliseconds
                             }
-
+                            os.sleep(0.001) --sleep 1 milliseconds to change timeOffered between items (reference code)
                         end
                     end
                 end

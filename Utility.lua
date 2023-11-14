@@ -196,4 +196,31 @@ function Utility.readTextFileToArray(filePath)
     return lines  -- Return the array of lines
 end
 
+-- Delete a file with retries
+-- Parameters:
+--   filePath (string): The path to the file you want to delete.
+--   maxRetries (number, optional): The maximum number of deletion attempts (default is 10).
+function Utility.deleteFile(filePath, maxRetries)
+    maxRetries = maxRetries or 10  -- Default to 10 retries if not specified
+    
+    for attempt = 1, maxRetries do
+        if fs.exists(filePath) then
+            if fs.delete(filePath) then
+                --print("File deleted successfully.")
+                return true  -- Successfully deleted the file
+            else
+                --print("Failed to delete file on attempt " .. attempt)
+            end
+        else
+            --print("File does not exist.")
+            return false  -- File doesn't exist, no need to retry
+        end
+        -- Wait for 0.1 seconds before the next attempt
+        os.sleep(0.1)
+    end
+    print(filePath.." - Failed to delete the file after all attempts")
+    return false  -- Failed to delete the file after all attempts
+end
+
+
 return Utility
