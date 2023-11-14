@@ -323,7 +323,7 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                 if trades.offers.selling[i] ~= nil then
                     continue = false
                 end
-                if trades.offers.accepted[i] ~= nil then
+                if trades.offers.accepted and trades.offers.accepted[i] ~= nil then
                     continue = false
                 end
                 if continue then -- keepInstock item not in sell list, check resources
