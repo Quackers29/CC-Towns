@@ -51,6 +51,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
             --print(itemString)
             if itemString ~= "" and (offer.timeOffered + (1000*trades.offers.deadline)) < currentTime then
                 -- Auction has ended
+                print("Auction has ended for: "..itemString)
                 -- Delete all response file first (add other auctions after)
                 -- Are there any acceptable responses?
                 -- Gather by itemString
@@ -60,13 +61,13 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                     Utility.deleteFile(ResponsesFile) -- default 10 attempts
                 end
 
-                local function compare(a, b)
-                    return a.bidPrice > b.bidPrice
-                end
                 local currentItemResponses = parsedResponses[itemString]
                 -- If there is a response at all
                 if currentItemResponses then
-                        table.sort(currentItemResponses,compare)
+                    local function compare(a, b)
+                        return a.bidPrice > b.bidPrice
+                    end
+                    table.sort(currentItemResponses,compare)
                     local bestResponse = currentItemResponses[1]
                     print("item, bestBid, minprice: "..itemString..","..bestResponse.bidPrice..","..offer.minPrice)
                     if bestResponse.bidPrice > offer.minPrice then --#ADD check for resources still available
@@ -87,6 +88,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                             local resTable = Utility.readJsonFile(resFile)
                             resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.quantity*-1))
                             print("Selling Res, Removed res: "..itemString..","..offer.quantity)
+                            print("Selling for, Total Bids: "..bestResponse.bidPrice..","..#currentItemResponses)
                             Utility.writeJsonFile(resFile,resTable)
                         end
 
@@ -99,12 +101,17 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
 
                     else
                         --Not acceptable, just delete the response table and Seller offer
+                        print("No acceptable trades for: "..itemString.." Bids: "..#currentItemResponses)
                         parsedResponses[itemString] = nil
                         TradeAPI.AppendArray(ResponsesFile, parsedResponses)
                         
                         trades.offers.selling[itemString] = nil
                         Utility.writeJsonFile(tradeFile,trades)
                     end
+                else
+                    print("No responses to Auction")
+                    trades.offers.selling[itemString] = nil
+                    Utility.writeJsonFile(tradeFile,trades)
                 end
             end
         end
