@@ -69,7 +69,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                         table.sort(currentItemResponses,compare)
                     local bestResponse = currentItemResponses[1]
                     print("item, bestBid, minprice: "..itemString..bestResponse.bidPrice..offer.minPrice)
-                    if bestResponse.bidPrice > offer.minPrice then
+                    if bestResponse.bidPrice > offer.minPrice then --#ADD check for resources still available
                         --Best Response is acceptable
 
                         --Delete response section and Seller offer
@@ -93,6 +93,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                             --Remove required resources for the trade
                             local resTable = Utility.readJsonFile(resFile)
                             resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.quantity*-1))
+                            print("Selling Res, Removed res: "..itemString..offer.quantity)
                             Utility.writeJsonFile(resFile,resTable)
                         end
                     else
@@ -295,7 +296,8 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 --2. X Add to trade.proposal with extra data, time etc
                 --3. X Add to Responses.txt
 
-                resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.buyerTotalCost*-1))
+                resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,(offer.buyerTotalCost*-1))
+                print("Previous emeralds, Removed emeralds: "..emeraldsForTrading..offer.buyerTotalCost)
 
                 offer.timeResponded = os.epoch("utc") -- unix time for timestamping, milliseconds
                 offer.destination = townFolder
