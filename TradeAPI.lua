@@ -7,7 +7,7 @@ function TradeAPI.AppendArray(FilePath,Array)
     for i,v in pairs(Array) do
         for a,b in ipairs(v) do
             -- Add response
-            local response = i.."\t"..b.destination.."\t"..b.timeResponded.."\t"..b.bidPrice
+            local response = i.."\t"..b.destination.."\t"..b.timeResponded.."\t"..b.bidPrice.."\n"
             Utility.appendToFile(FilePath,response)
         end
     end
@@ -223,6 +223,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
     local trades = Utility.readJsonFile(tradeFile)
     local settings = Utility.readJsonFile(SettingsFile)
     local resTable = Utility.readJsonFile(resFile)
+    local currentTime = os.epoch("utc")
     --Searches from Nearby to Far Towns for Offers
 
     --#Buyer can collect to save from the cost of delivery
@@ -291,8 +292,8 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 if nearbyOffers and nearbyOffers.selling then
                     --check if the sold item is needed
                     for itemstring,itemdata in pairs(nearbyOffers.selling) do
-                        if possibleBids[itemstring] then
-                            --resource is in possibleBids
+                        if possibleBids[itemstring] and currentTime < itemdata.timeCloses then
+                            --resource is in possibleBids and the sellers auction has not ended already
                             local needed = possibleBids[itemstring].needed
                             print("BuyerSearch, Found town, item, quantity"..v.folderName..itemstring..tostring(itemdata.quantity))
                             if needed < itemdata.quantity then
@@ -425,7 +426,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
 
                 -- Add response
                 local ResponsesFile = "Towns\\"..offer.origin.."\\".."Responses.txt"
-                local response = itemString.."\t"..townFolder.."\t"..tostring(offer.timeResponded).."\t"..tostring(offer.bidPrice)
+                local response = itemString.."\t"..townFolder.."\t"..tostring(offer.timeResponded).."\t"..tostring(offer.bidPrice).."\n"
                 Utility.appendToFile(ResponsesFile,response)
             end
         end
@@ -492,12 +493,12 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                 end
                 if continue then -- keepInstock item not in buy list, check resources
                     --local itemShort = string.match(i,":(.+)")
-                    print("Searching: "..i)
+                    --print("Searching: "..i)
                     local count = 0
                     if resTable[i] then
                         count = resTable[i].count
-                        print("BuyCount: "..count.." < "..(v*settings.resources.restockThreshold))
                         if count < (v*settings.resources.restockThreshold) then
+                            print("BuyCount: "..i..", "..count.." < "..(v*settings.resources.restockThreshold))
                             -- attempt add the buying
                             resTable[i].count = v - count
                             resTable[i].price = {

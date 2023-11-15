@@ -194,7 +194,7 @@ function Utility.readTextFileToArray(filePath)
         end
         file:close()  -- Close the file
     else
-        print("Failed to open the file")
+        --print("Failed to open the file")
     end
     return lines  -- Return the array of lines
 end
