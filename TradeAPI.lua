@@ -23,26 +23,6 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
     local currentTime = os.epoch("utc") -- milliseconds
     local trades = Utility.readJsonFile(tradeFile)
     local ResponsesFile = "Towns\\"..townFolder.."\\".."Responses.txt"
-    local Responses = Utility.readTextFileToArray(ResponsesFile)
-
-    --parse responses file and gather per item
-    local parsedResponses = {}
-    for i,v in ipairs(Responses) do
-        -- Define a pattern to capture each item (assuming they are alphanumeric)
-        local parts = {}
-        for part in string.gmatch(v, "([^\t]+)") do
-            table.insert(parts, part)
-        end
-        local item1, item2, item3, item4 = parts[1], parts[2], parts[3], parts[4]
-        if item1 and item2 and item3 and item4 then
-            if parsedResponses[item1] == nil then
-                parsedResponses[item1] = {}
-            end
-            table.insert(parsedResponses[item1],{destination=item2,timeResponded=tonumber(item3),bidPrice=tonumber(item4)})
-        else
-            print("Reading Reposonse file,One or more parts are nil on line: "..tostring(i))
-        end
-    end
 
     local deletedRepsonseFile = false
 
@@ -53,6 +33,28 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                 -- Auction has ended
                 local auctionStatus
                 print("Auction has ended for: "..itemString)
+
+                --Moved reading responses here so to update per item
+                local Responses = Utility.readTextFileToArray(ResponsesFile)
+                --parse responses file and gather per item
+                local parsedResponses = {}
+                for i,v in ipairs(Responses) do
+                    -- Define a pattern to capture each item (assuming they are alphanumeric)
+                    local parts = {}
+                    for part in string.gmatch(v, "([^\t]+)") do
+                        table.insert(parts, part)
+                    end
+                    local item1, item2, item3, item4 = parts[1], parts[2], parts[3], parts[4]
+                    if item1 and item2 and item3 and item4 then
+                        if parsedResponses[item1] == nil then
+                            parsedResponses[item1] = {}
+                        end
+                        table.insert(parsedResponses[item1],{destination=item2,timeResponded=tonumber(item3),bidPrice=tonumber(item4)})
+                    else
+                        print("Reading Reposonse file,One or more parts are nil on line: "..tostring(i))
+                    end
+                end
+
                 -- Delete all response file first (add other auctions after)
                 -- Are there any acceptable responses?
                 -- Gather by itemString
