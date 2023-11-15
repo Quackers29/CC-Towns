@@ -196,6 +196,7 @@ function TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
                     --No end time set, add one
                     v.transportEndTime = v.transportStartTime + (v.distance * 10000) -- 10 seconds per block distance
                     trades.accepted[i] = v
+                    commands.say("Transportation started to: "..v.destination)
                 end
                 if currentTime > v.transportEndTime then
                     --Item delivered
@@ -206,6 +207,7 @@ function TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
                     Utility.writeJsonFile(resFile,resTable)
                     trades.history[v.timeOffered] = trades.accepted[i]
                     trades.accepted[i] = nil
+                    commands.say("Items delivered to: "..v.destination..", "..v.item.." x"..v.quantity)
                 end
             end
         end
