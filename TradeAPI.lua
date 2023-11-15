@@ -51,6 +51,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
             --print(itemString)
             if itemString ~= "" and (offer.timeOffered + (1000*trades.offers.deadline)) < currentTime then
                 -- Auction has ended
+                local auctionStatus
                 print("Auction has ended for: "..itemString)
                 -- Delete all response file first (add other auctions after)
                 -- Are there any acceptable responses?
@@ -89,6 +90,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                             resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.quantity*-1))
                             print("Selling Res, Removed res: "..itemString..","..offer.quantity)
                             print("Selling for, Total Bids: "..bestResponse.bidPrice..","..#currentItemResponses)
+                            auctionStatus = "Sold to: "..bestResponse.destination..", for: "..bestResponse.bidPrice
                             Utility.writeJsonFile(resFile,resTable)
                         end
 
@@ -102,6 +104,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                     else
                         --Not acceptable, just delete the response table and Seller offer
                         print("No acceptable trades for: "..itemString.." Bids: "..#currentItemResponses)
+                        auctionStatus = "No acceptable trades for: "..itemString.." Bids: "..#currentItemResponses
                         parsedResponses[itemString] = nil
                         TradeAPI.AppendArray(ResponsesFile, parsedResponses)
                         
@@ -110,9 +113,12 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                     end
                 else
                     print("No responses to Auction")
+                    auctionStatus = "No responses to Auction"
                     trades.offers.selling[itemString] = nil
                     Utility.writeJsonFile(tradeFile,trades)
                 end
+                commands.say("Auction for "..itemString.." x"..offer.quantity.." has ended. ")
+                commands.say(auctionStatus)
             end
         end
     end
