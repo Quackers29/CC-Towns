@@ -88,6 +88,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                             --Remove required resources for the trade
                             local resTable = Utility.readJsonFile(resFile)
                             resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.quantity*-1))
+                            resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,bestResponse.bidPrice)
                             print("Selling Res, Removed res: "..itemString..","..offer.quantity)
                             print("Selling for, Total Bids: "..bestResponse.bidPrice..","..#currentItemResponses)
                             auctionStatus = "Sold to: "..bestResponse.destination..", for: "..bestResponse.bidPrice
