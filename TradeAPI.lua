@@ -7,7 +7,7 @@ function TradeAPI.AppendArray(FilePath,Array)
     for i,v in pairs(Array) do
         for a,b in ipairs(v) do
             -- Add response
-            local response = i.."_"..b.destination.."_"..b.timeResponded.."_"..b.bidPrice
+            local response = i.."\t"..b.destination.."\t"..b.timeResponded.."\t"..b.bidPrice
             Utility.appendToFile(FilePath,response)
         end
     end
@@ -17,7 +17,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
     --Auction deadline ended?
     --Is there a BuyNow response?   #FUTURE ADDITION
     --Are there any acceptable responses?
-    --local response = itemString.."_"..townFolder.."_"..tostring(offer.timeResponded).."_"..tostring(offer.bidPrice)
+    --local response = itemString.."\t"..townFolder.."\t"..tostring(offer.timeResponded).."\t"..tostring(offer.bidPrice)
 
     --Auction deadline ended?
     local currentTime = os.epoch("utc") -- milliseconds
@@ -29,13 +29,18 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
     local parsedResponses = {}
     for i,v in ipairs(Responses) do
         -- Define a pattern to capture each item (assuming they are alphanumeric)
-        local pattern = "([^_]+)_([^_]+)_([^_]+)_([^_]+)"
-        local item1, item2, item3, item4 = string.match(v, pattern)
+        local parts = {}
+        for part in string.gmatch(v, "([^\t]+)") do
+            table.insert(parts, part)
+        end
+        local item1, item2, item3, item4 = parts[1], parts[2], parts[3], parts[4]
         if item1 and item2 and item3 and item4 then
             if parsedResponses[item1] == nil then
                 parsedResponses[item1] = {}
             end
             table.insert(parsedResponses[item1],{destination=item2,timeResponded=item3,bidPrice=item4})
+        else
+            print("Reading Reposonse file,One or more parts are nil on line: "..tostring(i))
         end
     end
 
@@ -109,9 +114,6 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
     local settings = Utility.readJsonFile(SettingsFile)
     local resTable = Utility.readJsonFile(resFile)
     --Searches from Nearby to Far Towns for Offers
-    --Checks if offer is acceptable to current needs
-    --Removes required resource of offer
-    --Adds proposal to buyer and response to seller
 
     --#Buyer can collect to save from the cost of delivery
     --#Could setup ~a auto transport company per X spawned towns that vary their prices over time, maybe even based on location, bulk transport price, etc
@@ -129,8 +131,8 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
         --X 2. Check is bid is already out for that item
         --~ 3. Search towns against this list, adding potenial town offerings to this list
         --X 4. Choose best offering per item (closest to count needed, nearest etc)
-        -- 5. Check best is acceptable (resources etc) 
-        -- 6. Add to Buyers trade.proposal and to Sellers Responses.txt
+        --X 5. Check best is acceptable (resources etc) 
+        --X 6. Add to Buyers trade.proposal and to Sellers Responses.txt
 
         -- 1. make a list of all the keepinstock items that are needed so resource count low
         local possibleBids = {}
@@ -146,7 +148,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 local restockAt = keepStock*settings.resources.restockThreshold
                 if count < restockAt then
                     -- needed
-                    needed = needed - count
+                    needed = keepStock - count
                     urgencyFactor = (restockAt - count)/restockAt--Between 0 and 1 depending on if there is any of that resource
                     add = true
                 end
@@ -160,6 +162,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                     add = false
                 else
                     --not in bids, add to possibleBids
+                    print("BuyerSearch, needs and Unrgency: "..i..","..tostring(needed)..","..tostring(urgencyFactor))
                     possibleBids[i] = {needed = needed, urgencyFactor = urgencyFactor}
                 end
             end
@@ -173,12 +176,13 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 local nearbyOffersFile = "Towns\\"..v.folderName.."\\".."TRD_X"..v.x.."Y"..v.y.."Z"..v.z..".json"
                 local nearbyResponsesFile = "Towns\\"..v.folderName.."\\".."Responses.txt"
                 local nearbyOffers = Utility.readJsonFile(nearbyOffersFile)
-                if nearbyOffers and nearbyOffers.selling then
+                if nearbyOffers and nearbyOffers.offers.selling then
                     --check if the sold item is needed
-                    for itemstring,itemdata in pairs(nearbyOffers.selling) do
+                    for itemstring,itemdata in pairs(nearbyOffers.offers.selling) do
                         if possibleBids[itemstring] then
                             --resource is in possibleBids
                             local needed = possibleBids[itemstring].needed
+                            print("BuyerSearch, Found town, item, count"..v.folderName..itemstring..tostring(itemdata.count))
                             if needed < itemdata.count then
                                 --they are selling more than needed, add to list
                                 --add important info with it from the seller
@@ -195,6 +199,9 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                                     quantity = itemdata.count
                                 }
 
+                                if not possibleBids[itemstring].offers then
+                                    possibleBids[itemstring].offers = {}
+                                end
                                 table.insert(possibleBids[itemstring].offers,data) --this table will be ordered in nearest. 
                             end
                         end
@@ -298,7 +305,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
 
                 -- Add response
                 local ResponsesFile = "Towns\\"..offer.origin.."\\".."Responses.txt"
-                local response = itemString.."_"..townFolder.."_"..tostring(offer.timeResponded).."_"..tostring(offer.bidPrice)
+                local response = itemString.."\t"..townFolder.."\t"..tostring(offer.timeResponded).."\t"..tostring(offer.bidPrice)
                 Utility.appendToFile(ResponsesFile,response)
             end
         end
@@ -380,9 +387,9 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                                 }
                                 }
                             if not trades.offers.buying[i] then
-                                trades.offers.buying[i] = {}
+                                --trades.offers.buying[i] = {}
                             end
-                            trades.offers.buying[i] = resTable[i]
+                            --trades.offers.buying[i] = resTable[i]
                         end
                     end
                 end
