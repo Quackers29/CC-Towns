@@ -49,7 +49,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
     if trades and trades.selling then
         for itemString,offer in pairs(trades.selling) do
             --print(itemString)
-            if itemString ~= "" and (offer.timeOffered + (1000*trades.settings.deadline)) < currentTime then
+            if itemString ~= "" and offer.timeCloses < currentTime then
                 -- Auction has ended
                 local auctionStatus
                 print("Auction has ended for: "..itemString)
@@ -83,7 +83,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                             local accepted = buyerTrades.proposal[itemString]
                             accepted.timeAccepted = currentTime
                             accepted.transportStartTime = currentTime + (PreTransportTimer * 1000)  -- Wait for PreTransportTimer
-                            trades.accepted[itemString] = accepted
+                            trades.history[accepted.timeOffered] = accepted
 
                             --Remove required resources for the trade
                             local resTable = Utility.readJsonFile(resFile)
@@ -123,6 +123,94 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
             end
         end
     end
+end
+
+function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
+    --Has proposal been accepted by Seller?
+    --Has the proposal expired?
+
+    --Wait for Sellers PreTransport timer to pass
+    --Is transport Automated
+
+    --Wait for transport complete time to elapse
+    --Add resources from the trade
+    --Move trade.accepted to .history
+
+    local trades = Utility.readJsonFile(tradeFile)
+    local resTable = Utility.readJsonFile(resFile)
+    local currentTime = os.epoch("utc")
+    --Has proposal been accepted by Seller?
+    --Has the proposal expired?
+    if trades and trades.proposal then
+        for i,v in pairs(trades.proposal) do
+            local sellerX, sellerY, sellerZ = string.match(v.origin, "X(-?%d+)Y(-?%d+)Z(-?%d+)")
+            local sellerTradeFile = "Towns\\"..v.origin.."\\".."TRD_X"..sellerX.."Y"..sellerY.."Z"..sellerZ..".json"
+            local sellerTrades = Utility.readJsonFile(sellerTradeFile)
+
+            --search Seller history
+            local acceptedBuyer = false
+            if sellerTrades and sellerTrades.history and sellerTrades.history[v.timeOffered] then
+                if sellerTrades.history[v.timeOffered] then
+                    -- Seller has accepted a response
+                    if sellerTrades.history[v.timeOffered].destination == v.destination then
+                        --Seller has accepted the Buyers response
+                        acceptedBuyer = true
+                    else
+                        --Seller has not accepted offer
+                    end
+                end
+            end
+            if acceptedBuyer then
+                --Move proposal to accepted
+                trades.accepted[i] = trades.proposal[i]
+                trades.proposal[i] = nil
+            else
+                --Has the proposal expired?
+                if currentTime > (v.timeCloses + 30000) then -- 30 seconds after the auction has ended
+                    --Seller has not accepted offer
+                    --Delete the proposal and return the stored cost
+                    resTable = Utility.readJsonFile(resFile)
+                    resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,(v.bidPrice))
+                    Utility.writeJsonFile(resFile,resTable)
+                    trades.proposal[i] = nil
+                end
+            end
+        end
+    end
+    Utility.writeJsonFile(tradeFile,trades)
+end
+
+function TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
+    --Wait for Sellers PreTransport timer to pass
+    --#ADD Is transport Automated
+
+    local trades = Utility.readJsonFile(tradeFile)
+    local resTable = Utility.readJsonFile(resFile)
+    local currentTime = os.epoch("utc")
+    --Has proposal been accepted by Seller?
+    --Has the proposal expired?
+    if trades and trades.accepted then
+        for i,v in pairs(trades.accepted) do
+            if currentTime > v.transportStartTime then
+                if v.transportEndTime then
+                    --No end time set, add one
+                    v.transportEndTime = v.transportStartTime + (v.distance * 10000) -- 10 seconds per block distance
+                    trades.accepted[i] = v
+                end
+                if currentTime > v.transportEndTime then
+                    --Item delivered
+                    --Add resources from the trade
+                    --Move trade.accepted to .history
+                    resTable = Utility.readJsonFile(resFile)
+                    resTable = Utility.AddMcItemToTable(v.item,resTable,v.quantity)
+                    Utility.writeJsonFile(resFile,resTable)
+                    trades.history[v.timeOffered] = trades.accepted[i]
+                    trades.accepted[i] = nil
+                end
+            end
+        end
+    end
+    Utility.writeJsonFile(tradeFile,trades)
 end
 
 function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,resFile)
@@ -176,6 +264,8 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 --2. Check if bid is already out for that item
                 if trades.proposal and trades.proposal[i] then
                     add = false
+                elseif trades.accepted and trades.accepted[i] then
+                    add = false
                 else
                     --not in bids, add to possibleBids
                     print("BuyerSearch, needs and Unrgency: "..i..","..tostring(needed)..","..tostring(urgencyFactor))
@@ -212,7 +302,9 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                                     maxPrice = itemdata.maxPrice, -- buy it now
                                     needed = needed,
                                     urgencyFactor = possibleBids[itemstring].urgencyFactor,
-                                    quantity = itemdata.quantity
+                                    quantity = itemdata.quantity,
+                                    timeOffered = itemdata.timeOffered,
+                                    timeCloses = itemdata.timeCloses
                                 }
 
                                 if not possibleBids[itemstring].offers then
@@ -302,17 +394,21 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
 
         -- 6. Add to Buyers trade.proposal and to Sellers Responses.txt
         -- go for as many bids as possible for available emeralds
-        local emeraldsForTrading = Utility.ResCount(resTable,"minecraft:emerald")
+        
 
         for itemString, offer in pairs(bestBids) do
+            resTable = Utility.readJsonFile(resFile)
+            local emeraldsForTrading = Utility.ResCount(resTable,"minecraft:emerald")
             if emeraldsForTrading > (offer.buyerTotalCost * 1.1) then -- 10% extra error margin
                 --Have enough emeralds for bid, make the bid
                 --1. X Remove Resources
                 --2. X Add to trade.proposal with extra data, time etc
                 --3. X Add to Responses.txt
 
-                resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,(offer.buyerTotalCost*-1))
-                print("Previous emeralds, Removed emeralds: "..emeraldsForTrading..offer.buyerTotalCost)
+                resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,(offer.bidPrice*-1))
+                --Update Resources
+                Utility.writeJsonFile(resFile,resTable)
+                print("Previous emeralds, Removed emeralds: "..emeraldsForTrading..offer.bidPrice)
 
                 offer.timeResponded = os.epoch("utc") -- unix time for timestamping, milliseconds
                 offer.destination = townFolder
@@ -328,8 +424,6 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
         end
         --Update trades
         Utility.writeJsonFile(tradeFile,trades)
-        --Update Resources
-        Utility.writeJsonFile(resFile,resTable)
     end
 end
 
@@ -365,12 +459,15 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                             if not trades.selling[i] then
                                 trades.selling[i] = {}
                             end
+                            local currentTime = os.epoch("utc") -- milliseconds
 
                             trades.selling[i] = {
+                                item = i,
                                 quantity = count-v,
                                 minPrice = math.abs((count-v)*0.8),
                                 maxPrice = math.abs((count-v)*1.2),
-                                timeOffered = os.epoch("utc") -- milliseconds
+                                timeOffered = currentTime,
+                                timeCloses = currentTime + (1000*trades.settings.deadline)
                             }
                             commands.say("Auction has started for: "..i.." x"..count-v)
                             os.sleep(0.001) --sleep 1 milliseconds to change timeOffered between items (reference code)

@@ -103,6 +103,7 @@ fs.getFreeSpace("") -- gets remaining space in bytes
 
 
 local data = {
+    item = itemString,
     origin = v.folderName,
     distance = v.distance, --transportation distance
     bids = Utility.countDataLines(nearbyResponsesFile), -- gets how many bids there are already
@@ -111,6 +112,8 @@ local data = {
     needed = needed,
     urgencyFactor = possibleBids[itemstring].urgencyFactor,
     quantity = itemdata.count,
+    timeOffered = itemdata.timeOffered, -- ID of trade
+    imeCloses = itemdata.timeCloses,
 
     transportCost = math.ceil(offer.distance * transportRate),
 
