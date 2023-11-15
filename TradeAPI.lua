@@ -145,6 +145,7 @@ function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
         for i,v in pairs(trades.proposal) do
             local sellerX, sellerY, sellerZ = string.match(v.origin, "X(-?%d+)Y(-?%d+)Z(-?%d+)")
             local sellerTradeFile = "Towns\\"..v.origin.."\\".."TRD_X"..sellerX.."Y"..sellerY.."Z"..sellerZ..".json"
+            print(sellerTradeFile)
             local sellerTrades = Utility.readJsonFile(sellerTradeFile)
 
             --search Seller history
@@ -160,9 +161,9 @@ function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
                     end
                 end
             end
-            if acceptedBuyer then
+            if acceptedBuyer and sellerTrades then
                 --Move proposal to accepted
-                trades.accepted[i] = trades.proposal[i]
+                trades.accepted[i] = sellerTrades.history[tostring(v.timeOffered)]
                 trades.proposal[i] = nil
                 commands.say("Seller Accepted trade")
             else

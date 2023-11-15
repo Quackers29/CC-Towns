@@ -707,6 +707,8 @@ function productionTimer()
             TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
             TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFile,resFile)
             TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile)
+            TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
+            TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
         os.sleep(productionWait)
     end
 end
