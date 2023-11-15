@@ -164,6 +164,7 @@ function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
                 --Move proposal to accepted
                 trades.accepted[i] = trades.proposal[i]
                 trades.proposal[i] = nil
+                commands.say("Seller Accepted trade")
             else
                 --Has the proposal expired?
                 if currentTime > (v.timeCloses + 30000) then -- 30 seconds after the auction has ended
@@ -173,6 +174,7 @@ function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
                     resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,(v.bidPrice))
                     Utility.writeJsonFile(resFile,resTable)
                     trades.proposal[i] = nil
+                    commands.say("Trade not accepted by Seller")
                 end
             end
         end
