@@ -1,5 +1,6 @@
 local Utility = {}
 local covertFile = "Defaults\\convert.json"
+os.loadAPI("json")
 
 function Utility.getArraySize(arr)
     local count = 0
@@ -16,7 +17,8 @@ function Utility.readJsonFile(filePath)
         local serializedData = file:read("*a")
         file:close()
 
-        local luaTable = textutils.unserializeJSON(serializedData)
+        --local luaTable = textutils.unserializeJSON(serializedData)
+        local luaTable = json.decode(serializedData)
 
         if luaTable then
             return luaTable  -- Successfully parsed JSON
@@ -29,7 +31,8 @@ function Utility.readJsonFile(filePath)
 end
 
 function Utility.writeJsonFile(filePath, data)
-    local serializedData = textutils.serializeJSON(data)
+    --local serializedData = textutils.serializeJSON(data)
+    local serializedData = json.encodePretty(data)
     
     local file = io.open(filePath, "w+")
 
