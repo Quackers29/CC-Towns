@@ -1,7 +1,7 @@
 {
   "offers": {
     "limit": 3,
-    "deadline": 60,
+    "deadline": 120,
     "buying": {},
     "selling": {}
   },

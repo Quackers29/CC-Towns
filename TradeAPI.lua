@@ -38,7 +38,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
             if parsedResponses[item1] == nil then
                 parsedResponses[item1] = {}
             end
-            table.insert(parsedResponses[item1],{destination=item2,timeResponded=item3,bidPrice=item4})
+            table.insert(parsedResponses[item1],{destination=item2,timeResponded=tonumber(item3),bidPrice=tonumber(item4)})
         else
             print("Reading Reposonse file,One or more parts are nil on line: "..tostring(i))
         end
@@ -68,7 +68,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                 if currentItemResponses then
                         table.sort(currentItemResponses,compare)
                     local bestResponse = currentItemResponses[1]
-
+                    print("item, bestBid, minprice: "..itemString..bestResponse.bidPrice..offer.minPrice)
                     if bestResponse.bidPrice > offer.minPrice then
                         --Best Response is acceptable
 
@@ -92,7 +92,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
 
                             --Remove required resources for the trade
                             local resTable = Utility.readJsonFile(resFile)
-                            resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.buyerTotalCost*-1))
+                            resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.quantity*-1))
                             Utility.writeJsonFile(resFile,resTable)
                         end
                     else
