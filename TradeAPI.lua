@@ -184,8 +184,8 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                         if possibleBids[itemstring] then
                             --resource is in possibleBids
                             local needed = possibleBids[itemstring].needed
-                            print("BuyerSearch, Found town, item, count"..v.folderName..itemstring..tostring(itemdata.count))
-                            if needed < itemdata.count then
+                            print("BuyerSearch, Found town, item, quantity"..v.folderName..itemstring..tostring(itemdata.quantity))
+                            if needed < itemdata.quantity then
                                 --they are selling more than needed, add to list
                                 --add important info with it from the seller
                                 --Account for: market price (not here), X transportation distance, #past trades, X current bids made, min price, buy now price,
@@ -198,7 +198,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                                     maxPrice = itemdata.maxPrice, -- buy it now
                                     needed = needed,
                                     urgencyFactor = possibleBids[itemstring].urgencyFactor,
-                                    quantity = itemdata.count
+                                    quantity = itemdata.quantity
                                 }
 
                                 if not possibleBids[itemstring].offers then
@@ -353,7 +353,7 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                             end
 
                             trades.offers.selling[i] = {
-                                count = count-v,
+                                quantity = count-v,
                                 minPrice = math.abs((count-v)*0.8),
                                 maxPrice = math.abs((count-v)*1.2),
                                 timeOffered = os.epoch("utc") -- milliseconds
@@ -386,7 +386,7 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                                 string = "minecraft:emerald",
                                 attributes = "",
                                 key = "emerald",
-                                count = resTable[i].count
+                                quantity = resTable[i].count
                                 }
                                 }
                             if not trades.offers.buying[i] then
