@@ -83,7 +83,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                             local accepted = buyerTrades.proposal[itemString]
                             accepted.timeAccepted = currentTime
                             accepted.transportStartTime = currentTime + (PreTransportTimer * 1000)  -- Wait for PreTransportTimer
-                            trades.history[accepted.timeOffered] = accepted
+                            trades.history[tostring(accepted.timeOffered)] = accepted
 
                             --Remove required resources for the trade
                             local resTable = Utility.readJsonFile(resFile)
@@ -149,10 +149,10 @@ function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
 
             --search Seller history
             local acceptedBuyer = false
-            if sellerTrades and sellerTrades.history and sellerTrades.history[v.timeOffered] then
-                if sellerTrades.history[v.timeOffered] then
+            if sellerTrades and sellerTrades.history and sellerTrades.history[tostring(v.timeOffered)] then
+                if sellerTrades.history[tostring(v.timeOffered)] then
                     -- Seller has accepted a response
-                    if sellerTrades.history[v.timeOffered].destination == v.destination then
+                    if sellerTrades.history[tostring(v.timeOffered)].destination == v.destination then
                         --Seller has accepted the Buyers response
                         acceptedBuyer = true
                     else
@@ -207,7 +207,7 @@ function TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
                     resTable = Utility.readJsonFile(resFile)
                     resTable = Utility.AddMcItemToTable(v.item,resTable,v.quantity)
                     Utility.writeJsonFile(resFile,resTable)
-                    trades.history[v.timeOffered] = trades.accepted[i]
+                    trades.history[tostring(v.timeOffered)] = trades.accepted[i]
                     trades.accepted[i] = nil
                     commands.say("Items delivered to: "..v.destination..", "..v.item.." x"..v.quantity)
                 end
