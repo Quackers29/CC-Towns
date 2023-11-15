@@ -371,6 +371,7 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                                 maxPrice = math.abs((count-v)*1.2),
                                 timeOffered = os.epoch("utc") -- milliseconds
                             }
+                            commands.say("Auction has for: "..i.." x"..count-v)
                             os.sleep(0.001) --sleep 1 milliseconds to change timeOffered between items (reference code)
                         end
                     end
