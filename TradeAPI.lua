@@ -207,10 +207,11 @@ function TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
                     --Move trade.accepted to .history
                     resTable = Utility.readJsonFile(resFile)
                     resTable = Utility.AddMcItemToTable(v.item,resTable,v.quantity)
+                    resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,(v.transportCost*-1))
                     Utility.writeJsonFile(resFile,resTable)
                     trades.history[tostring(v.timeOffered)] = trades.accepted[i]
                     trades.accepted[i] = nil
-                    commands.say("Items delivered to: "..v.destination..", "..v.item.." x"..v.quantity)
+                    commands.say("Items delivered to: "..v.destination..", "..v.item.." x"..v.quantity..", For: "..v.transportCost.."emerald")
                 end
             end
         end
@@ -414,7 +415,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,(offer.bidPrice*-1))
                 --Update Resources
                 Utility.writeJsonFile(resFile,resTable)
-                print("Previous emeralds, Removed emeralds: "..emeraldsForTrading..offer.bidPrice)
+                print("Previous emeralds, Removed emeralds: "..emeraldsForTrading..", "..offer.bidPrice)
 
                 offer.timeResponded = os.epoch("utc") -- unix time for timestamping, milliseconds
                 offer.destination = townFolder
