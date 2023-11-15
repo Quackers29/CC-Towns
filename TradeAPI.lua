@@ -48,7 +48,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
 
     if trades and trades.offers.selling then
         for itemString,offer in pairs(trades.offers.selling) do
-            print(itemString)
+            --print(itemString)
             if itemString ~= "" and (offer.timeOffered + (1000*trades.offers.deadline)) < currentTime then
                 -- Auction has ended
                 -- Delete all response file first (add other auctions after)
@@ -68,20 +68,13 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                 if currentItemResponses then
                         table.sort(currentItemResponses,compare)
                     local bestResponse = currentItemResponses[1]
-                    print("item, bestBid, minprice: "..itemString..bestResponse.bidPrice..offer.minPrice)
+                    print("item, bestBid, minprice: "..itemString..","..bestResponse.bidPrice..","..offer.minPrice)
                     if bestResponse.bidPrice > offer.minPrice then --#ADD check for resources still available
                         --Best Response is acceptable
 
-                        --Delete response section and Seller offer
-                        parsedResponses[itemString] = nil
-                        TradeAPI.appendArray(ResponsesFile, parsedResponses)
-
-                        trades.offers.selling[itemString] = nil
-                        Utility.writeJsonFile(tradeFile,trades)
-
                         --Move info from Buyers trades.proposal to trades.accepted
-                        local buyerX, buyerY, buyerZ = string.match(offer.destination, "X(-?%d+)Y(-?%d+)Z(-?%d+)")
-                        local buyerTradeFile = "Towns\\"..offer.destination.."\\".."TRD_X"..buyerX.."Y"..buyerY.."Z"..buyerZ..".json"
+                        local buyerX, buyerY, buyerZ = string.match(bestResponse.destination, "X(-?%d+)Y(-?%d+)Z(-?%d+)")
+                        local buyerTradeFile = "Towns\\"..bestResponse.destination.."\\".."TRD_X"..buyerX.."Y"..buyerY.."Z"..buyerZ..".json"
                         local buyerTrades = Utility.readJsonFile(buyerTradeFile)
                         local PreTransportTimer = 60 -- seconds #FUTURE configure
                         if buyerTrades then
@@ -93,13 +86,21 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                             --Remove required resources for the trade
                             local resTable = Utility.readJsonFile(resFile)
                             resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.quantity*-1))
-                            print("Selling Res, Removed res: "..itemString..offer.quantity)
+                            print("Selling Res, Removed res: "..itemString..","..offer.quantity)
                             Utility.writeJsonFile(resFile,resTable)
                         end
+
+                        --Delete response section and Seller offer
+                        parsedResponses[itemString] = nil
+                        TradeAPI.AppendArray(ResponsesFile, parsedResponses)
+
+                        trades.offers.selling[itemString] = nil
+                        Utility.writeJsonFile(tradeFile,trades)
+
                     else
                         --Not acceptable, just delete the response table and Seller offer
                         parsedResponses[itemString] = nil
-                        TradeAPI.appendArray(ResponsesFile, parsedResponses)
+                        TradeAPI.AppendArray(ResponsesFile, parsedResponses)
                         
                         trades.offers.selling[itemString] = nil
                         Utility.writeJsonFile(tradeFile,trades)
