@@ -1,10 +1,10 @@
 {
-  "offers": {
+  "settings": {
     "limit": 3,
-    "deadline": 60,
-    "buying": {},
-    "selling": {}
+    "deadline": 60
   },
+  "selling": {},
+  "buying": {},
   "proposal": {},
   "accepted": {},
   "completed": {},

@@ -46,10 +46,10 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
 
     local deletedRepsonseFile = false
 
-    if trades and trades.offers.selling then
-        for itemString,offer in pairs(trades.offers.selling) do
+    if trades and trades.selling then
+        for itemString,offer in pairs(trades.selling) do
             --print(itemString)
-            if itemString ~= "" and (offer.timeOffered + (1000*trades.offers.deadline)) < currentTime then
+            if itemString ~= "" and (offer.timeOffered + (1000*trades.settings.deadline)) < currentTime then
                 -- Auction has ended
                 local auctionStatus
                 print("Auction has ended for: "..itemString)
@@ -98,7 +98,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                         parsedResponses[itemString] = nil
                         TradeAPI.AppendArray(ResponsesFile, parsedResponses)
 
-                        trades.offers.selling[itemString] = nil
+                        trades.selling[itemString] = nil
                         Utility.writeJsonFile(tradeFile,trades)
 
                     else
@@ -108,13 +108,13 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                         parsedResponses[itemString] = nil
                         TradeAPI.AppendArray(ResponsesFile, parsedResponses)
                         
-                        trades.offers.selling[itemString] = nil
+                        trades.selling[itemString] = nil
                         Utility.writeJsonFile(tradeFile,trades)
                     end
                 else
                     print("No responses to Auction")
                     auctionStatus = "No responses to Auction"
-                    trades.offers.selling[itemString] = nil
+                    trades.selling[itemString] = nil
                     Utility.writeJsonFile(tradeFile,trades)
                 end
                 commands.say("Auction for "..itemString.." x"..offer.quantity.." has ended. ")
@@ -191,9 +191,9 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 local nearbyOffersFile = "Towns\\"..v.folderName.."\\".."TRD_X"..v.x.."Y"..v.y.."Z"..v.z..".json"
                 local nearbyResponsesFile = "Towns\\"..v.folderName.."\\".."Responses.txt"
                 local nearbyOffers = Utility.readJsonFile(nearbyOffersFile)
-                if nearbyOffers and nearbyOffers.offers.selling then
+                if nearbyOffers and nearbyOffers.selling then
                     --check if the sold item is needed
-                    for itemstring,itemdata in pairs(nearbyOffers.offers.selling) do
+                    for itemstring,itemdata in pairs(nearbyOffers.selling) do
                         if possibleBids[itemstring] then
                             --resource is in possibleBids
                             local needed = possibleBids[itemstring].needed
@@ -344,11 +344,11 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
 
     if trades and settings and resTable then
         -- check if there is room for an offer, only add one
-        if Utility.getArraySize(trades.offers.selling) < trades.offers.limit then
+        if Utility.getArraySize(trades.selling) < trades.settings.limit then
             -- make a list of all current selling offers
             for i,v in pairs(settings.resources.keepInstock) do
                 local continue = true
-                if trades.offers.selling and trades.offers.selling[i] ~= nil then
+                if trades.selling and trades.selling[i] ~= nil then
                     continue = false
                 end
                 if trades.accepted and trades.accepted[i] ~= nil then
@@ -361,11 +361,11 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                         print("SellCount: "..count.." > "..(v*settings.resources.excessThreshold))
                         if count > (v*settings.resources.excessThreshold) then
                             -- Add to selling
-                            if not trades.offers.selling[i] then
-                                trades.offers.selling[i] = {}
+                            if not trades.selling[i] then
+                                trades.selling[i] = {}
                             end
 
-                            trades.offers.selling[i] = {
+                            trades.selling[i] = {
                                 quantity = count-v,
                                 minPrice = math.abs((count-v)*0.8),
                                 maxPrice = math.abs((count-v)*1.2),
@@ -378,11 +378,11 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                 end
             end
         end
-        if Utility.getArraySize(trades.offers.buying) < trades.offers.limit then
+        if Utility.getArraySize(trades.buying) < trades.settings.limit then
             -- make a list of all current buying offers
             for i,v in pairs(settings.resources.keepInstock) do
                 local continue = true
-                if trades.offers.buying[i] ~= nil then
+                if trades.buying[i] ~= nil then
                     continue = false
                 end
                 if continue then -- keepInstock item not in buy list, check resources
@@ -403,10 +403,10 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                                 quantity = resTable[i].count
                                 }
                                 }
-                            if not trades.offers.buying[i] then
-                                --trades.offers.buying[i] = {}
+                            if not trades.buying[i] then
+                                --trades.buying[i] = {}
                             end
-                            --trades.offers.buying[i] = resTable[i]
+                            --trades.buying[i] = resTable[i]
                         end
                     end
                 end
