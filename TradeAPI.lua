@@ -195,7 +195,7 @@ function TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
     if trades and trades.accepted then
         for i,v in pairs(trades.accepted) do
             if currentTime > v.transportStartTime then
-                if v.transportEndTime then
+                if not v.transportEndTime then
                     --No end time set, add one
                     v.transportEndTime = v.transportStartTime + (v.distance * 10000) -- 10 seconds per block distance
                     trades.accepted[i] = v
@@ -309,7 +309,8 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                                     urgencyFactor = possibleBids[itemstring].urgencyFactor,
                                     quantity = itemdata.quantity,
                                     timeOffered = itemdata.timeOffered,
-                                    timeCloses = itemdata.timeCloses
+                                    timeCloses = itemdata.timeCloses,
+                                    item = itemdata.item
                                 }
 
                                 if not possibleBids[itemstring].offers then
