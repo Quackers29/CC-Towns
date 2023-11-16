@@ -7,7 +7,7 @@ function TradeAPI.AppendArray(FilePath,Array)
     for i,v in pairs(Array) do
         for a,b in ipairs(v) do
             -- Add response
-            local response = i.."\t"..b.destination.."\t"..b.timeResponded.."\t"..b.bidPrice.."\n"
+            local response = i.."\t"..b.destination.."\t"..b.timeResponded.."\t"..b.bidPrice.."\t"..b.bidQuantity.."\n"
             Utility.appendToFile(FilePath,response)
         end
     end
@@ -17,7 +17,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
     --Auction deadline ended?
     --Is there a BuyNow response?   #FUTURE ADDITION
     --Are there any acceptable responses?
-    --local response = itemString.."\t"..townFolder.."\t"..tostring(offer.timeResponded).."\t"..tostring(offer.bidPrice)
+    --local response = itemString.."\t"..townFolder.."\t"..tostring(offer.timeResponded).."\t"..tostring(offer.bidPrice)..tostring(offer.needed).."\n"
 
     --Auction deadline ended?
     local currentTime = os.epoch("utc") -- milliseconds
@@ -44,12 +44,12 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                     for part in string.gmatch(v, "([^\t]+)") do
                         table.insert(parts, part)
                     end
-                    local item1, item2, item3, item4 = parts[1], parts[2], parts[3], parts[4]
+                    local item1, item2, item3, item4, item5 = parts[1], parts[2], parts[3], parts[4], parts[5]
                     if item1 and item2 and item3 and item4 then
                         if parsedResponses[item1] == nil then
                             parsedResponses[item1] = {}
                         end
-                        table.insert(parsedResponses[item1],{destination=item2,timeResponded=tonumber(item3),bidPrice=tonumber(item4)})
+                        table.insert(parsedResponses[item1],{destination=item2,timeResponded=tonumber(item3),bidPrice=tonumber(item4),bidQuantity=tonumber(item5)})
                     else
                         print("Reading Reposonse file,One or more parts are nil on line: "..tostring(i))
                     end
@@ -67,13 +67,31 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                 local currentItemResponses = parsedResponses[itemString]
                 -- If there is a response at all
                 if currentItemResponses then
-                    local function compare(a, b)
-                        return a.bidPrice > b.bidPrice
+
+                    -- Calculates scores for each bid based on a weighted combination of unit price and fulfillment of sell quantity.
+                    local function scoreBids(array, sellQuantity, unitPriceWeight, fulfillmentWeight)
+                        for _, item in ipairs(array) do
+                            local unitPrice = item.bidPrice / item.bidQuantity
+                            local fulfillment = math.min(item.bidQuantity, sellQuantity) / sellQuantity
+                            item.score = unitPrice * unitPriceWeight + (1 - fulfillment) * fulfillmentWeight
+                        end
                     end
-                    table.sort(currentItemResponses,compare)
+
+                    local sellQuantity = offer.quantity
+                    local unitPriceWeight = 0.5  -- Adjust this value as needed
+                    local fulfillmentWeight = 0.5  -- Adjust this value as needed
+
+                    scoreBids(currentItemResponses, sellQuantity, unitPriceWeight, fulfillmentWeight)
+                    Utility.sortArrayByKey(currentItemResponses, "score")
+
                     local bestResponse = currentItemResponses[1]
                     print("item, bestBid, minprice: "..itemString..","..bestResponse.bidPrice..","..offer.minPrice)
-                    if bestResponse.bidPrice > offer.minPrice then --#ADD check for resources still available
+
+                    --Check Seller still has quantity to sell
+                    local resTable = Utility.readJsonFile(resFile)
+                    local hasQuantity = Utility.GetMcItemCount(itemString,resTable) > (offer.quantity * 1.0) --0% error margin
+
+                    if bestResponse.bidPrice > offer.minPrice and hasQuantity then --#ADD check for resources still available
                         --Best Response is acceptable
 
                         --Move info from Buyers trades.proposal to trades.accepted
@@ -88,10 +106,9 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                             trades.history[tostring(accepted.timeOffered)] = accepted
 
                             --Remove required resources for the trade
-                            local resTable = Utility.readJsonFile(resFile)
-                            resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.quantity*-1))
+                            resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.needed*-1))
                             resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,bestResponse.bidPrice)
-                            print("Selling Res, Removed res: "..itemString..","..offer.quantity)
+                            print("Selling Res, Removed res: "..itemString..","..offer.needed)
                             print("Selling for, Total Bids: "..bestResponse.bidPrice..","..#currentItemResponses)
                             auctionStatus = "Sold to: "..bestResponse.destination..", for: "..bestResponse.bidPrice
                             Utility.writeJsonFile(resFile,resTable)
@@ -103,9 +120,12 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
 
                         trades.selling[itemString] = nil
                         Utility.writeJsonFile(tradeFile,trades)
-
                     else
                         --Not acceptable, just delete the response table and Seller offer
+                        if not hasQuantity then
+                            print("Seller did not have enough resource")
+                            commands.say("Seller did not have enough resource")
+                        end
                         print("No acceptable trades for: "..itemString.." Bids: "..#currentItemResponses)
                         auctionStatus = "No acceptable trades for: "..itemString.." Bids: "..#currentItemResponses
                         parsedResponses[itemString] = nil
@@ -120,7 +140,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                     trades.selling[itemString] = nil
                     Utility.writeJsonFile(tradeFile,trades)
                 end
-                commands.say("Auction for "..itemString.." x"..offer.quantity.." has ended. ")
+                commands.say("Auction for "..itemString.." x"..offer.needed.." has ended. ")
                 commands.say(auctionStatus)
             end
         end
@@ -208,12 +228,12 @@ function TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
                     --Add resources from the trade
                     --Move trade.accepted to .history
                     resTable = Utility.readJsonFile(resFile)
-                    resTable = Utility.AddMcItemToTable(v.item,resTable,v.quantity)
+                    resTable = Utility.AddMcItemToTable(v.item,resTable,v.needed)
                     resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,(v.transportCost*-1))
                     Utility.writeJsonFile(resFile,resTable)
                     trades.history[tostring(v.timeOffered)] = trades.accepted[i]
                     trades.accepted[i] = nil
-                    commands.say("Items delivered to: "..v.destination..", "..v.item.." x"..v.quantity..", For: "..v.transportCost.."emerald")
+                    commands.say("Items delivered to: "..v.destination..", "..v.item.." x"..v.needed..", For: "..v.transportCost.."emerald")
                 end
             end
         end
@@ -338,6 +358,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 
                 -- Weights (these could be dynamically adjusted based on buyer's preferences)
                 local weights = {
+                    quantity_weight = 1, -- The closer the match of Seller quantity and Buyer needed, the better, out of 100% for now.
                     distance_weight = -1, -- Negative because less distance is better
                     bids_weight = -0.5, -- Assuming fewer bids are better
                     minPrice_weight = -1, -- Negative because a lower price is better
@@ -347,6 +368,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 -- Function to calculate the score for an offer
                 function calculate_offer_score(offer, weights)
                     local score = 0
+                    score = score + (((offer.needed / offer.quantity) * 100) * weights.quantity_weight)
                     score = score + (offer.distance * weights.distance_weight)
                     score = score + (offer.bids * weights.bids_weight)
                     score = score + (offer.minPrice * weights.minPrice_weight)
@@ -377,7 +399,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
         end
 
 
-        local transportRate = 0.01 -- 1 emerald per 100 blocks, roundUP
+        local transportRate = 0.5 -- 50 emerald per 100 blocks, roundUP
         -- 5. Check best is acceptable (resources etc) 
         for itemString, offer in pairs(bestBids) do
             --per item
@@ -428,7 +450,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
 
                 -- Add response
                 local ResponsesFile = "Towns\\"..offer.origin.."\\".."Responses.txt"
-                local response = itemString.."\t"..townFolder.."\t"..tostring(offer.timeResponded).."\t"..tostring(offer.bidPrice).."\n"
+                local response = itemString.."\t"..townFolder.."\t"..tostring(offer.timeResponded).."\t"..tostring(offer.bidPrice).."\t"..tostring(offer.needed).."\n"
                 Utility.appendToFile(ResponsesFile,response)
             end
         end

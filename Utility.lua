@@ -113,6 +113,20 @@ function Utility.AddMcItemToTable(itemString, itemTable, count)
     return itemTable
 end
 
+function Utility.GetMcItemCount(itemString, itemTable)
+    local itemTable = itemTable or {}
+    -- Check if the entry exists in the table
+    local exists = false
+    if itemTable[itemString] ~= nil then
+        exists = true
+    end
+    if not exists then
+        return 0
+    else
+        return itemTable[itemString].count
+    end
+end
+
 function Utility.ModifyMcItemInTable(itemString, itemTable, toggle)
     -- Parse the item string
     local itemTable = itemTable or {}
@@ -225,5 +239,11 @@ function Utility.deleteFile(filePath, maxRetries)
     return false  -- Failed to delete the file after all attempts
 end
 
+-- Sorts an array based on a specified key
+function Utility.sortArrayByKey(array, key)
+    table.sort(array, function(a, b)
+        return a[key] < b[key]
+    end)
+end
 
 return Utility
