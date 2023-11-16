@@ -77,7 +77,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                         end
                     end
 
-                    local sellQuantity = offer.quantity
+                    local sellQuantity = offer.maxQuantity
                     local unitPriceWeight = 0.5  -- Adjust this value as needed
                     local fulfillmentWeight = 0.5  -- Adjust this value as needed
 
@@ -89,7 +89,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
 
                     --Check Seller still has quantity to sell
                     local resTable = Utility.readJsonFile(resFile)
-                    local hasQuantity = Utility.GetMcItemCount(itemString,resTable) > (offer.quantity * 1.0) --0% error margin
+                    local hasQuantity = Utility.GetMcItemCount(itemString,resTable) > (offer.maxQuantity * 1.0) --0% error margin
 
                     if bestResponse.bidPrice > offer.minPrice and hasQuantity then --#ADD check for resources still available
                         --Best Response is acceptable
@@ -317,8 +317,8 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                         if possibleBids[itemstring] and currentTime < itemdata.timeCloses then
                             --resource is in possibleBids and the sellers auction has not ended already
                             local needed = possibleBids[itemstring].needed
-                            print("BuyerSearch, Found town, item, quantity"..v.folderName..itemstring..tostring(itemdata.quantity))
-                            if needed < itemdata.quantity then
+                            print("BuyerSearch, Found town, item, quantity"..v.folderName..itemstring..tostring(itemdata.maxQuantity))
+                            if needed <= itemdata.maxQuantity then
                                 --they are selling more than needed, add to list
                                 --add important info with it from the seller
                                 --Account for: market price (not here), X transportation distance, #past trades, X current bids made, min price, buy now price,
@@ -331,7 +331,8 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                                     maxPrice = itemdata.maxPrice, -- buy it now
                                     needed = needed,
                                     urgencyFactor = possibleBids[itemstring].urgencyFactor,
-                                    quantity = itemdata.quantity,
+                                    maxQuantity = itemdata.maxQuantity,
+                                    minQuantity = itemdata.minQuantity,
                                     timeOffered = itemdata.timeOffered,
                                     timeCloses = itemdata.timeCloses,
                                     item = itemdata.item
@@ -368,7 +369,7 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
                 -- Function to calculate the score for an offer
                 function calculate_offer_score(offer, weights)
                     local score = 0
-                    score = score + (((offer.needed / offer.quantity) * 100) * weights.quantity_weight)
+                    score = score + (((offer.needed / offer.maxQuantity) * 100) * weights.quantity_weight)
                     score = score + (offer.distance * weights.distance_weight)
                     score = score + (offer.bids * weights.bids_weight)
                     score = score + (offer.minPrice * weights.minPrice_weight)
@@ -402,21 +403,15 @@ function TradeAPI.BuyerSearchOffers(NearbyTowns,townFolder,tradeFile,SettingsFil
         local transportRate = 0.5 -- 50 emerald per 100 blocks, roundUP
         -- 5. Check best is acceptable (resources etc) 
         for itemString, offer in pairs(bestBids) do
-            --per item
             -- is there enough emeralds for a bid
             -- #FUTURE is there enough storage for the purchased items
 
             offer.transportCost = math.ceil(offer.distance * transportRate)
 
             -- Make a bid price
-            -- offer 20% extra * by random factor (0.5 to 1) * (urgencyFactor(0 to 1) * 2)
-            local bidExtra = (offer.minPrice*0.2) * math.random(0.5,1) * (offer.urgencyFactor * 2)
-            local bidPrice = math.ceil(offer.minPrice + bidExtra)
-
-            -- if the bid is over max price, use max price
-            if bidPrice > offer.maxPrice then
-                bidPrice = offer.maxPrice
-            end
+            local minPricePerUnit = offer.minPrice / offer.minQuantity
+            local bidPricePerUnit = minPricePerUnit * (math.random(1,1.2) + offer.urgencyFactor) --random 0 to 20% + urgencyFactor(0 to 1) or 0 to 100%
+            local bidPrice = math.ceil(bidPricePerUnit * offer.needed)
 
             offer.bidPrice = bidPrice
             offer.buyerTotalCost = bidPrice + offer.transportCost
@@ -488,6 +483,7 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                         print("SellCount: "..count.." > "..(v*settings.resources.excessThreshold))
                         if count > (v*settings.resources.excessThreshold) then
                             -- Add to selling
+                            local quantityToTrade = count - v
                             if not trades.selling[i] then
                                 trades.selling[i] = {}
                             end
@@ -495,13 +491,14 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
 
                             trades.selling[i] = {
                                 item = i,
-                                quantity = count-v,
-                                minPrice = math.abs((count-v)*0.8),
-                                maxPrice = math.abs((count-v)*1.2),
+                                minQuantity = quantityToTrade * 0.4, --40% min quantity, #static for now
+                                maxQuantity = quantityToTrade,
+                                minPrice = math.abs((quantityToTrade * 0.4) * 0.8),
+                                maxPrice = math.abs((quantityToTrade) * 2),
                                 timeOffered = currentTime,
                                 timeCloses = currentTime + (1000*trades.settings.deadline)
                             }
-                            commands.say("Auction has started for: "..i.." x"..count-v)
+                            commands.say("Auction has started for: "..i.." x"..quantityToTrade)
                             os.sleep(0.001) --sleep 1 milliseconds to change timeOffered between items (reference code)
                         end
                     end

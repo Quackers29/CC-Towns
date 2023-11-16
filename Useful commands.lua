@@ -113,7 +113,12 @@ local data = {
     urgencyFactor = possibleBids[itemstring].urgencyFactor,
     quantity = itemdata.count,
     timeOffered = itemdata.timeOffered, -- ID of trade
-    imeCloses = itemdata.timeCloses,
+    timeCloses = itemdata.timeCloses,
+
+    minPrice
+    minQuantity
+    maxQuantity
+
 
     transportCost = math.ceil(offer.distance * transportRate),
 
