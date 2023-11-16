@@ -106,9 +106,9 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                             trades.history[tostring(accepted.timeOffered)] = accepted
 
                             --Remove required resources for the trade
-                            resTable = Utility.AddMcItemToTable(itemString,resTable,(offer.needed*-1))
+                            resTable = Utility.AddMcItemToTable(itemString,resTable,(accepted.needed*-1))
                             resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,bestResponse.bidPrice)
-                            print("Selling Res, Removed res: "..itemString..","..offer.needed)
+                            print("Selling Res, Removed res: "..itemString..","..accepted.needed)
                             print("Selling for, Total Bids: "..bestResponse.bidPrice..","..#currentItemResponses)
                             auctionStatus = "Sold to: "..bestResponse.destination..", for: "..bestResponse.bidPrice
                             Utility.writeJsonFile(resFile,resTable)
@@ -140,7 +140,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                     trades.selling[itemString] = nil
                     Utility.writeJsonFile(tradeFile,trades)
                 end
-                commands.say("Auction for "..itemString.." x"..offer.needed.." has ended. ")
+                commands.say("Auction for "..itemString.." x"..offer.maxQuantity.." has ended. ")
                 commands.say(auctionStatus)
             end
         end
