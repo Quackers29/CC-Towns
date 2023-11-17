@@ -376,10 +376,11 @@ function drawButtonsForCurrentPage()
             local PreRecTable = {}
             if tradeTable.selling then
                 for i,v in ipairs(tradeTable.selling) do --
-                    PreRecTable[v.item] = PreRecTable[v] or {}
-                    PreRecTable[v.item]["key"] = v.item
-                    PreRecTable[v.item]["extra"] = " x"..v.maxQuantity
-                    PreRecTable[v.item]["toggle"] = false
+                    PreRecTable[i] = PreRecTable[i] or {}
+                    PreRecTable[i]["key"] = v.item
+                    PreRecTable[i]["extra"] = " x"..v.maxQuantity
+                    PreRecTable[i]["toggle"] = false
+                    PreRecTable[i]["string"] = v.item
                 end
                 Monitor.drawKeyList(2, endY, PreRecTable, pageButtons["list"], 1, 1) 
             end
@@ -396,10 +397,11 @@ function drawButtonsForCurrentPage()
             if tradeTable.proposal then
                 for i,v in ipairs(tradeTable.proposal) do --
                     index = index + 1
-                    PreRecTable[v.item] = PreRecTable[v] or {}
-                    PreRecTable[v.item]["key"] = v.item
-                    PreRecTable[v.item]["extra"] = " x"..v.needed
-                    PreRecTable[v.item]["toggle"] = false
+                    PreRecTable[i] = PreRecTable[i] or {}
+                    PreRecTable[i]["key"] = v.item
+                    PreRecTable[i]["extra"] = " x"..v.needed
+                    PreRecTable[i]["toggle"] = false
+                    PreRecTable[i]["string"] = v.item
                 end
                 Monitor.drawKeyList(2, endY, PreRecTable, pageButtons["list"], 1, 1) 
             end
@@ -493,8 +495,10 @@ function drawButtonsForCurrentPage()
             Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
             Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
         end
-        for i,v in ipairs(pageButtons["button"]) do
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        if pageButtons["button"] then
+            for i,v in ipairs(pageButtons["button"]) do
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
         end
     end
 end
