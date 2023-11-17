@@ -94,7 +94,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                     if bestResponse.bidPrice > offer.minPrice and hasQuantity then --#ADD check for resources still available
                         --Best Response is acceptable
 
-                        --Move info from Buyers trades.proposal to trades.accepted
+                        --Move info from Buyers trades.proposal to Sellers trades.accepted
                         local buyerX, buyerY, buyerZ = string.match(bestResponse.destination, "X(-?%d+)Y(-?%d+)Z(-?%d+)")
                         local buyerTradeFile = "Towns\\"..bestResponse.destination.."\\".."TRD_X"..buyerX.."Y"..buyerY.."Z"..buyerZ..".json"
                         local buyerTrades = Utility.readJsonFile(buyerTradeFile)
@@ -103,7 +103,7 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                             local accepted = buyerTrades.proposal[itemString]
                             accepted.timeAccepted = currentTime
                             accepted.transportStartTime = currentTime + (PreTransportTimer * 1000)  -- Wait for PreTransportTimer
-                            trades.history[tostring(accepted.timeOffered)] = accepted
+                            trades.sold[tostring(accepted.timeOffered)] = accepted
 
                             --Remove required resources for the trade
                             resTable = Utility.AddMcItemToTable(itemString,resTable,(accepted.needed*-1))
@@ -156,7 +156,7 @@ function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
 
     --Wait for transport complete time to elapse
     --Add resources from the trade
-    --Move trade.accepted to .history
+    --Move trade.accepted to .sold
 
     local trades = Utility.readJsonFile(tradeFile)
     local resTable = Utility.readJsonFile(resFile)
@@ -170,12 +170,12 @@ function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
             print(sellerTradeFile)
             local sellerTrades = Utility.readJsonFile(sellerTradeFile)
 
-            --search Seller history
+            --search Seller sold history
             local acceptedBuyer = false
-            if sellerTrades and sellerTrades.history and sellerTrades.history[tostring(v.timeOffered)] then
-                if sellerTrades.history[tostring(v.timeOffered)] then
+            if sellerTrades and sellerTrades.sold and sellerTrades.sold[tostring(v.timeOffered)] then
+                if sellerTrades.sold[tostring(v.timeOffered)] then
                     -- Seller has accepted a response
-                    if sellerTrades.history[tostring(v.timeOffered)].destination == v.destination then
+                    if sellerTrades.sold[tostring(v.timeOffered)].destination == v.destination then
                         --Seller has accepted the Buyers response
                         acceptedBuyer = true
                     else
@@ -185,7 +185,7 @@ function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
             end
             if acceptedBuyer and sellerTrades then
                 --Move proposal to accepted
-                trades.accepted[i] = sellerTrades.history[tostring(v.timeOffered)]
+                trades.accepted[i] = sellerTrades.sold[tostring(v.timeOffered)]
                 trades.proposal[i] = nil
                 commands.say("Seller Accepted trade")
             else
@@ -226,12 +226,12 @@ function TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
                 if currentTime > v.transportEndTime then
                     --Item delivered
                     --Add resources from the trade
-                    --Move trade.accepted to .history
+                    --Move trade.accepted to .bought
                     resTable = Utility.readJsonFile(resFile)
                     resTable = Utility.AddMcItemToTable(v.item,resTable,v.needed)
                     resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,(v.transportCost*-1))
                     Utility.writeJsonFile(resFile,resTable)
-                    trades.history[tostring(v.timeOffered)] = trades.accepted[i]
+                    trades.bought[tostring(v.timeOffered)] = trades.accepted[i]
                     trades.accepted[i] = nil
                     commands.say("Items delivered to: "..v.destination..", "..v.item.." x"..v.needed..", For: "..v.transportCost.."emerald")
                 end

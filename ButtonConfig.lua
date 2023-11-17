@@ -35,10 +35,10 @@ local ButtonConfig = {
     {id = "Add",type = "button",page = "Map",width = 3,x = -4,y = 0,action = function() OffsetZoom(-1) end,charOn = "+",colorOn = colors.yellow,colorOff = colors.gray,enabled = true},
     {id = "Subtract",type = "button",page = "Map",width = 3,x = -7,y = 0,action = function() OffsetZoom(1) end,charOn = "-",colorOn = colors.yellow,colorOff = colors.gray,enabled = true},
 --Settings
-{label = "InputChest",id = "settigns_inputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_InputChest") end},
-{label = "OutputChest",id = "settigns_outputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_OutputChest") end},
-{label = "InputPOP",id = "settigns_inputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    InputPOP() end},
-{label = "OutputPOP",id = "settigns_outputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputPOP() end},
+{label = "InputChest",id = "settings_inputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_InputChest") end},
+{label = "OutputChest",id = "settings_outputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_OutputChest") end},
+{label = "InputPOP",id = "settings_inputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    InputPOP() end},
+{label = "OutputPOP",id = "settings_outputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputPOP() end},
 
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_InputChest"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_OutputChest"},
@@ -56,6 +56,15 @@ local ButtonConfig = {
 {id = "Subtract",width = 3,x = 8,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputChest(0,-1,0) end,enabled = true, type = "button",page = "settings_OutputChest"},
 {id = "Add",width = 3,x = 14,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputChest(0,0,1) end,enabled = true, type = "button",page = "settings_OutputChest"},
 {id = "Subtract",width = 3,x = 14,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputChest(0,0,-1) end,enabled = true, type = "button",page = "settings_OutputChest"},
+--trades
+{label = "Selling",id = "",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("Trade_Selling") end},
+{label = "Buying",id = "",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("Trade_Buying") end},
+{label = "Sold",id = "",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("Trade_Sold") end},
+{label = "Bought",id = "",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("Trade_Bought") end},
+
+{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "Trade_Selling"},
+{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "Trade_Buying"},
+
 } 
 
 return ButtonConfig

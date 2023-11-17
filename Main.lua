@@ -308,7 +308,7 @@ function drawButtonsForCurrentPage()
             displayItem.requires ={displayItem.requires}
         end
 
-        if displayItem.requires then
+        if displayItem and displayTable and displayItem.requires then
             for i,v in ipairs(displayItem.requires) do --
                 --print(v)
                 local currentUp = false
@@ -368,6 +368,37 @@ function drawButtonsForCurrentPage()
             end
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
+
+    elseif currentPage == "Trade_Selling" then
+        local tradeTable = Utility.readJsonFile(tradeFile)
+        if tradeTable then
+            local PreRecTable = {}
+            if tradeTable.selling then
+                for i,v in ipairs(tradeTable.selling) do --
+                    PreRecTable[v] = PreRecTable[v] or {}
+                    PreRecTable[v]["key"] = v.item
+                    PreRecTable[v]["extra"] = " x"..v.maxQuantity
+                    PreRecTable[v]["toggle"] = false
+                end
+                Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
+            end
+        end
+
+    elseif currentPage == "Trade_Buying" then
+        local tradeTable = Utility.readJsonFile(tradeFile)
+        if tradeTable then
+            local PreRecTable = {}
+            if tradeTable.buying then
+                for i,v in ipairs(tradeTable.buying) do --
+                    PreRecTable[v] = PreRecTable[v] or {}
+                    PreRecTable[v]["key"] = v.item
+                    PreRecTable[v]["extra"] = " x"..v.needed
+                    PreRecTable[v]["toggle"] = false
+                end
+                Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
+            end
+        end
+
     elseif displayItem and currentPage == "display_production" then
         local canUp = true
         local resTable = Utility.readJsonFile(resFile)
@@ -384,7 +415,7 @@ function drawButtonsForCurrentPage()
             displayItem.requires ={displayItem.requires}
         end
 
-        if displayItem.requires then
+        if displayTable and displayItem.requires then
             for i,v in ipairs(displayItem.requires) do --
                 --print(v)
                 local currentUp = false
