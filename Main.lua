@@ -375,7 +375,7 @@ function drawButtonsForCurrentPage()
         if tradeTable then
             local PreRecTable = {}
             if tradeTable.selling then
-                for i,v in ipairs(tradeTable.selling) do --
+                for i,v in pairs(tradeTable.selling) do --
                     PreRecTable[v.item] = PreRecTable[i] or {}
                     PreRecTable[v.item]["key"] = v.item
                     PreRecTable[v.item]["extra"] = " x"..v.maxQuantity
@@ -395,8 +395,7 @@ function drawButtonsForCurrentPage()
         if tradeTable then
             local PreRecTable = {}
             if tradeTable.proposal then
-                for i,v in ipairs(tradeTable.proposal) do --
-                    index = index + 1
+                for i,v in pairs(tradeTable.proposal) do --
                     PreRecTable[v.item] = PreRecTable[v.item] or {}
                     PreRecTable[v.item]["key"] = v.item
                     PreRecTable[v.item]["extra"] = " x"..v.needed
