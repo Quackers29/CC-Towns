@@ -375,10 +375,10 @@ function drawButtonsForCurrentPage()
             local PreRecTable = {}
             if tradeTable.selling then
                 for i,v in ipairs(tradeTable.selling) do --
-                    PreRecTable[v] = PreRecTable[v] or {}
-                    PreRecTable[v]["key"] = v.item
-                    PreRecTable[v]["extra"] = " x"..v.maxQuantity
-                    PreRecTable[v]["toggle"] = false
+                    PreRecTable[v.item] = PreRecTable[v] or {}
+                    PreRecTable[v.item]["key"] = v.item
+                    PreRecTable[v.item]["extra"] = " x"..v.maxQuantity
+                    PreRecTable[v.item]["toggle"] = false
                 end
                 Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
             end
@@ -390,10 +390,11 @@ function drawButtonsForCurrentPage()
             local PreRecTable = {}
             if tradeTable.proposal then
                 for i,v in ipairs(tradeTable.proposal) do --
-                    PreRecTable[v] = PreRecTable[v] or {}
-                    PreRecTable[v]["key"] = v.item
-                    PreRecTable[v]["extra"] = " x"..v.needed
-                    PreRecTable[v]["toggle"] = false
+                    index = index + 1
+                    PreRecTable[v.item] = PreRecTable[v] or {}
+                    PreRecTable[v.item]["key"] = v.item
+                    PreRecTable[v.item]["extra"] = " x"..v.needed
+                    PreRecTable[v.item]["toggle"] = false
                 end
                 Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
             end
