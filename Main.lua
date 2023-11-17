@@ -409,6 +409,46 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
 
+    elseif currentPage == "Trade_Sold" then
+        Monitor.write("Sold", 1, 1)
+        local tradeTable = Utility.readJsonFile(tradeFile)
+        if tradeTable then
+            local PreRecTable = {}
+            if tradeTable.sold then
+                for i,v in pairs(tradeTable.sold) do --
+                    PreRecTable[v.item] = PreRecTable[v.item] or {}
+                    PreRecTable[v.item]["key"] = v.item
+                    PreRecTable[v.item]["extra"] = " x"..v.needed
+                    PreRecTable[v.item]["toggle"] = false
+                    PreRecTable[v.item]["string"] = v.item
+                end
+                Monitor.drawKeyList(2, endY, PreRecTable, pageButtons["list"], 1, 1) 
+            end
+        end
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+
+    elseif currentPage == "Trade_Bought" then
+        Monitor.write("Bought", 1, 1)
+        local tradeTable = Utility.readJsonFile(tradeFile)
+        if tradeTable then
+            local PreRecTable = {}
+            if tradeTable.bought then
+                for i,v in pairs(tradeTable.bought) do --
+                    PreRecTable[v.item] = PreRecTable[v.item] or {}
+                    PreRecTable[v.item]["key"] = v.item
+                    PreRecTable[v.item]["extra"] = " x"..v.needed
+                    PreRecTable[v.item]["toggle"] = false
+                    PreRecTable[v.item]["string"] = v.item
+                end
+                Monitor.drawKeyList(2, endY, PreRecTable, pageButtons["list"], 1, 1) 
+            end
+        end
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+
     elseif displayItem and currentPage == "display_production" then
         local canUp = true
         local resTable = Utility.readJsonFile(resFile)
