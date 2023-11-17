@@ -388,8 +388,8 @@ function drawButtonsForCurrentPage()
         local tradeTable = Utility.readJsonFile(tradeFile)
         if tradeTable then
             local PreRecTable = {}
-            if tradeTable.buying then
-                for i,v in ipairs(tradeTable.buying) do --
+            if tradeTable.proposal then
+                for i,v in ipairs(tradeTable.proposal) do --
                     PreRecTable[v] = PreRecTable[v] or {}
                     PreRecTable[v]["key"] = v.item
                     PreRecTable[v]["extra"] = " x"..v.needed
