@@ -493,7 +493,9 @@ function drawButtonsForCurrentPage()
             Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
             Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
         end
-
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
     end
 end
 
