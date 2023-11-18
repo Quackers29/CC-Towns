@@ -451,11 +451,24 @@ function drawButtonsForCurrentPage()
 
     elseif currentPage == "Trade_Trading" then
         Monitor.write("Trading", 1, 1)
+        Monitor.write("Buying: ", 10, 3)
+        Monitor.write("Selling: ", 10, ((endY-2)/2)+3)
         local tradeTable = Utility.readJsonFile(tradeFile)
         if tradeTable then
             local PreRecTable = {}
-            if tradeTable.bought then
-                for i,v in pairs(tradeTable.bought) do --
+            if tradeTable.buying then
+                for i,v in pairs(tradeTable.buying) do --
+                    PreRecTable[v.item] = PreRecTable[v.item] or {}
+                    PreRecTable[v.item]["key"] = v.item
+                    PreRecTable[v.item]["extra"] = " x"..v.needed
+                    PreRecTable[v.item]["toggle"] = false
+                    PreRecTable[v.item]["string"] = v.item
+                end
+                Monitor.drawKeyList(3, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 1) 
+            end 
+            PreRecTable = {}
+            if tradeTable.selling then
+                for i,v in pairs(tradeTable.selling) do --
                     PreRecTable[v.item] = PreRecTable[v.item] or {}
                     PreRecTable[v.item]["key"] = v.item
                     PreRecTable[v.item]["extra"] = " x"..v.needed
@@ -463,7 +476,7 @@ function drawButtonsForCurrentPage()
                     PreRecTable[v.item]["string"] = v.item
                 end
                 Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
-            end
+            end 
         end
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
