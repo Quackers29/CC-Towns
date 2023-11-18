@@ -449,6 +449,46 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
 
+    elseif currentPage == "Trade_Trading" then
+        Monitor.write("Trading", 1, 1)
+        local tradeTable = Utility.readJsonFile(tradeFile)
+        if tradeTable then
+            local PreRecTable = {}
+            if tradeTable.bought then
+                for i,v in pairs(tradeTable.bought) do --
+                    PreRecTable[v.item] = PreRecTable[v.item] or {}
+                    PreRecTable[v.item]["key"] = v.item
+                    PreRecTable[v.item]["extra"] = " x"..v.needed
+                    PreRecTable[v.item]["toggle"] = false
+                    PreRecTable[v.item]["string"] = v.item
+                end
+                Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
+            end
+        end
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+
+    elseif currentPage == "Trade_History" then
+        Monitor.write("History", 1, 1)
+        local tradeTable = Utility.readJsonFile(tradeFile)
+        if tradeTable then
+            local PreRecTable = {}
+            if tradeTable.bought then
+                for i,v in pairs(tradeTable.bought) do --
+                    PreRecTable[v.item] = PreRecTable[v.item] or {}
+                    PreRecTable[v.item]["key"] = v.item
+                    PreRecTable[v.item]["extra"] = " x"..v.needed
+                    PreRecTable[v.item]["toggle"] = false
+                    PreRecTable[v.item]["string"] = v.item
+                end
+                Monitor.drawKeyList(2, endY, PreRecTable, pageButtons["list"], 1, 1) 
+            end
+        end
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+
     elseif displayItem and currentPage == "display_production" then
         local canUp = true
         local resTable = Utility.readJsonFile(resFile)
@@ -604,7 +644,7 @@ end
 function RefreshButton()
     Manager.inputItems(resFile,INx,INy,INz)
     Manager.checkItems(resFile,OUTx,OUTy,OUTz)
-    if currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" then
+    if currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
         drawButtonsForCurrentPage()     
     end
 end
