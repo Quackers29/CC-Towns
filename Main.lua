@@ -464,7 +464,7 @@ function drawButtonsForCurrentPage()
                     PreRecTable[v.item]["toggle"] = false
                     PreRecTable[v.item]["string"] = v.item
                 end
-                Monitor.drawKeyList(3, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 1) 
+                Monitor.drawKeyList(3, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 0) 
             end 
             PreRecTable = {}
             if tradeTable.selling then
@@ -499,7 +499,7 @@ function drawButtonsForCurrentPage()
                     PreRecTable[id]["toggle"] = false
                     PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
                 end
-                Monitor.drawKeyList(3, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 1)
+                Monitor.drawKeyList(4, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 0)
             end 
             PreRecTable = {}
             if tradeTable.sold then
