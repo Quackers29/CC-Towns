@@ -491,22 +491,25 @@ function drawButtonsForCurrentPage()
             local PreRecTable = {}
             if tradeTable.bought then
                 for i,v in pairs(tradeTable.bought) do --
-                    PreRecTable[i] = PreRecTable[i] or {}
-                    PreRecTable[i]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
-                    PreRecTable[i]["extra"] = " x"..v.needed
-                    PreRecTable[i]["toggle"] = false
-                    PreRecTable[i]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    -- key gets overwritten with [i] so fix or 
+                    local id = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    PreRecTable[id] = PreRecTable[i] or {}
+                    PreRecTable[id]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    PreRecTable[id]["extra"] = " x"..v.needed
+                    PreRecTable[id]["toggle"] = false
+                    PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
                 end
                 Monitor.drawKeyList(3, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 1)
             end 
             PreRecTable = {}
             if tradeTable.sold then
                 for i,v in pairs(tradeTable.sold) do --
-                    PreRecTable[i] = PreRecTable[i] or {}
-                    PreRecTable[i]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
-                    PreRecTable[i]["extra"] = " x"..v.needed
-                    PreRecTable[i]["toggle"] = false
-                    PreRecTable[i]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    local id = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    PreRecTable[id] = PreRecTable[i] or {}
+                    PreRecTable[id]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    PreRecTable[id]["extra"] = " x"..v.needed
+                    PreRecTable[id]["toggle"] = false
+                    PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
                 end
                 Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1)
             end
