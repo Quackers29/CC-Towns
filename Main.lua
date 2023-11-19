@@ -456,8 +456,8 @@ function drawButtonsForCurrentPage()
         local tradeTable = Utility.readJsonFile(tradeFile)
         if tradeTable then
             local PreRecTable = {}
-            if tradeTable.buying then
-                for i,v in pairs(tradeTable.buying) do --
+            if tradeTable.proposal then
+                for i,v in pairs(tradeTable.proposal) do --
                     PreRecTable[v.item] = PreRecTable[v.item] or {}
                     PreRecTable[v.item]["key"] = v.item
                     PreRecTable[v.item]["extra"] = " x"..v.needed
@@ -471,7 +471,7 @@ function drawButtonsForCurrentPage()
                 for i,v in pairs(tradeTable.selling) do --
                     PreRecTable[v.item] = PreRecTable[v.item] or {}
                     PreRecTable[v.item]["key"] = v.item
-                    PreRecTable[v.item]["extra"] = " x"..v.needed
+                    PreRecTable[v.item]["extra"] = " x"..v.maxQuantity
                     PreRecTable[v.item]["toggle"] = false
                     PreRecTable[v.item]["string"] = v.item
                 end
@@ -484,23 +484,37 @@ function drawButtonsForCurrentPage()
 
     elseif currentPage == "Trade_History" then
         Monitor.write("History", 1, 1)
+        Monitor.write("Bought: ", 10, 3)
+        Monitor.write("Sold: ", 10, ((endY-2)/2)+3)
         local tradeTable = Utility.readJsonFile(tradeFile)
         if tradeTable then
             local PreRecTable = {}
             if tradeTable.bought then
                 for i,v in pairs(tradeTable.bought) do --
                     PreRecTable[v.item] = PreRecTable[v.item] or {}
-                    PreRecTable[v.item]["key"] = v.item
+                    PreRecTable[v.item]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
                     PreRecTable[v.item]["extra"] = " x"..v.needed
                     PreRecTable[v.item]["toggle"] = false
-                    PreRecTable[v.item]["string"] = v.item
+                    PreRecTable[v.item]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
                 end
-                Monitor.drawKeyList(2, endY, PreRecTable, pageButtons["list"], 1, 1) 
+                Monitor.drawKeyList(3, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 1)
+            end 
+            PreRecTable = {}
+            if tradeTable.sold then
+                for i,v in pairs(tradeTable.sold) do --
+                    PreRecTable[v.item] = PreRecTable[v.item] or {}
+                    PreRecTable[v.item]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    PreRecTable[v.item]["extra"] = " x"..v.needed
+                    PreRecTable[v.item]["toggle"] = false
+                    PreRecTable[v.item]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                end
+                Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1)
             end
         end
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
+
 
     elseif displayItem and currentPage == "display_production" then
         local canUp = true
