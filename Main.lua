@@ -491,22 +491,22 @@ function drawButtonsForCurrentPage()
             local PreRecTable = {}
             if tradeTable.bought then
                 for i,v in pairs(tradeTable.bought) do --
-                    PreRecTable[v.item] = PreRecTable[v.item] or {}
-                    PreRecTable[v.item]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
-                    PreRecTable[v.item]["extra"] = " x"..v.needed
-                    PreRecTable[v.item]["toggle"] = false
-                    PreRecTable[v.item]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    PreRecTable[i] = PreRecTable[i] or {}
+                    PreRecTable[i]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    PreRecTable[i]["extra"] = " x"..v.needed
+                    PreRecTable[i]["toggle"] = false
+                    PreRecTable[i]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
                 end
                 Monitor.drawKeyList(3, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 1)
             end 
             PreRecTable = {}
             if tradeTable.sold then
                 for i,v in pairs(tradeTable.sold) do --
-                    PreRecTable[v.item] = PreRecTable[v.item] or {}
-                    PreRecTable[v.item]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
-                    PreRecTable[v.item]["extra"] = " x"..v.needed
-                    PreRecTable[v.item]["toggle"] = false
-                    PreRecTable[v.item]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    PreRecTable[i] = PreRecTable[i] or {}
+                    PreRecTable[i]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    PreRecTable[i]["extra"] = " x"..v.needed
+                    PreRecTable[i]["toggle"] = false
+                    PreRecTable[i]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
                 end
                 Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1)
             end
