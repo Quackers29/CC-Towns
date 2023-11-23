@@ -898,35 +898,22 @@ function handleScheduledActions()
     end
 end
 
-function ChatLoop()
+commands.scoreboard.objectives.add("Restart","dummy")
+
+function ScoreLoop()
     while mainflag do
-        local function getPlayerData(playerName)
-            local command = "/data get entity " .. playerName
-            local success, result = commands.exec(command)
-            if success then
-                -- Parse 'result' to find the specific data you need
-                print(result)
-                if result:find("playerGameType: 1") then
-                    print("YAY")
-                else
-                    print("NAY")
-                end
-            else
-                print("Command failed")
-            end
-        end
-        while true do
-            local event, player, message = os.pullEvent("chat")
-            print(message)
-            if message:find("/CCTowns restart") then
-                getPlayerData(player)
-            end
+        os.sleep(60)
+        local result, message, score = commands.scoreboard.players.get("All", "Restart")
+        if score == 1 then
+            commands.scoreboard.players.set("All", "Restart", 0)
+            os.reboot()
         end
     end
 end
 
+
 -- Start the loops
-parallel.waitForAll(main, second, handleScheduledActions, productionTimer, AdminLoop, ChatLoop)
+parallel.waitForAll(main, second, handleScheduledActions, productionTimer, AdminLoop, ScoreLoop)
 
 -- Code here continues after both loops have exited
 print("Both loops have exited.")

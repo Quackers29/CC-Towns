@@ -11,6 +11,6 @@
   "Town": {
     "Startup": true,
     "MinDistance": 10,
-    "Restart": null
+    "Restart": 0
   }
 }
