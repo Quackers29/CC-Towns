@@ -2,6 +2,16 @@
 ![2023-10-11_19 57 38](https://github.com/Quackers29/CC-Towns/assets/11053436/10cdbb2f-fdda-4f29-a7a4-6d07c8116f14)
 
 # Current State
+  ### Trading: Completed
+  Has a Trading window and a History window
+  All Towns check restock values for each resource, if excess, starts and auction for the excess
+  If low, looks around for auctions of that item and makes a bid automatically, judging how much to bid on various factors
+  The selling town reviews the auction at the end (1 minute currently) and goes for the best bid if acceptable
+  The resources are virtually transported over time to the Buying Town
+  Reources are traded for the bid emeralds
+  
+![2023-11-23_22 46 38](https://github.com/Quackers29/CC-Towns/assets/11053436/aae29025-a5c7-48ef-a743-d64dac360c2b)
+
   ### Upgrades: Completed
   List all upgrades, can set Possible upgrades per town type, can set default Base upgrades per town,
   Each Possible upgrade is listed in the Upgrades page, each can be selected to its own Display page,
