@@ -10,6 +10,7 @@
   },
   "Town": {
     "Startup": true,
-    "MinDistance": 10
+    "MinDistance": 10,
+    "Restart": null
   }
 }

@@ -122,70 +122,81 @@ end
 
 local Settings = Utility.readJsonFile(SettingsFile)
 
-if Settings.general.biome == nil then
-    local currentBiome = nil
-    local dist = 9999
-    if not fs.exists(biomeFile) then
-        local biomeslist = Manager.readCSV(biomes)
-        local newList = {}
-        for i,v in pairs(biomeslist) do
-            print(i,v)
-            print(v.id)
-            local listItem = {}
-            local boolean, tableWithString, distance = commands.locate.biome(v.id)
-            local mod, key = string.match(tableWithString[1], "%((.-):(.-)%)")
-            local x, y, z = string.match(tableWithString[1], "%[([^,]+),([^,]+),([^%]]+)%]")
-            if boolean or string.match(tableWithString[1], "(0 blocks away)") then
-                if distance < dist then
-                    dist = distance
-                    currentBiome = v.id
+if Settings then
+    if Settings.general.biome == nil then
+        local currentBiome = nil
+        local dist = 9999
+        if not fs.exists(biomeFile) then
+            local biomeslist = Manager.readCSV(biomes)
+            local newList = {}
+            for i,v in pairs(biomeslist) do
+                print(i,v)
+                print(v.id)
+                local listItem = {}
+                local boolean, tableWithString, distance = commands.locate.biome(v.id)
+                local mod, key = string.match(tableWithString[1], "%((.-):(.-)%)")
+                local x, y, z = string.match(tableWithString[1], "%[([^,]+),([^,]+),([^%]]+)%]")
+                if boolean or string.match(tableWithString[1], "(0 blocks away)") then
+                    if distance < dist then
+                        dist = distance
+                        currentBiome = v.id
+                    end
+                else
+                    distance = nil
                 end
-            else
-                distance = nil
+                listItem = {mod = mod,key = key,x = tonumber(x),y = tonumber(y),z = tonumber(z),distance = distance}
+                table.insert(newList,listItem)
+                print(distance)
             end
-            listItem = {mod = mod,key = key,x = tonumber(x),y = tonumber(y),z = tonumber(z),distance = distance}
-            table.insert(newList,listItem)
-            print(distance)
+            Utility.writeJsonFile(biomeFile,newList)
+            print("Out: ",currentBiome, dist)
         end
-        Utility.writeJsonFile(biomeFile,newList)
-        print("Out: ",currentBiome, dist)
+        currentBiome = currentBiome:match("_(.*)$") or currentBiome
+        Settings.general.biome = currentBiome or nil
+        Settings.general.biomeDist = dist or nil
     end
-    currentBiome = currentBiome:match("_(.*)$") or currentBiome
-    Settings.general.biome = currentBiome or nil
-    Settings.general.biomeDist = dist or nil
-end
-
-if Settings and Settings.town.name == nil then
-    local townnameslist = Manager.readCSV(townNames)
-    local randomIndex = math.random(1, #townnameslist)
-    print(randomIndex)
-    local townName = townnameslist[randomIndex].id
-    Settings.town.name = townName
-    Settings.town.born = os.date("%Y-%m-%d %H:%M:%S", os.epoch("utc")/1000)
-    Settings.town.timestamp = os.epoch("utc") -- milliseconds
-    print(townName)
-    print("Created (utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
-    commands.say("New Town: "..townName..". Founded(utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
-end
-
-if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then
-    INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
-else
-    Settings.Input = {}
-    Settings.Input.x, Settings.Input.y, Settings.Input.z = x+1,y,z
-    INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
-end
-
-if Settings.Output and math.abs(Settings.Output.x - x) <= ChestRange and math.abs(Settings.Output.y - y) <= ChestRange then
-    OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
-else
-    Settings.Output = {}
-    Settings.Output.x, Settings.Output.y, Settings.Output.z = x+1,y+2,z
-    OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
+    if Settings.town.name == nil then
+        local townnameslist = Manager.readCSV(townNames)
+        local randomIndex = math.random(1, #townnameslist)
+        print(randomIndex)
+        local townName = townnameslist[randomIndex].id
+        Settings.town.name = townName
+        Settings.town.born = os.date("%Y-%m-%d %H:%M:%S", os.epoch("utc")/1000)
+        Settings.town.timestamp = os.epoch("utc") -- milliseconds
+        print(townName)
+        print("Created (utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
+        commands.say("New Town: "..townName..". Founded(utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
+    end
+    if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then
+        INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
+    else
+        Settings.Input = {}
+        Settings.Input.x, Settings.Input.y, Settings.Input.z = x+1,y,z
+        INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
+    end
+    if Settings.Output and math.abs(Settings.Output.x - x) <= ChestRange and math.abs(Settings.Output.y - y) <= ChestRange then
+        OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
+    else
+        Settings.Output = {}
+        Settings.Output.x, Settings.Output.y, Settings.Output.z = x+1,y+2,z
+        OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
+    end
+    --Add restart timer to settings file
+    Settings.lastRestarted = os.epoch("utc")
 end
 
 Utility.writeJsonFile(SettingsFile,Settings)
 
+function CheckRestart()
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(adminFile)
+    if Settings and Admin then
+        if Settings.lastRestarted < Admin.Town.Restart then
+            --Reboot the Town
+            os.reboot()
+        end 
+    end
+end
 
 if not fs.exists(upgradesFile) then
     local upgradeTable = Utility.readJsonFile(upgradesSource)
@@ -464,7 +475,7 @@ function drawButtonsForCurrentPage()
                     PreRecTable[v.item]["toggle"] = false
                     PreRecTable[v.item]["string"] = v.item
                 end
-                Monitor.drawKeyList(3, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 0) 
+                Monitor.drawKeyList(4, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 0) 
             end 
             PreRecTable = {}
             if tradeTable.selling then
@@ -869,6 +880,13 @@ function productionTimer()
     end
 end
 
+function AdminLoop()
+    while mainflag do
+        CheckRestart()
+        os.sleep(60)
+    end
+end
+
 -- Function to handle scheduled actions
 function handleScheduledActions()
     while mainflag do
@@ -880,8 +898,35 @@ function handleScheduledActions()
     end
 end
 
+function ChatLoop()
+    while mainflag do
+        local function getPlayerData(playerName)
+            local command = "/data get entity " .. playerName
+            local success, result = commands.exec(command)
+            if success then
+                -- Parse 'result' to find the specific data you need
+                print(result)
+                if result:find("playerGameType: 1") then
+                    print("YAY")
+                else
+                    print("NAY")
+                end
+            else
+                print("Command failed")
+            end
+        end
+        while true do
+            local event, player, message = os.pullEvent("chat")
+            print(message)
+            if message:find("/CCTowns restart") then
+                getPlayerData(player)
+            end
+        end
+    end
+end
+
 -- Start the loops
-parallel.waitForAll(main, second, handleScheduledActions, productionTimer)
+parallel.waitForAll(main, second, handleScheduledActions, productionTimer, AdminLoop, ChatLoop)
 
 -- Code here continues after both loops have exited
 print("Both loops have exited.")

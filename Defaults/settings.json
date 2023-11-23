@@ -29,5 +29,6 @@
       "minecraft:oak_log":2000,
       "minecraft:bread":1000
     }
-  }
+  },
+  "lastRestarted": null
 }
