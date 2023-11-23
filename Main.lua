@@ -898,8 +898,13 @@ function handleScheduledActions()
     end
 end
 
-commands.scoreboard.objectives.add("Restart","dummy")
 
+-- ScoreLoop checks the scoreboard to see if a player sets a score for All [Restart] to 1 
+-- could instead use timestamps but score can only go up to 999999999, 9 digits. 
+-- example timestamp is "timestamp": 1700144675566, 13 digits
+-- So admin could set the start of server time to in settings and the score only be the difference giving 9 digits of time...
+
+commands.scoreboard.objectives.add("Restart","dummy")
 function ScoreLoop()
     while mainflag do
         os.sleep(60)
