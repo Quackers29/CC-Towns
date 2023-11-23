@@ -12,6 +12,9 @@
   
 ![2023-11-23_22 46 38](https://github.com/Quackers29/CC-Towns/assets/11053436/aae29025-a5c7-48ef-a743-d64dac360c2b)
 
+![2023-11-23_22 45 58](https://github.com/Quackers29/CC-Towns/assets/11053436/30954a99-5df0-4cf5-93ef-41206c70a2c1)
+
+
   ### Upgrades: Completed
   List all upgrades, can set Possible upgrades per town type, can set default Base upgrades per town,
   Each Possible upgrade is listed in the Upgrades page, each can be selected to its own Display page,
