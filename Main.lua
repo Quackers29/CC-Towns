@@ -187,17 +187,6 @@ end
 
 Utility.writeJsonFile(SettingsFile,Settings)
 
-function CheckRestart()
-    local Settings = Utility.readJsonFile(SettingsFile)
-    local Admin = Utility.readJsonFile(adminFile)
-    if Settings and Admin then
-        if Settings.lastRestarted < Admin.Town.Restart then
-            --Reboot the Town
-            os.reboot()
-        end 
-    end
-end
-
 if not fs.exists(upgradesFile) then
     local upgradeTable = Utility.readJsonFile(upgradesSource)
     local newTable = {}
@@ -882,8 +871,7 @@ end
 
 function AdminLoop()
     while mainflag do
-        CheckRestart()
-        os.sleep(60)
+
     end
 end
 
@@ -904,13 +892,30 @@ end
 -- example timestamp is "timestamp": 1700144675566, 13 digits
 -- So admin could set the start of server time to in settings and the score only be the difference giving 9 digits of time...
 
+function CheckRestart()
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(adminFile)
+    if Settings and Admin then
+        if Settings.lastRestarted < Admin.Town.Restart then
+            --Reboot the Town
+            os.reboot()
+        end 
+    end
+end
+
 commands.scoreboard.objectives.add("Restart","dummy")
-function ScoreLoop()
+function AdminLoop()
     while mainflag do
         os.sleep(60)
+        CheckRestart()
         local result, message, score = commands.scoreboard.players.get("All", "Restart")
         if score == 1 then
             commands.scoreboard.players.set("All", "Restart", 0)
+            local Admin = Utility.readJsonFile(adminFile)
+            if Admin then
+                Admin.Town.Restart = os.epoch("utc")
+                Utility.writeJsonFile(adminFile,Admin)
+            end
             os.reboot()
         end
     end
@@ -918,7 +923,7 @@ end
 
 
 -- Start the loops
-parallel.waitForAll(main, second, handleScheduledActions, productionTimer, AdminLoop, ScoreLoop)
+parallel.waitForAll(main, second, handleScheduledActions, productionTimer, AdminLoop)
 
 -- Code here continues after both loops have exited
 print("Both loops have exited.")
