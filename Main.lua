@@ -914,6 +914,7 @@ function AdminLoop()
             local Admin = Utility.readJsonFile(adminFile)
             if Admin then
                 Admin.Town.Restart = os.epoch("utc")
+                commands.say(Admin.Town.Restart)
                 Utility.writeJsonFile(adminFile,Admin)
             end
             os.reboot()
