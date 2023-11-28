@@ -15,6 +15,8 @@
   },
   "Generation": {
     "State": false,
-    "Type": 1
+    "Type": 1,
+    "minDistance": 10,
+    "maxDistance": 100
   }
 }
