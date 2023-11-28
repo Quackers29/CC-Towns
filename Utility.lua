@@ -294,9 +294,9 @@ end
 
 
 
-function Utility.findOptimalSpawnLocation(minDistance, nearbyTowns, currentPos)
+function Utility.findOptimalSpawnLocation(minDistance, searchRange, nearbyTowns, currentPos)
     local potentialLocations = {}
-    local searchRange = 50 -- Define the range in which to look for new locations
+    local searchRange = searchRange or 50 -- Define the range in which to look for new locations
     local maxRange = searchRange + minDistance
 
     -- Filter nearby towns based on pre-calculated distance
@@ -319,6 +319,59 @@ function Utility.findOptimalSpawnLocation(minDistance, nearbyTowns, currentPos)
         return nil -- No valid location found
     end
 end
+
+
+
+
+
+
+
+function Utility.isChunkLoaded(x, z)
+    -- Function to check if the chunk at (x, z) is loaded
+    -- Return true if loaded, false otherwise
+end
+
+function Utility.findSuitableY(x, z)
+    if not Utility.isChunkLoaded(x, z) then
+        return nil -- Chunk is not loaded
+    end
+
+    local startY = 64
+    local maxY = 100
+    local groundY = nil
+
+    -- Check upward if necessary
+    if not Utility.isAirBlock(x, startY, z) then
+        for y = startY, maxY do
+            if Utility.isAirBlock(x, y, z) then
+                groundY = Utility.findGroundLevel(x, y, z)
+                break
+            end
+        end
+    else
+        groundY = Utility.findGroundLevel(x, startY, z)
+    end
+
+    if groundY and Utility.isSpaceAboveClear(x, groundY, z, 10) then
+        return groundY
+    else
+        return nil
+    end
+end
+
+function Utility.findGroundLevel(x, airY, z)
+    -- Find the ground level from the air block
+end
+
+function Utility.isAirBlock(x, y, z)
+    -- Check if the block at (x, y, z) is air
+end
+
+function Utility.isSpaceAboveClear(x, groundY, z, requiredSpace)
+    -- Check if there is enough clear space above groundY
+end
+
+-- Use findSuitableY in your town spawning logic
 
 
 
