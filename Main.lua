@@ -910,10 +910,10 @@ function AdminLoop()
     while mainflag do
         os.sleep(60)
         CheckRestart()
+        local Admin = Utility.readJsonFile(adminFile)
         local result, message, score = commands.scoreboard.players.get("Restart", "AllTowns")
         if score == 1 then
             commands.scoreboard.players.set("Restart", "AllTowns", 0)
-            local Admin = Utility.readJsonFile(adminFile)
             if Admin then
                 Admin.Town.Restart = os.epoch("utc")
                 --commands.say(Admin.Town.Restart)
@@ -922,6 +922,12 @@ function AdminLoop()
             Monitor.clear()
             Monitor.write("Offline",1,1)
             os.reboot()
+        end
+        if Admin and Admin.Generation.State then
+            local OptimalSpawnLocation = Utility.findOptimalSpawnLocation(Admin.Generation.minDistance,Admin.Generation.maxDistance, NearbyTowns, {x = x, z = z})
+            if OptimalSpawnLocation then
+                commands.say("potential local x, z: "..x..", "..z)
+            end
         end
     end
 end

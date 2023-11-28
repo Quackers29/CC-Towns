@@ -9,8 +9,12 @@
     }
   },
   "Town": {
-    "Startup": true,
+    "Startup": false,
     "MinDistance": 10,
     "Restart": 0
+  },
+  "Generation": {
+    "State": false,
+    "Type": 1
   }
 }

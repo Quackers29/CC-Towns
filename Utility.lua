@@ -255,4 +255,71 @@ function Utility.Stop()
     commands.scoreboard.players.set("Restart", "AllTowns", 1)
 end
 
+
+
+
+
+function Utility.calculateDistance(pos1, pos2)
+    return math.sqrt((pos2.x - pos1.x)^2 + (pos2.z - pos1.z)^2)
+end
+
+function Utility.isLocationValid(newPos, minDistance, nearbyTowns)
+    -- Check against existing positions
+    for _, pos in ipairs(positions) do
+        if Utility.calculateDistance(newPos, pos) < minDistance then
+            return false
+        end
+    end
+
+    -- Check against nearby towns
+    for _, town in ipairs(nearbyTowns) do
+        local townPos = {x = town.x, z = town.z} -- Only use x and z coordinates
+        if Utility.calculateDistance(newPos, townPos) < minDistance then
+            return false
+        end
+    end
+
+    return true
+end
+
+function Utility.filterNearbyTowns(nearbyTowns, maxRange)
+    local filteredTowns = {}
+    for _, town in ipairs(nearbyTowns) do
+        if town.distance <= maxRange then
+            table.insert(filteredTowns, town)
+        end
+    end
+    return filteredTowns
+end
+
+
+
+function Utility.findOptimalSpawnLocation(minDistance, searchRange, nearbyTowns, currentPos)
+    local potentialLocations = {}
+    local searchRange = searchRange or 50 -- Define the range in which to look for new locations
+    local maxRange = searchRange + minDistance
+
+    -- Filter nearby towns to include only those within the relevant range
+    local relevantTowns = Utility.filterNearbyTowns(currentPos, nearbyTowns, maxRange)
+
+    -- Generate potential locations within the range
+    for x = currentPos.x - searchRange, currentPos.x + searchRange do
+        for z = currentPos.z - searchRange, currentPos.z + searchRange do
+            local newPos = {x = x, z = z} -- Only use x and z coordinates
+            if Utility.isLocationValid(newPos, minDistance, relevantTowns) then
+                table.insert(potentialLocations, newPos)
+            end
+        end
+    end
+
+    -- Randomly select a location from potentialLocations
+    if #potentialLocations > 0 then
+        return potentialLocations[math.random(#potentialLocations)]
+    else
+        return nil -- No valid location found
+    end
+end
+
+
+
 return Utility
