@@ -42,7 +42,7 @@ if AdminSettings then
         AdminSettings.Town.Startup = true
         --commands.scoreboard.players.set("StartUp", "AllTowns", 1)
         Utility.writeJsonFile(adminFile,AdminSettings)
-        print("Towns can now startup")
+        print("Towns can now startup ")
     else
         term.clear()
         term.setCursorPos(1,1)
