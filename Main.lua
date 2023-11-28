@@ -898,6 +898,8 @@ function CheckRestart()
     if Settings and Admin then
         if Settings.lastRestarted < Admin.Town.Restart then
             --Reboot the Town
+            Monitor.clear()
+            Monitor.write("Offline",1,1)
             os.reboot()
         end 
     end
