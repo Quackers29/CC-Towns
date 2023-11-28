@@ -917,6 +917,8 @@ function AdminLoop()
                 --commands.say(Admin.Town.Restart)
                 Utility.writeJsonFile(adminFile,Admin)
             end
+            Monitor.clear()
+            Monitor.write("Offline",1,1)
             os.reboot()
         end
     end

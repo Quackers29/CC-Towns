@@ -33,16 +33,17 @@ if AdminSettings then
             shell.run("gitget Quackers29 CC-Towns main") --https://www.computercraft.info/forums2/index.php?/topic/17387-gitget-version-2-release/
 
             os.sleep(20)
+            AdminSettings.Town.Startup = true
+            commands.scoreboard.players.set("StartUp", "AllTowns", 1)
+            Utility.writeJsonFile(adminFile,AdminSettings)
+            print("Towns can now startup ")
         else
             print("Not Auto-Updating")
-            commands.scoreboard.players.set("StartUp", "AllTowns", 1)
+            --commands.scoreboard.players.set("StartUp", "AllTowns", 1)
         end
-        print("Setting Towns to startup")
-        os.sleep(2)
-        AdminSettings.Town.Startup = true
+        --print("Setting Towns to startup")
         --commands.scoreboard.players.set("StartUp", "AllTowns", 1)
-        Utility.writeJsonFile(adminFile,AdminSettings)
-        print("Towns can now startup ")
+        --print("Towns can now startup ")
     else
         term.clear()
         term.setCursorPos(1,1)
