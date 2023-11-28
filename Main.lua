@@ -903,18 +903,18 @@ function CheckRestart()
     end
 end
 
-commands.scoreboard.objectives.add("Restart","dummy")
+-- commands.scoreboard.objectives.add("AllTowns","dummy") Added to Startup Control PC
 function AdminLoop()
     while mainflag do
         os.sleep(60)
         CheckRestart()
-        local result, message, score = commands.scoreboard.players.get("All", "Restart")
+        local result, message, score = commands.scoreboard.players.get("Restart", "AllTowns")
         if score == 1 then
-            commands.scoreboard.players.set("All", "Restart", 0)
+            commands.scoreboard.players.set("Restart", "AllTowns", 0)
             local Admin = Utility.readJsonFile(adminFile)
             if Admin then
                 Admin.Town.Restart = os.epoch("utc")
-                commands.say(Admin.Town.Restart)
+                --commands.say(Admin.Town.Restart)
                 Utility.writeJsonFile(adminFile,Admin)
             end
             os.reboot()

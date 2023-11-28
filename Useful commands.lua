@@ -132,3 +132,11 @@ local data = {
     timeAccepted = currentTime,
     transportStartTime = currentTime + (PreTransportTimer * 1000)  -- Wait for PreTransportTimer
 }
+
+
+
+
+
+
+commands.scoreboard.players.get("All", "Restart")
+/scoreboard objectives setdisplay sidebar Restart

@@ -246,4 +246,13 @@ function Utility.sortArrayByKey(array, key)
     end)
 end
 
+function Utility.Start()
+    commands.scoreboard.players.set("StartUp", "AllTowns", 1)
+end
+
+function Utility.Stop()
+    commands.scoreboard.players.set("StartUp", "AllTowns", 0)
+    commands.scoreboard.players.set("Restart", "AllTowns", 1)
+end
+
 return Utility
