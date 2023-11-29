@@ -929,7 +929,7 @@ function AdminLoop()
                 local OpY = Utility.findSuitableY(OptimalSpawnLocation.x, OptimalSpawnLocation.z)
                 if OpY then
                     commands.say("potential local x, y, z: "..OptimalSpawnLocation.x..", "..OpY..", "..OptimalSpawnLocation.z)
-                    commands.fill(OptimalSpawnLocation.x,-61,OptimalSpawnLocation.z,OptimalSpawnLocation.x,OpY,OptimalSpawnLocation.z,"cobblestone")
+                    commands.fill(OptimalSpawnLocation.x,-61,OptimalSpawnLocation.z,OptimalSpawnLocation.x,OpY,OptimalSpawnLocation.z,"glass")
                 end
             end
         end
