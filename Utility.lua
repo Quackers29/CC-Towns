@@ -310,8 +310,8 @@ function Utility.findSuitableY(x, z)
         groundY = Utility.findGroundLevel(x, startY, z, minY)
     end
 
-    if groundY and Utility.isSpaceAboveClear(x, groundY, z, 10) then
-        return groundY
+    if groundY and Utility.isSpaceAboveClear(x, groundY, z, 11) then
+        return groundY + 1
     else
         return nil
     end
@@ -329,7 +329,7 @@ end
 
 function Utility.isAirBlock(x, y, z)
     -- Check if the block at (x, y, z) is air
-    local table = commands.getBlockInfo(1,1,1)
+    local table = commands.getBlockInfo(x,y,z)
     if table.name == "minecraft:air" then
         return true
     end
