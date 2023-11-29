@@ -926,9 +926,11 @@ function AdminLoop()
         if Admin and Admin.Generation.State then
             local OptimalSpawnLocation = Utility.findNewTownLocation(NearbyTowns, Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z})
             if OptimalSpawnLocation then
-                commands.say("potential local x, z: "..OptimalSpawnLocation.x..", "..OptimalSpawnLocation.z)
-                commands.fill(OptimalSpawnLocation.x,-61,OptimalSpawnLocation.z,OptimalSpawnLocation.x,-61,OptimalSpawnLocation.z,"cobblestone")
-
+                local OpY = Utility.findSuitableY(OptimalSpawnLocation.x, OptimalSpawnLocation.z)
+                if OpY then
+                    commands.say("potential local x, y, z: "..OptimalSpawnLocation.x..", "..OpY..", "..OptimalSpawnLocation.z)
+                    commands.fill(OptimalSpawnLocation.x,-61,OptimalSpawnLocation.z,OptimalSpawnLocation.x,OpY,OptimalSpawnLocation.z,"cobblestone")
+                end
             end
         end
     end

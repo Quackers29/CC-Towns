@@ -259,6 +259,10 @@ end
 
 
 
+
+
+
+
 function Utility.calculateDistance(pos1, pos2)
     return math.sqrt((pos2.x - pos1.x)^2 + (pos2.z - pos1.z)^2)
 end
@@ -312,19 +316,38 @@ function Utility.findSuitableY(x, z)
     end
 end
 
-function Utility.findGroundLevel(x, airY, z)
-    -- Find the ground level from the air block
+function Utility.findGroundLevel(x, startY, z)
+    for y = startY, 0, -1 do  -- Assuming 0 is the lowest possible Y-coordinate
+        if not Utility.isAirBlock(x, y, z) then
+            return y  -- Return the Y-coordinate of the ground level
+        end
+    end
+    return nil  -- Return nil if no ground is found (e.g., over a void or an unusual world)
 end
+
 
 function Utility.isAirBlock(x, y, z)
     -- Check if the block at (x, y, z) is air
+    local table = commands.getBlockInfo(1,1,1)
+    if table.name == "minecraft:air" then
+        return true
+    end
+    return false
 end
 
 function Utility.isSpaceAboveClear(x, groundY, z, requiredSpace)
-    -- Check if there is enough clear space above groundY
+    for y = groundY + 1, groundY + requiredSpace do
+        if not Utility.isAirBlock(x, y, z) then
+            return false  -- Return false if a non-air block is found
+        end
+    end
+    return true  -- Return true if all checked blocks are air
 end
 
 -- Use findSuitableY in your town spawning logic
+
+
+
 
 
 
