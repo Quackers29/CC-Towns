@@ -419,9 +419,29 @@ function Utility.addRandomAngleDeviation(angle, maxDeviationDegrees)
     return angle + deviationRadians
 end
 
+function Utility.calculateWeightedDirection(nearbyTowns, currentPos)
+    local sumX, sumZ = 0, 0
+
+    for _, town in ipairs(nearbyTowns) do
+        local weight = 1 / town.distance -- Inverse weight by distance
+        local directionX = (town.x - currentPos.x) * weight
+        local directionZ = (town.z - currentPos.z) * weight
+        sumX = sumX + directionX
+        sumZ = sumZ + directionZ
+    end
+
+    -- Determine the average direction (summed and normalized)
+    local avgDirectionX = sumX / #nearbyTowns
+    local avgDirectionZ = sumZ / #nearbyTowns
+
+    -- Get the opposite direction
+    return -avgDirectionX, -avgDirectionZ
+end
+
 function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos)
+    local relevantTowns = Utility.filterNearbyTowns(nearbyTowns, maxRange)
     local angleDeviationDegrees = 10
-    local oppositeDirectionX, oppositeDirectionZ = Utility.calculateWeightedDirection(nearbyTowns, currentPos)
+    local oppositeDirectionX, oppositeDirectionZ = Utility.calculateWeightedDirection(relevantTowns, currentPos)
     local angle = math.atan2(oppositeDirectionZ, oppositeDirectionX)
 
     for attempt = 1, 10 do
@@ -431,9 +451,9 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
         local distance = math.random(minRange, maxRange)
         local newX = currentPos.x + distance * math.cos(randomizedAngle)
         local newZ = currentPos.z + distance * math.sin(randomizedAngle)
-        local potentialNewPos = {x = round(newX), z = round(newZ)}
+        local potentialNewPos = {x = Utility.round(newX), z = Utility.round(newZ)}
 
-        if not Utility.isLocationTooClose(potentialNewPos, nearbyTowns, minRange, currentPos) then
+        if not Utility.isLocationTooClose(potentialNewPos, relevantTowns, minRange, currentPos) then
             return potentialNewPos
         end
     end
