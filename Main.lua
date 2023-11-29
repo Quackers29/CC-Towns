@@ -918,6 +918,7 @@ function AdminLoop()
             if OpLocation then
                 commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
                 commands.clone(x,y,z,x,y,z,OpLocation.x,OpLocation.y,OpLocation.z)
+                commands.fill(OpLocation.x+1,OpLocation.y+1,OpLocation.z,OpLocation.x-1,OpLocation.y+4,OpLocation.z,"computercraft:monitor_advanced")
                 os.sleep(60)
             end
         end

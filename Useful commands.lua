@@ -150,3 +150,11 @@ commands.exec("/data get block 0 -63 -34000")
 
 commands.setblock(x,-65,z,"air")
 "That position is not loaded"
+
+
+table = commands.getBlockInfo(1,1,1)
+table.name == "minecraft:air"
+{
+    name = name,
+}
+
