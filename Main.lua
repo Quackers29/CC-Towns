@@ -908,7 +908,7 @@ end
 -- commands.scoreboard.objectives.add("AllTowns","dummy") Added to Startup Control PC
 function AdminLoop()
     while mainflag do
-        os.sleep(10)
+        os.sleep(60)
         CheckRestart()
         local Admin = Utility.readJsonFile(adminFile)
         local result, message, score = commands.scoreboard.players.get("Restart", "AllTowns")
@@ -916,18 +916,19 @@ function AdminLoop()
             commands.scoreboard.players.set("Restart", "AllTowns", 0)
             if Admin then
                 Admin.Town.Restart = os.epoch("utc")
-                --commands.say(Admin.Town.Restart)
                 Utility.writeJsonFile(adminFile,Admin)
             end
             Monitor.clear()
             Monitor.write("Offline",1,1)
             os.reboot()
         end
-        if Admin and Admin.Generation.State then
-            local OpLocation = Utility.findNewTownLocation(NearbyTowns, Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z})
+        local result, message, score = commands.scoreboard.players.get("GenState", "AllTowns")
+        if score == 1 then
+            local OpLocation = Utility.findNewTownLocation(NearbyTowns, Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z}, Admin.Generation.spread)
             if OpLocation then
-                commands.say("potential local x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
-                commands.fill(OpLocation.x,OpLocation.y,OpLocation.z,OpLocation.x,OpLocation.y,OpLocation.z,"glass")
+                commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
+                commands.clone(x,y,z,x,y,z,OpLocation.x,OpLocation.y,OpLocation.z)
+                os.sleep(60)
             end
         end
     end

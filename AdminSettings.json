@@ -16,7 +16,8 @@
   "Generation": {
     "State": true,
     "Type": 1,
-    "minDistance": 10,
-    "maxDistance": 100
+    "minDistance": 20,
+    "maxDistance": 40,
+    "spread": 45
   }
 }

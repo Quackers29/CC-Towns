@@ -414,9 +414,9 @@ function Utility.calculateWeightedDirection(nearbyTowns, currentPos)
     return -avgDirectionX, -avgDirectionZ
 end
 
-function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos)
+function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos, spread)
     local relevantTowns = Utility.filterNearbyTowns(nearbyTowns, maxRange)
-    local angleDeviationDegrees = 10
+    local angleDeviationDegrees = spread or 10
     local oppositeDirectionX, oppositeDirectionZ = Utility.calculateWeightedDirection(relevantTowns, currentPos)
     local angle = math.atan2(oppositeDirectionZ, oppositeDirectionX)
 
