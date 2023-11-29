@@ -266,6 +266,7 @@ end
 function Utility.isLocationValid(newPos, minDistance, nearbyTowns, potentials)
     -- Check against existing positions
     for _, pos in ipairs(potentials) do
+        print(_, pos.x, pos.z)
         if Utility.calculateDistance(newPos, pos) < minDistance then
             return false
         end
@@ -372,6 +373,64 @@ function Utility.isSpaceAboveClear(x, groundY, z, requiredSpace)
 end
 
 -- Use findSuitableY in your town spawning logic
+
+
+
+
+function Utility.degreesToRadians(deg)
+    return deg * (math.pi / 180)
+end
+
+function Utility.radiansToDegrees(rad)
+    return rad * (180 / math.pi)
+end
+
+function Utility.calculateAverageAngle(nearbyTowns)
+    local sumSin, sumCos = 0, 0
+
+    for _, town in ipairs(nearbyTowns) do
+        local angle = math.atan2(town.z, town.x) -- Get angle in radians
+        sumSin = sumSin + math.sin(angle)
+        sumCos = sumCos + math.cos(angle)
+    end
+
+    local avgAngle = math.atan2(sumSin, sumCos)
+    return avgAngle
+end
+
+function Utility.isLocationTooClose(newPos, nearbyTowns, minDistance, currentPos)
+    for _, town in ipairs(nearbyTowns) do
+        if Utility.calculateDistance(newPos, {x = town.x, z = town.z}) < minDistance then
+            return true
+        end
+    end
+    if Utility.calculateDistance(newPos, currentPos) < minDistance then
+        return true
+    end
+    return false
+end
+
+function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos)
+    local filteredTowns = Utility.filterNearbyTowns(nearbyTowns, maxRange)
+    local avgAngle = Utility.calculateAverageAngle(filteredTowns)
+    local oppositeAngle = avgAngle + math.pi -- Opposite direction
+
+    for attempt = 1, 10 do  -- Attempt multiple times to find a valid location
+        -- Random distance within specified range
+        local distance = math.random(minRange, maxRange)
+
+        -- Calculate new town's coordinates
+        local newX = currentPos.x + distance * math.cos(oppositeAngle)
+        local newZ = currentPos.z + distance * math.sin(oppositeAngle)
+        local potentialNewPos = {x = newX, z = newZ}
+
+        if not Utility.isLocationTooClose(potentialNewPos, filteredTowns, minRange, currentPos) then
+            return potentialNewPos
+        end
+    end
+
+    return nil -- No valid location found after attempts
+end
 
 
 

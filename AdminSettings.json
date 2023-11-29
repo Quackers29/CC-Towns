@@ -14,7 +14,7 @@
     "Restart": 0
   },
   "Generation": {
-    "State": false,
+    "State": true,
     "Type": 1,
     "minDistance": 10,
     "maxDistance": 100
