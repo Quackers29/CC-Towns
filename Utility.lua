@@ -414,29 +414,32 @@ function Utility.round(number)
     return math.floor(number + 0.5)
 end
 
+function Utility.addRandomAngleDeviation(angle, maxDeviationDegrees)
+    local deviationRadians = Utility.degreesToRadians(math.random(-maxDeviationDegrees, maxDeviationDegrees))
+    return angle + deviationRadians
+end
+
 function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos)
-    local filteredTowns = Utility.filterNearbyTowns(nearbyTowns, maxRange)
-    local avgAngle = Utility.calculateAverageAngle(filteredTowns)
-    local oppositeAngle = avgAngle + math.pi -- Opposite direction
+    local angleDeviationDegrees = 10
+    local oppositeDirectionX, oppositeDirectionZ = Utility.calculateWeightedDirection(nearbyTowns, currentPos)
+    local angle = math.atan2(oppositeDirectionZ, oppositeDirectionX)
 
-    for attempt = 1, 10 do  -- Attempt multiple times to find a valid location
-        -- Random distance within specified range
+    for attempt = 1, 10 do
+        -- Add random deviation to the angle
+        local randomizedAngle = Utility.addRandomAngleDeviation(angle, angleDeviationDegrees)
+
         local distance = math.random(minRange, maxRange)
+        local newX = currentPos.x + distance * math.cos(randomizedAngle)
+        local newZ = currentPos.z + distance * math.sin(randomizedAngle)
+        local potentialNewPos = {x = round(newX), z = round(newZ)}
 
-        -- Calculate new town's coordinates
-        local newX = currentPos.x + distance * math.cos(oppositeAngle)
-        local newZ = currentPos.z + distance * math.sin(oppositeAngle)
-        local potentialNewPos = {x = Utility.round(newX), z = Utility.round(newZ)}
-
-        if not Utility.isLocationTooClose(potentialNewPos, filteredTowns, minRange, currentPos) then
+        if not Utility.isLocationTooClose(potentialNewPos, nearbyTowns, minRange, currentPos) then
             return potentialNewPos
         end
     end
 
-    return nil -- No valid location found after attempts
+    return nil
 end
-
-
 
 
 return Utility
