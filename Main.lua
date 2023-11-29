@@ -908,7 +908,7 @@ end
 -- commands.scoreboard.objectives.add("AllTowns","dummy") Added to Startup Control PC
 function AdminLoop()
     while mainflag do
-        os.sleep(60)
+        os.sleep(10)
         CheckRestart()
         local Admin = Utility.readJsonFile(adminFile)
         local result, message, score = commands.scoreboard.players.get("Restart", "AllTowns")
