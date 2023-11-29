@@ -79,30 +79,9 @@ end
 
 -- Initialize Checks if it exists or should exist
 
-function FindTowns()
-    local AllTowns = {}
-    for i,v in ipairs(fs.list("Towns")) do
-        local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
-        if v == townFolder then
-        else
-            table.insert(AllTowns,{folderName = v,x = ax,y = ay,z = az, distance = CalcDist(x, z, ax, az)})
-        end
-    end
-    return AllTowns
-end
-
-local TownFlag = false
-local AllTowns = FindTowns()
-for i,v in ipairs(AllTowns) do
-    if v.folderName == townFolder then
-        print("Town already exist")
-        TownFlag = true
-    end
-end
-
+local TownFlag = Utility.IsATown(townFolder)
 
 local AdminSettings = Utility.readJsonFile(adminFile)
-
 if AdminSettings and AdminSettings.Town.MinDistance then
     local deleteTown = false
     if not TownFlag then
@@ -303,7 +282,7 @@ function drawButtonsForCurrentPage()
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
-        Monitor.displayMap(FindTowns(), currentTown, topLeftX, topLeftY, mapWidth, mapHeight, currentZoom)
+        Monitor.displayMap(Utility.FindOtherTowns(townFolder), currentTown, topLeftX, topLeftY, mapWidth, mapHeight, currentZoom)
     elseif currentPage == "display_upgrade" then
         local canUp = true
         local resTable = Utility.readJsonFile(resFile)
@@ -872,7 +851,7 @@ function productionTimer()
     while mainflag do
             productionCheck()
             TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
-            TradeAPI.BuyerSearchOffers(FindTowns(),townFolder,tradeFile,SettingsFile,resFile)
+            TradeAPI.BuyerSearchOffers(Utility.FindOtherTowns(townFolder),townFolder,tradeFile,SettingsFile,resFile)
             TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile)
             TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
             TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
@@ -935,7 +914,7 @@ function AdminLoop()
         end
         local result, message, score = commands.scoreboard.players.get("GenState", "AllTowns")
         if score == 1 then
-            local OpLocation = Utility.findNewTownLocation(FindTowns(), Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z}, Admin.Generation.spread)
+            local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(townFolder), Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z}, Admin.Generation.spread)
             if OpLocation then
                 commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
                 commands.clone(x,y,z,x,y,z,OpLocation.x,OpLocation.y,OpLocation.z)

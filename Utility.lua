@@ -443,5 +443,35 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
     return nil
 end
 
+function Utility.FindAllTowns()
+    local AllTowns = {}
+    for i,v in ipairs(fs.list("Towns")) do
+        local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
+        table.insert(AllTowns,{folderName = v,x = ax,y = ay,z = az, distance = CalcDist(x, z, ax, az)})
+    end
+    return AllTowns
+end
+
+function Utility.FindOtherTowns(townFolder)
+    local OtherTowns = {}
+    for i,v in ipairs(fs.list("Towns")) do
+        if v == townFolder then
+            local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
+            table.insert(AllTowns,{folderName = v,x = ax,y = ay,z = az, distance = CalcDist(x, z, ax, az)})
+        else
+        end
+    end
+    return OtherTowns
+end
+
+function Utility.IsATown(townFolder)
+    for i,v in ipairs(Utility.FindAllTowns()) do
+        if v.folderName == townFolder then
+            print("Town already exist")
+            return true
+        end
+    end
+    return false
+end
 
 return Utility
