@@ -140,3 +140,13 @@ local data = {
 
 commands.scoreboard.players.get("All", "Restart")
 /scoreboard objectives setdisplay sidebar Restart
+
+
+commands.particle("block_marker", "chest", INx, INy, INz, 0, 0, 0, 0.5, 10, "normal")
+commands.particle("end_rod", INx, INy, INz, 0, 0, 0, 0.03, 100, "normal")
+
+
+commands.exec("/data get block 0 -63 -34000")
+
+commands.setblock(x,-65,z,"air")
+"That position is not loaded"

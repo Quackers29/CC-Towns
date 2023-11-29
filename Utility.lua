@@ -263,26 +263,6 @@ function Utility.calculateDistance(pos1, pos2)
     return math.sqrt((pos2.x - pos1.x)^2 + (pos2.z - pos1.z)^2)
 end
 
-function Utility.isLocationValid(newPos, minDistance, nearbyTowns, potentials)
-    -- Check against existing positions
-    for _, pos in ipairs(potentials) do
-        print(_, pos.x, pos.z)
-        if Utility.calculateDistance(newPos, pos) < minDistance then
-            return false
-        end
-    end
-
-    -- Check against nearby towns
-    for _, town in ipairs(nearbyTowns) do
-        local townPos = {x = town.x, z = town.z} -- Only use x and z coordinates
-        if Utility.calculateDistance(newPos, townPos) < minDistance then
-            return false
-        end
-    end
-
-    return true
-end
-
 function Utility.filterNearbyTowns(nearbyTowns, maxRange)
     local filteredTowns = {}
     for _, town in ipairs(nearbyTowns) do
@@ -293,43 +273,15 @@ function Utility.filterNearbyTowns(nearbyTowns, maxRange)
     return filteredTowns
 end
 
-
-
-function Utility.findOptimalSpawnLocation(minDistance, searchRange, nearbyTowns, currentPos)
-    local potentialLocations = {}
-    local searchRange = searchRange or 50 -- Define the range in which to look for new locations
-    local maxRange = searchRange + minDistance
-
-    -- Filter nearby towns based on pre-calculated distance
-    local relevantTowns = Utility.filterNearbyTowns(nearbyTowns, maxRange)
-
-    -- Generate potential locations within the range
-    for x = currentPos.x - searchRange, currentPos.x + searchRange do
-        for z = currentPos.z - searchRange, currentPos.z + searchRange do
-            local newPos = {x = x, z = z} -- Only use x and z coordinates
-            if Utility.isLocationValid(newPos, minDistance, relevantTowns, potentialLocations) then
-                table.insert(potentialLocations, newPos)
-            end
-        end
-    end
-
-    -- Randomly select a location from potentialLocations
-    if #potentialLocations > 0 then
-        return potentialLocations[math.random(#potentialLocations)]
-    else
-        return nil -- No valid location found
-    end
-end
-
-
-
-
-
-
-
 function Utility.isChunkLoaded(x, z)
     -- Function to check if the chunk at (x, z) is loaded
     -- Return true if loaded, false otherwise
+    local boolean,table,count = commands.setblock(x,-65,z,"air")
+    if table[1] == "That position is not loaded" then
+        return false
+    else
+        return true
+    end
 end
 
 function Utility.findSuitableY(x, z)
@@ -454,7 +406,9 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
         local potentialNewPos = {x = Utility.round(newX), z = Utility.round(newZ)}
 
         if not Utility.isLocationTooClose(potentialNewPos, relevantTowns, minRange, currentPos) then
-            return potentialNewPos
+            if Utility.isChunkLoaded(potentialNewPos.x, potentialNewPos.z) then
+                return potentialNewPos
+            end
         end
     end
 
