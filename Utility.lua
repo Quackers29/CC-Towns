@@ -431,7 +431,11 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
 
         if not Utility.isLocationTooClose(potentialNewPos, relevantTowns, minRange, currentPos) then
             if Utility.isChunkLoaded(potentialNewPos.x, potentialNewPos.z) then
-                return potentialNewPos
+                local OpY = Utility.findSuitableY(potentialNewPos.x, potentialNewPos.z)
+                if OpY then
+                    potentialNewPos.y = OpY
+                    return potentialNewPos
+                end
             end
         end
     end
