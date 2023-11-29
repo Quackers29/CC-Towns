@@ -293,7 +293,8 @@ function Utility.findSuitableY(x, z)
         return nil -- Chunk is not loaded
     end
 
-    local startY = 64
+    local startY = -50
+    local minY = -62
     local maxY = 100
     local groundY = nil
 
@@ -301,12 +302,12 @@ function Utility.findSuitableY(x, z)
     if not Utility.isAirBlock(x, startY, z) then
         for y = startY, maxY do
             if Utility.isAirBlock(x, y, z) then
-                groundY = Utility.findGroundLevel(x, y, z)
+                groundY = Utility.findGroundLevel(x, y, z, minY)
                 break
             end
         end
     else
-        groundY = Utility.findGroundLevel(x, startY, z)
+        groundY = Utility.findGroundLevel(x, startY, z, minY)
     end
 
     if groundY and Utility.isSpaceAboveClear(x, groundY, z, 10) then
@@ -316,8 +317,8 @@ function Utility.findSuitableY(x, z)
     end
 end
 
-function Utility.findGroundLevel(x, startY, z)
-    for y = startY, 0, -1 do  -- Assuming 0 is the lowest possible Y-coordinate
+function Utility.findGroundLevel(x, startY, z, minY)
+    for y = startY, minY, -1 do
         if not Utility.isAirBlock(x, y, z) then
             return y  -- Return the Y-coordinate of the ground level
         end
