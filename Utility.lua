@@ -410,6 +410,10 @@ function Utility.isLocationTooClose(newPos, nearbyTowns, minDistance, currentPos
     return false
 end
 
+function Utility.round(number)
+    return math.floor(number + 0.5)
+end
+
 function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos)
     local filteredTowns = Utility.filterNearbyTowns(nearbyTowns, maxRange)
     local avgAngle = Utility.calculateAverageAngle(filteredTowns)
@@ -422,7 +426,7 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
         -- Calculate new town's coordinates
         local newX = currentPos.x + distance * math.cos(oppositeAngle)
         local newZ = currentPos.z + distance * math.sin(oppositeAngle)
-        local potentialNewPos = {x = newX, z = newZ}
+        local potentialNewPos = {x = Utility.round(newX), z = Utility.round(newZ)}
 
         if not Utility.isLocationTooClose(potentialNewPos, filteredTowns, minRange, currentPos) then
             return potentialNewPos
