@@ -476,4 +476,33 @@ function Utility.IsATown(townFolder)
     return false
 end
 
+
+
+
+-- Function to execute the setblock command with optional orientation
+function Utility.setBlock(x, y, z, blockName, orientation)
+    local command = "setblock " .. x .. " " .. y .. " " .. z .. " " .. blockName
+    if orientation and orientation ~= "" then
+        command = command .. " " .. orientation
+    end
+    commands.exec(command)
+end
+
+-- Main function to fill an area with optionally oriented blocks
+function Utility.fillArea(startX, startY, startZ, endX, endY, endZ, blockName, orientation)
+    for x = startX, endX do
+        for y = startY, endY do
+            for z = startZ, endZ do
+                Utility.setBlock(x, y, z, blockName, orientation)
+            end
+        end
+    end
+end
+-- Example usage
+-- Replace these values with your specific coordinates and desired block
+-- Orientation is optional; remove or leave it empty for default orientation
+-- Utility.fillArea(10, 64, 10, 12, 66, 12, "computercraft:monitor_advanced", "facing=north")
+
+
+
 return Utility
