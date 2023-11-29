@@ -263,7 +263,7 @@ end
 
 
 
-function Utility.calculateDistance(pos1, pos2)
+function Utility.CalcDist(pos1, pos2)
     return math.sqrt((pos2.x - pos1.x)^2 + (pos2.z - pos1.z)^2)
 end
 
@@ -376,11 +376,11 @@ end
 
 function Utility.isLocationTooClose(newPos, nearbyTowns, minDistance, currentPos)
     for _, town in ipairs(nearbyTowns) do
-        if Utility.calculateDistance(newPos, {x = town.x, z = town.z}) < minDistance then
+        if Utility.CalcDist(newPos, {x = town.x, z = town.z}) < minDistance then
             return true
         end
     end
-    if Utility.calculateDistance(newPos, currentPos) < minDistance then
+    if Utility.CalcDist(newPos, currentPos) < minDistance then
         return true
     end
     return false
@@ -444,21 +444,23 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
 end
 
 function Utility.FindAllTowns()
+    local x,y,z = gps.locate()
     local AllTowns = {}
     for i,v in ipairs(fs.list("Towns")) do
         local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
-        table.insert(AllTowns,{folderName = v,x = ax,y = ay,z = az, distance = CalcDist(x, z, ax, az)})
+        table.insert(AllTowns,{folderName = v,x = ax,y = ay,z = az, distance = Utility.CalcDist({x = x, z = z}, {x = ax,z = az})})
     end
     return AllTowns
 end
 
 function Utility.FindOtherTowns(townFolder)
+    local x,y,z = gps.locate()
     local OtherTowns = {}
     for i,v in ipairs(fs.list("Towns")) do
         if v == townFolder then
-            local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
-            table.insert(AllTowns,{folderName = v,x = ax,y = ay,z = az, distance = CalcDist(x, z, ax, az)})
         else
+            local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
+            table.insert(OtherTowns,{folderName = v,x = ax,y = ay,z = az, distance = Utility.CalcDist({x = x, z = z}, {x = ax,z = az})})
         end
     end
     return OtherTowns

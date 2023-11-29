@@ -41,10 +41,6 @@ local POUTx,POUTy,POUTz = 11,-59,-47 --population output coords
 
 local scheduledActions = {} -- A table to keep track of scheduled actions
 
-function CalcDist(x1, z1, x2, z2)
-    return math.sqrt((x2 - x1)^2 + (z2 - z1)^2)
-end
-
 function InRange(value, origin, range)
     return math.max(origin - range, math.min(value, origin + range))
 end
