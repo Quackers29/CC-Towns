@@ -330,7 +330,7 @@ end
 function Utility.isAirBlock(x, y, z)
     -- Check if the block at (x, y, z) is air
     local table = commands.getBlockInfo(x,y,z)
-    if table.name == "minecraft:air" then
+    if table and table.name == "minecraft:air" then
         return true
     end
     return false
