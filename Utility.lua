@@ -429,10 +429,10 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
         local randomizedAngle = Utility.addRandomAngleDeviation(angle, angleDeviationDegrees)
 
         local distance = math.random(minRange, maxRange)
-        local newX = currentPos.x + distance * math.cos(randomizedAngle)
-        local safetyX = currentPos.x + distance + safetyDist * math.cos(randomizedAngle)
-        local newZ = currentPos.z + distance * math.sin(randomizedAngle)
-        local safetyZ = currentPos.z + distance + safetyDist * math.sin(randomizedAngle)
+        local newX = currentPos.x + (distance * math.cos(randomizedAngle))
+        local safetyX = currentPos.x + ((distance + safetyDist) * math.cos(randomizedAngle))
+        local newZ = currentPos.z + (distance * math.sin(randomizedAngle))
+        local safetyZ = currentPos.z + ((distance + safetyDist) * math.sin(randomizedAngle))
         local potentialNewPos = {x = Utility.round(newX), z = Utility.round(newZ)}
         local safetyPos = {x = Utility.round(safetyX), z = Utility.round(safetyZ)}
         --print(potentialNewPos.x,potentialNewPos.z,newX,newZ,randomizedAngle,math.cos(randomizedAngle),math.sin(randomizedAngle),angle,angleDeviationDegrees,oppositeDirectionZ, oppositeDirectionX,#relevantTowns)
