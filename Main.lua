@@ -896,8 +896,10 @@ end
 -- commands.scoreboard.objectives.add("AllTowns","dummy") Added to Startup Control PC
 function AdminLoop()
     while mainflag do
-        os.sleep(60)
         CheckRestart()
+        local Admin = Utility.readJsonFile(adminFile)
+        local wait = Admin.Town.AdminWait or 60
+        os.sleep(wait)
         local Admin = Utility.readJsonFile(adminFile)
         local result, message, score = commands.scoreboard.players.get("SelfDestruct", "AllTowns")
         if score == 1 then

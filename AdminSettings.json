@@ -11,7 +11,8 @@
   "Town": {
     "Startup": false,
     "MinDistance": 10,
-    "Restart": 0
+    "Restart": 0,
+    "AdminWait": 20
   },
   "Generation": {
     "State": true,

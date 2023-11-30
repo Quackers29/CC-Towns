@@ -48,7 +48,7 @@ if AdminSettings then
         term.clear()
         term.setCursorPos(1,1)
         print("This is a Town PC, waiting for command to startup")
-        os.sleep(20)
+        os.sleep(2)
         local flag = true
         while flag do
             local result, message, score = commands.scoreboard.players.get("StartUp", "AllTowns")
@@ -57,7 +57,7 @@ if AdminSettings then
                 if AdminSettings.Town.Startup or score == 1 then
                     flag = false
                     print("This is a Town PC, startup command received")
-                    os.sleep(10)
+                    os.sleep(2)
                     shell.run("Main.lua")
                 else
                     print("No startup command, checked at: ")
