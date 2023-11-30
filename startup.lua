@@ -7,7 +7,7 @@ term.setCursorPos(1,1)
 
 print("Starting up (Waiting for Server)")
 
-os.sleep(10)
+os.sleep(1)
 
 local adminFile = "AdminSettings.json"
 local AdminSettings = Utility.readJsonFile(adminFile)
@@ -57,7 +57,7 @@ if AdminSettings then
                 if AdminSettings.Town.Startup or score == 1 then
                     flag = false
                     print("This is a Town PC, startup command received")
-                    os.sleep(2)
+                    os.sleep(1)
                     shell.run("Main.lua")
                 else
                     print("No startup command, checked at: ")
