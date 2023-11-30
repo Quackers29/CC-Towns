@@ -917,11 +917,11 @@ function AdminLoop()
             os.reboot()
         end
         local result, message, score = commands.scoreboard.players.get("GenState", "AllTowns")
-        if score == 1 then
+        if Admin and score == 1 then
             local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(townFolder), Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z}, Admin.Generation.spread)
             if OpLocation then
                 --commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
-                commands.clone(x,y,z,x,y,z,OpLocation.x,OpLocation.y,OpLocation.z)
+                commands.setblock(OpLocation.x,OpLocation.y,OpLocation.z,"computercraft:computer_command{ComputerId:"..Admin.ComputerId..",On:1}")
                 os.sleep(60)
             end
         end

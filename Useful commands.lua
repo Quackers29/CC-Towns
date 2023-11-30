@@ -160,3 +160,6 @@ table.name == "minecraft:air"
 
 
 -- Particles have a 30 metre radius or state "The particle was not visible for anybody"
+
+
+commands.setblock(1,1,1,"computercraft:computer_command{ComputerId:1,On:1}")
