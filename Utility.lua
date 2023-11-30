@@ -281,12 +281,11 @@ function Utility.isChunkLoaded(x, z)
     -- Function to check if the chunk at (x, z) is loaded
     -- Return true if loaded, false otherwise
     local boolean,table,count = commands.setblock(x,-65,z,"air")
-    print(table[1])
-    if table[1] == "That position is not loaded" then
-        return false
-    else
+    print(table[1], x, z)
+    if table[1] == "That position is out of this world!" then --"That position is out of this world!"
         return true
     end
+    return false
 end
 
 function Utility.findSuitableY(x, z)
@@ -416,12 +415,15 @@ function Utility.calculateWeightedDirection(nearbyTowns, currentPos)
 end
 
 function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos, spread)
-    local relevantTowns = Utility.filterNearbyTowns(nearbyTowns, maxRange)
+    local relevantTowns = Utility.filterNearbyTowns(nearbyTowns, maxRange*2)
     local angleDeviationDegrees = spread or 10
-    local oppositeDirectionX, oppositeDirectionZ = Utility.calculateWeightedDirection(relevantTowns, currentPos)
+    local oppositeDirectionX, oppositeDirectionZ = 1,1
+    if #relevantTowns > 0 then
+        oppositeDirectionX, oppositeDirectionZ = Utility.calculateWeightedDirection(relevantTowns, currentPos)
+    end
     local angle = math.atan2(oppositeDirectionZ, oppositeDirectionX)
 
-    for attempt = 1, 10 do
+    for attempt = 1, 5 do
         -- Add random deviation to the angle
         local randomizedAngle = Utility.addRandomAngleDeviation(angle, angleDeviationDegrees)
 
@@ -429,6 +431,7 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
         local newX = currentPos.x + distance * math.cos(randomizedAngle)
         local newZ = currentPos.z + distance * math.sin(randomizedAngle)
         local potentialNewPos = {x = Utility.round(newX), z = Utility.round(newZ)}
+        --print(potentialNewPos.x,potentialNewPos.z,newX,newZ,randomizedAngle,math.cos(randomizedAngle),math.sin(randomizedAngle),angle,angleDeviationDegrees,oppositeDirectionZ, oppositeDirectionX,#relevantTowns)
 
         if not Utility.isLocationTooClose(potentialNewPos, relevantTowns, minRange, currentPos) then
             if Utility.isChunkLoaded(potentialNewPos.x, potentialNewPos.z) then
