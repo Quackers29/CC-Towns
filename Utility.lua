@@ -503,5 +503,17 @@ end
 -- Utility.fillArea(10, 64, 10, 12, 66, 12, "computercraft:monitor_advanced", "facing=north")
 
 
+function Utility.SelfDestruct()
+    local x,y,z = gps.locate()
+    local townFolder = "Town_X"..x.."Y"..y.."Z"..z
+    if Utility.IsATown(townFolder) then
+        fs.delete("Towns\\"..townFolder.."\\")
+    end
+    Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "air","")
+    commands.fill(x,y,z,x,y,z,"air")
+    error("Program terminated, Computer deleted")
+end
+
+
 
 return Utility

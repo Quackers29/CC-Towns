@@ -142,8 +142,7 @@ if Settings then
         Settings.general.biomeDist = dist or nil
     end
     if Settings.town.name == nil then
-        print(x,y,z)
-        Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "computercraft:monitor_advanced", "")
+        Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "computercraft:monitor_advanced{width:1}", "")
 
         local townnameslist = Manager.readCSV(townNames)
         local randomIndex = math.random(1, #townnameslist)
@@ -900,6 +899,10 @@ function AdminLoop()
         os.sleep(60)
         CheckRestart()
         local Admin = Utility.readJsonFile(adminFile)
+        local result, message, score = commands.scoreboard.players.get("SelfDestruct", "AllTowns")
+        if score == 1 then
+            Utility.SelfDestruct()
+        end
         local result, message, score = commands.scoreboard.players.get("Restart", "AllTowns")
         if score == 1 then
             commands.scoreboard.players.set("Restart", "AllTowns", 0)
