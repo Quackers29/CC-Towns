@@ -429,20 +429,23 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
         local randomizedAngle = Utility.addRandomAngleDeviation(angle, angleDeviationDegrees)
 
         local distance = math.random(minRange, maxRange)
-        local newX = currentPos.x + (distance * math.cos(randomizedAngle))
-        local safetyX = currentPos.x + ((distance + safetyDist) * math.cos(randomizedAngle))
-        local newZ = currentPos.z + (distance * math.sin(randomizedAngle))
-        local safetyZ = currentPos.z + ((distance + safetyDist) * math.sin(randomizedAngle))
-        local potentialNewPos = {x = Utility.round(newX), z = Utility.round(newZ)}
-        local safetyPos = {x = Utility.round(safetyX), z = Utility.round(safetyZ)}
+        local newX = Utility.round(currentPos.x + (distance * math.cos(randomizedAngle)))
+        local safetyXpos = Utility.round(newX + safetyDist)
+        local safetyXneg = Utility.round(newX - safetyDist)
+        local newZ = Utility.round(currentPos.z + (distance * math.sin(randomizedAngle)))
+        local safetyZpos = Utility.round(newZ + safetyDist)
+        local safetyZneg = Utility.round(newZ - safetyDist)
+        local potentialNewPos = {x = newX, z = newZ}
         --print(potentialNewPos.x,potentialNewPos.z,newX,newZ,randomizedAngle,math.cos(randomizedAngle),math.sin(randomizedAngle),angle,angleDeviationDegrees,oppositeDirectionZ, oppositeDirectionX,#relevantTowns)
 
         if not Utility.isLocationTooClose(potentialNewPos, relevantTowns, minRange, currentPos) then
-            if Utility.isChunkLoaded(potentialNewPos.x, potentialNewPos.z) and Utility.isChunkLoaded(safetyPos.x, safetyPos.z) then
-                local OpY = Utility.findSuitableY(potentialNewPos.x, potentialNewPos.z)
-                if OpY then
-                    potentialNewPos.y = OpY
-                    return potentialNewPos
+            if Utility.isChunkLoaded(newX, newZ) then
+                if Utility.isChunkLoaded(newX, safetyZpos) and Utility.isChunkLoaded(newX, safetyZneg) and Utility.isChunkLoaded(safetyXpos, newZ) and Utility.isChunkLoaded(safetyXneg, newZ) then
+                    local OpY = Utility.findSuitableY(potentialNewPos.x, potentialNewPos.z)
+                    if OpY then
+                        potentialNewPos.y = OpY
+                        return potentialNewPos
+                    end
                 end
             end
         end
