@@ -6,5 +6,5 @@ os.sleep(10)
 if Utility.IsATown(townFolder) then
     fs.delete("Towns\\"..townFolder.."\\")
 end
-Utility.fillArea(x+1,y+1,z,x-1,y+3,z, "air")
+Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "air","")
 commands.fill(x,y,z,x,y,z,"air")

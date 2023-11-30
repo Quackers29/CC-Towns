@@ -142,8 +142,9 @@ if Settings then
         Settings.general.biomeDist = dist or nil
     end
     if Settings.town.name == nil then
+        print(x,y,z)
+        Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "computercraft:monitor_advanced", "")
 
-        Utility.fillArea(x+1,y+1,z,x-1,y+3,z, "computercraft:monitor_advanced")
         local townnameslist = Manager.readCSV(townNames)
         local randomIndex = math.random(1, #townnameslist)
         print(randomIndex)
