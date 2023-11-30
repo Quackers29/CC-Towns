@@ -18,7 +18,7 @@ local x,y,z = gps.locate()
 --Add a Town restart command, sets a time that the event occured and if a town has not restarted based on that time, it does.
 
 if AdminSettings then
-    if AdminSettings.Admin.ControlPC.x == x and AdminSettings.Admin.ControlPC.y == y and AdminSettings.Admin.ControlPC.z == z then
+    if AdminSettings.Admin.ControlPC.x == x and AdminSettings.Admin.ControlPC.z == z then
         term.clear()
         term.setCursorPos(1,1)
         print("This is the control PC")
