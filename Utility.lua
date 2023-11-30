@@ -281,6 +281,7 @@ function Utility.isChunkLoaded(x, z)
     -- Function to check if the chunk at (x, z) is loaded
     -- Return true if loaded, false otherwise
     local boolean,table,count = commands.setblock(x,-65,z,"air")
+    print(table[1])
     if table[1] == "That position is not loaded" then
         return false
     else
@@ -479,20 +480,17 @@ end
 
 
 -- Function to execute the setblock command with optional orientation
-function Utility.setBlock(x, y, z, blockName, orientation)
+function Utility.setBlock(x, y, z, blockName)
     local command = "setblock " .. x .. " " .. y .. " " .. z .. " " .. blockName
-    if orientation and orientation ~= "" then
-        command = command .. " " .. orientation
-    end
     commands.exec(command)
 end
 
 -- Main function to fill an area with optionally oriented blocks
-function Utility.fillArea(startX, startY, startZ, endX, endY, endZ, blockName, orientation)
+function Utility.fillArea(startX, startY, startZ, endX, endY, endZ, blockName)
     for x = startX, endX do
         for y = startY, endY do
             for z = startZ, endZ do
-                Utility.setBlock(x, y, z, blockName, orientation)
+                Utility.setBlock(x, y, z, blockName)
             end
         end
     end
@@ -500,7 +498,7 @@ end
 -- Example usage
 -- Replace these values with your specific coordinates and desired block
 -- Orientation is optional; remove or leave it empty for default orientation
--- Utility.fillArea(10, 64, 10, 12, 66, 12, "computercraft:monitor_advanced", "facing=north")
+-- Utility.fillArea(10, 64, 10, 12, 66, 12, "computercraft:monitor_advanced{width:1}", "facing=north")
 
 
 function Utility.SelfDestruct()
