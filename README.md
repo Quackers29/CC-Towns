@@ -2,13 +2,20 @@
 ![2023-10-11_19 57 38](https://github.com/Quackers29/CC-Towns/assets/11053436/10cdbb2f-fdda-4f29-a7a4-6d07c8116f14)
 
 # Current State
+  ### Town Generation: Completed
+  Three town spawning methods: manual, singular(one after the other), and exponential(all towns spawn towns).
+  Options to set generation range and minimum distance requirements.
+  Feature to enable self-destruct for clearing active towns.
+  
+![2023-11-30_22 06 20](https://github.com/Quackers29/CC-Towns/assets/11053436/6be31665-aed0-4200-b879-b649597be827)
+
   ### Trading: Completed
-  Has a Trading window and a History window
-  All Towns check restock values for each resource, if excess, starts and auction for the excess
-  If low, looks around for auctions of that item and makes a bid automatically, judging how much to bid on various factors
-  The selling town reviews the auction at the end (1 minute currently) and goes for the best bid if acceptable
-  The resources are virtually transported over time to the Buying Town
-  Reources are traded for the bid emeralds
+  Features a Trading and History window.
+  Towns monitor restock levels of resources; surplus triggers an auction.
+  Scarcity leads to automated bids on auctions based on multiple factors.
+  Selling town evaluates auction after 1 minute, accepting the highest suitable bid.
+  Resources are virtually transferred over time to the Buyer.
+  Resources are exchanged for the bid amount in emeralds.
   
 ![2023-11-23_22 46 38](https://github.com/Quackers29/CC-Towns/assets/11053436/aae29025-a5c7-48ef-a743-d64dac360c2b)
 
