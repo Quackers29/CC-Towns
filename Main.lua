@@ -142,6 +142,8 @@ if Settings then
         Settings.general.biomeDist = dist or nil
     end
     if Settings.town.name == nil then
+
+        Utility.fillArea(x+1,y+1,z,x-1,y+3,z, "computercraft:monitor_advanced")
         local townnameslist = Manager.readCSV(townNames)
         local randomIndex = math.random(1, #townnameslist)
         print(randomIndex)
@@ -183,7 +185,7 @@ if not fs.exists(upgradesFile) then
         if temp then
             for x,y in ipairs(autoCompleted) do
                 if y == v then
-                    temp.toggle = true                   
+                    temp.toggle = true
                 end
             end
             newTable[v] = temp
@@ -914,7 +916,6 @@ function AdminLoop()
             if OpLocation then
                 commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
                 commands.clone(x,y,z,x,y,z,OpLocation.x,OpLocation.y,OpLocation.z)
-                Utility.fillArea(OpLocation.x+1,OpLocation.y+1,OpLocation.z,OpLocation.x-1,OpLocation.y+3,OpLocation.z, "computercraft:monitor_advanced", "facing=north")
                 os.sleep(60)
             end
         end
