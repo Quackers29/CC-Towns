@@ -518,11 +518,16 @@ function Utility.SelfDestruct()
         fs.delete("Towns\\"..townFolder.."\\")
     end
     Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "air","")
-    commands.exec("summon firework_rocket ~ ~4 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
+    Utility.Fireworks()
     commands.fill(x,y,z,x,y,z,"air")
     error("Program terminated, Computer deleted")
 end
 
+function Utility.Fireworks()
+    commands.exec("summon firework_rocket ~1 ~4 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:1,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
+    commands.exec("summon firework_rocket ~ ~4 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
+    commands.exec("summon firework_rocket ~-1 ~4 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:2,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
+end
 
 
 return Utility
