@@ -153,7 +153,7 @@ if Settings then
         Settings.town.timestamp = os.epoch("utc") -- milliseconds
         print(townName)
         print("Created (utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
-        commands.say("New Town: "..townName..". Founded(utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
+        commands.say("New Town: "..townName.." ("..x..","..y..","..z.."). Founded(utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
     end
     if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then
         INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
