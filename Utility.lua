@@ -417,6 +417,7 @@ end
 function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos, spread)
     local relevantTowns = Utility.filterNearbyTowns(nearbyTowns, maxRange*2)
     local angleDeviationDegrees = spread or 10
+    local safetyDist = 32 -- 2 chunks further into the void
     local oppositeDirectionX, oppositeDirectionZ = 1,1
     if #relevantTowns > 0 then
         oppositeDirectionX, oppositeDirectionZ = Utility.calculateWeightedDirection(relevantTowns, currentPos)
@@ -429,12 +430,15 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
 
         local distance = math.random(minRange, maxRange)
         local newX = currentPos.x + distance * math.cos(randomizedAngle)
+        local safetyX = currentPos.x + distance + safetyDist * math.cos(randomizedAngle)
         local newZ = currentPos.z + distance * math.sin(randomizedAngle)
+        local safetyZ = currentPos.z + distance + safetyDist * math.sin(randomizedAngle)
         local potentialNewPos = {x = Utility.round(newX), z = Utility.round(newZ)}
+        local safetyPos = {x = Utility.round(safetyX), z = Utility.round(safetyZ)}
         --print(potentialNewPos.x,potentialNewPos.z,newX,newZ,randomizedAngle,math.cos(randomizedAngle),math.sin(randomizedAngle),angle,angleDeviationDegrees,oppositeDirectionZ, oppositeDirectionX,#relevantTowns)
 
         if not Utility.isLocationTooClose(potentialNewPos, relevantTowns, minRange, currentPos) then
-            if Utility.isChunkLoaded(potentialNewPos.x, potentialNewPos.z) then
+            if Utility.isChunkLoaded(potentialNewPos.x, potentialNewPos.z) and Utility.isChunkLoaded(safetyPos.x, safetyPos.z) then
                 local OpY = Utility.findSuitableY(potentialNewPos.x, potentialNewPos.z)
                 if OpY then
                     potentialNewPos.y = OpY
