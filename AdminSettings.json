@@ -10,7 +10,7 @@
   },
   "Town": {
     "Startup": false,
-    "MinDistance": 10,
+    "MinDistance": 90,
     "Restart": 0,
     "AdminWait": 20
   },
