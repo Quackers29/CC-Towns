@@ -158,3 +158,5 @@ table.name == "minecraft:air"
     name = name,
 }
 
+
+-- Particles have a 30 metre radius or state "The particle was not visible for anybody"

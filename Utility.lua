@@ -417,7 +417,7 @@ end
 function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos, spread)
     local relevantTowns = Utility.filterNearbyTowns(nearbyTowns, maxRange*2)
     local angleDeviationDegrees = spread or 10
-    local safetyDist = 32 -- 2 chunks further into the void
+    local safetyDist = 90 -- 2 chunks further into the void
     local oppositeDirectionX, oppositeDirectionZ = 1,1
     if #relevantTowns > 0 then
         oppositeDirectionX, oppositeDirectionZ = Utility.calculateWeightedDirection(relevantTowns, currentPos)
