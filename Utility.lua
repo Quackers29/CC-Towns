@@ -424,7 +424,7 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
     end
     local angle = math.atan2(oppositeDirectionZ, oppositeDirectionX)
 
-    for attempt = 1, 5 do
+    for attempt = 1, 10 do
         -- Add random deviation to the angle
         local randomizedAngle = Utility.addRandomAngleDeviation(angle, angleDeviationDegrees)
 
