@@ -151,7 +151,7 @@ if Settings then
             if townNamesListSource then
                 townNamesList["used"] = {}
                 townNamesList["available"] = townNamesListSource["available"]
-                
+
             end
         else
             townNamesList = Utility.readJsonFile(townNames)
@@ -186,14 +186,10 @@ if Settings then
             Utility.writeJsonFile(townNames,townNamesList)
         end
         if not foundName then
-            commands.say("Not town name available, deleting town: "..townFolder)
+            commands.say("No town name available, deleting town: "..townFolder)
             Utility.SelfDestruct()
         end
 
-        local townnameslist = Manager.readCSV(townNames)
-        local randomIndex = math.random(1, #townnameslist)
-        print(randomIndex)
-        local townName = townnameslist[randomIndex].id
         Settings.town.name = townName
         Settings.town.born = os.date("%Y-%m-%d %H:%M:%S", os.epoch("utc")/1000)
         Settings.town.timestamp = os.epoch("utc") -- milliseconds
@@ -950,6 +946,11 @@ function AdminLoop()
         local Admin = Utility.readJsonFile(adminFile)
         local result, message, score = commands.scoreboard.players.get("SelfDestruct", "AllTowns")
         if score == 1 then
+            local townNamesList = Utility.readJsonFile(townNames)
+            if townNamesList and townNamesList.used and Settings then
+                townNamesList.used[Settings.town.name] = nil
+                Utility.writeJsonFile(townNames,townNamesList)
+            end
             Utility.SelfDestruct()
         end
         local result, message, score = commands.scoreboard.players.get("Restart", "AllTowns")
