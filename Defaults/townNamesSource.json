@@ -1,5 +1,4 @@
 {
-  "original": ["Bellmeadow", "Silverby"],
-  "available": [],
+  "available": ["Bellmeadow", "Silverby"],
   "used": {}
 }

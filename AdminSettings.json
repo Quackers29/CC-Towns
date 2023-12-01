@@ -11,15 +11,15 @@
   },
   "Town": {
     "Startup": false,
-    "MinDistance": 90,
+    "MinDistance": 8,
     "Restart": 0,
     "AdminWait": 20
   },
   "Generation": {
     "State": true,
     "Type": 1,
-    "minDistance": 90,
-    "maxDistance": 100,
+    "minDistance": 10,
+    "maxDistance": 12,
     "spread": 45
   }
 }

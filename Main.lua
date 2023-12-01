@@ -145,15 +145,25 @@ if Settings then
     if Settings.town.name == nil then
         Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "computercraft:monitor_advanced{width:1}")
 
+        local townNamesList = nil
         if not fs.exists(townNames) then
-            Utility.copyFile(townNamesSource,townNames)
+            local townNamesListSource = Utility.readJsonFile(townNamesSource)
+            if townNamesListSource then
+                townNamesList["used"] = {}
+                townNamesList["available"] = townNamesListSource["available"]
+            end
+        else
+            townNamesList = Utility.readJsonFile(townNames)
         end
-        local townNamesList = Utility.readJsonFile(townNames)
+        
         local foundName = false
         local townName = nil
         if townNamesList then
             if #townNamesList.available == 0 then
-                townNamesList.available = townNamesList.original
+                local townNamesListSource = Utility.readJsonFile(townNamesSource)
+                if townNamesListSource then
+                    townNamesList["available"] = townNamesListSource["available"]
+                end
             end
             local randomIndex = math.random(1, #townNamesList.available)
             townName = townNamesList.available[randomIndex]
