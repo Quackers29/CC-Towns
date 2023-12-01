@@ -149,9 +149,9 @@ if Settings then
         if not fs.exists(townNames) then
             local townNamesListSource = Utility.readJsonFile(townNamesSource)
             if townNamesListSource then
+                townNamesList = {}
                 townNamesList["used"] = {}
                 townNamesList["available"] = townNamesListSource["available"]
-
             end
         else
             townNamesList = Utility.readJsonFile(townNames)
