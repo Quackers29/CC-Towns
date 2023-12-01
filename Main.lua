@@ -19,7 +19,8 @@ local productionSource = "Defaults\\production.json"
 local tradeSource = "Defaults\\trades.json"
 local covertFile = "Defaults\\convert.json"
 local biomes = "Defaults\\biomes.txt"
-local townNames = "Defaults\\townNames.txt"
+local townNames = "Defaults\\townNames.json"
+local townNamesSource = "Defaults\\townNamesSource.json"
 local mainflag = true
 local secondflag = true
 local wait = 5 --IN/OUT wait timer
@@ -143,6 +144,40 @@ if Settings then
     end
     if Settings.town.name == nil then
         Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "computercraft:monitor_advanced{width:1}")
+
+        if not fs.exists(townNames) then
+            Utility.copyFile(townNamesSource,townNames)
+        end
+        local townNamesList = Utility.readJsonFile(townNames)
+        local foundName = false
+        local townName = nil
+        if townNamesList then
+            if #townNamesList.available == 0 then
+                townNamesList.available = townNamesList.original
+            end
+            local randomIndex = math.random(1, #townNamesList.available)
+            townName = townNamesList.available[randomIndex]
+            table.remove(townNamesList.available,randomIndex)
+            if townNamesList.used[townName] then
+                for x = 2,5 do
+                    if not townNamesList.used[townName..x] then
+                        townName = townName..x
+                        foundName = true
+                        break
+                    end
+                end
+            else
+                foundName = true
+            end
+            if foundName then
+                townNamesList.used[townName] = townFolder
+            end
+            Utility.writeJsonFile(townNames,townNamesList)
+        end
+        if not foundName then
+            commands.say("Not town name available, deleting town: "..townFolder)
+            Utility.SelfDestruct()
+        end
 
         local townnameslist = Manager.readCSV(townNames)
         local randomIndex = math.random(1, #townnameslist)
