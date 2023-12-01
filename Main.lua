@@ -151,6 +151,7 @@ if Settings then
             if townNamesListSource then
                 townNamesList["used"] = {}
                 townNamesList["available"] = townNamesListSource["available"]
+                
             end
         else
             townNamesList = Utility.readJsonFile(townNames)
