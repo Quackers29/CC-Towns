@@ -120,11 +120,12 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
 
                         trades.selling[itemString] = nil
                         Utility.writeJsonFile(tradeFile,trades)
+                        commands.say(auctionStatus)
                     else
                         --Not acceptable, just delete the response table and Seller offer
                         if not hasQuantity then
                             print("Seller did not have enough resource")
-                            commands.say("Seller did not have enough resource")
+                            --commands.say("Seller did not have enough resource")
                         end
                         print("No acceptable trades for: "..itemString.." Bids: "..#currentItemResponses)
                         auctionStatus = "No acceptable trades for: "..itemString.." Bids: "..#currentItemResponses
@@ -140,8 +141,8 @@ function TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile) -- You are 
                     trades.selling[itemString] = nil
                     Utility.writeJsonFile(tradeFile,trades)
                 end
-                commands.say("Auction for "..itemString.." x"..offer.maxQuantity.." has ended. ")
-                commands.say(auctionStatus)
+                --commands.say("Auction for "..itemString.." x"..offer.maxQuantity.." has ended. ")
+                --commands.say(auctionStatus)
             end
         end
     end
@@ -187,7 +188,7 @@ function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
                 --Move proposal to accepted
                 trades.accepted[i] = sellerTrades.sold[tostring(v.timeOffered)]
                 trades.proposal[i] = nil
-                commands.say("Seller Accepted trade")
+                --commands.say("Seller Accepted trade")
             else
                 --Has the proposal expired?
                 if currentTime > (v.timeCloses + 30000) then -- 30 seconds after the auction has ended
@@ -197,7 +198,7 @@ function TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
                     resTable = Utility.AddMcItemToTable("minecraft:emerald",resTable,(v.bidPrice))
                     Utility.writeJsonFile(resFile,resTable)
                     trades.proposal[i] = nil
-                    commands.say("Trade not accepted by Seller")
+                    --commands.say("Trade not accepted by Seller")
                 end
             end
         end
@@ -498,7 +499,7 @@ function TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                                 timeOffered = currentTime,
                                 timeCloses = currentTime + (1000*trades.settings.deadline)
                             }
-                            commands.say("Auction has started for: "..i.." x"..quantityToTrade)
+                            --commands.say("Auction has started for: "..i.." x"..quantityToTrade)
                             os.sleep(0.001) --sleep 1 milliseconds to change timeOffered between items (reference code)
                         end
                     end
