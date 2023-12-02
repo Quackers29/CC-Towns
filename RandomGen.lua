@@ -16,6 +16,40 @@ while true do
                 os.sleep(60)
             end
         end
+        if Admin and score == 3 then
+            local result, message, score = commands.exec("list")
+            local playerList = {}
+            if result then
+                -- Splitting the string at ': ' to isolate the player names
+                local splitResult = Utility.SplitString(message, ": ")
+                if #splitResult > 1 then
+                    local players = splitResult[2]
+
+                    -- Further splitting by ', ' to get individual player names
+                    playerList = Utility.SplitString(players, ", ")
+                end
+
+                -- Output the table of player names
+                for i, playerName in ipairs(playerList) do
+                    print(playerName)
+                end
+            end
+
+            if #playerList > 0 then
+                for i,v in ipairs(playerList) do
+                    local result, message, score = commands.scoreboard.players.get(v, "useCarrot")
+                    if score > 0 then
+                        local a,b,c = commands.data.get.entity(v)
+                        local c= b[1]
+                        local d=string.match(c, 'Pos:.-.]')
+                        local x,y,z = string.match(d, "(%--%d*%.?%d+).,.(%--%d*%.?%d+).,.(%--%d*%.?%d+)")
+                        commands.say(x,y,z)
+                        commands.setblock(x,y,z,"computercraft:computer_command{ComputerId:"..Admin.ComputerId..",On:1}")
+                    end
+                end
+                commands.exec("scoreboard players reset * useCarrot")
+            end
+        end
     end
     os.sleep(10)
 end
