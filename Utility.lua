@@ -530,4 +530,23 @@ function Utility.Fireworks()
 end
 
 
+local inputString = "There are ... online: gazer29, player2, player3"  -- Example string
+local playerList = {}
+
+-- Function to split the string by a delimiter
+function Utility.SplitString(inputstr, sep)
+    if sep == nil then
+        sep = "%s"
+    end
+    local t = {}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+        table.insert(t, str)
+    end
+    return t
+end
+
+
+
+
+
 return Utility
