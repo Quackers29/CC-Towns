@@ -21,12 +21,18 @@ while true do
             local playerList = {}
             if result then
                 -- Splitting the string at ': ' to isolate the player names
-                local splitResult = Utility.SplitString(message, ": ")
+                local splitResult = Utility.SplitString(message[1], ":")
                 if #splitResult > 1 then
                     local players = splitResult[2]
-
-                    -- Further splitting by ', ' to get individual player names
-                    playerList = Utility.SplitString(players, ", ")
+                
+                    -- Check if there's more than one player
+                    if string.find(players, ", ") then
+                        -- Split by ', ' for multiple players
+                        playerList = Utility.SplitString(players, ", ")
+                    else
+                        -- Directly insert the single player name
+                        table.insert(playerList, players)
+                    end
                 end
 
                 -- Output the table of player names
