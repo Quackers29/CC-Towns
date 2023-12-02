@@ -49,7 +49,7 @@ while true do
                         local result1, message1, score1 = commands.data.get.entity(v,"playerGameType")
                         if score1 == 1 and string.match(message[1],"minecraft:overworld") then
                             --commands.say(x,y,z)
-                            Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,Admin.ComputerId)
+                            Utility.SpawnTown(x,y,z,Admin.ComputerId)
                         end
                     end
                 end
