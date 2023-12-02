@@ -190,6 +190,7 @@ if Settings then
             Utility.SelfDestruct()
         end
 
+        Utility.SpawnStructure(x,y,z,"structure_001")
         Settings.town.name = townName
         Settings.town.born = os.date("%Y-%m-%d %H:%M:%S", os.epoch("utc")/1000)
         Settings.town.timestamp = os.epoch("utc") -- milliseconds

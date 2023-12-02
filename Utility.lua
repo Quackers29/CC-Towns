@@ -542,8 +542,12 @@ function Utility.SplitString(inputstr, sep)
 end
 
 function Utility.SpawnTown(x,y,z,Id)
-    commands.exec("setblock "..x.." "..(y-2).." "..z.."minecraft:structure_block{mode:\"LOAD\",name:\"structure_001\",posX:-10,posY:1,posZ:-8,sizeX:xSize,sizeY:ySize,sizeZ:zSize,integrity:1.0f,showboundingbox:1b} replace")
     commands.setblock(x,y,z,"computercraft:computer_command{ComputerId:"..Id..",On:1}")
+end
+
+function Utility.SpawnStructure(x,y,z,name)
+    commands.exec("setblock "..x.." "..y.." "..z.." minecraft:structure_block{mode:\"LOAD\",name:\""..name.."\",posX:-10,posY:1,posZ:-8,sizeX:xSize,sizeY:ySize,sizeZ:zSize,integrity:1.0f,showboundingbox:1b} replace")
+    commands.exec("setblock "..x.." "..(y-1).." "..z.." minecraft:redstone_block")
 end
 
 return Utility
