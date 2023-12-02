@@ -21,20 +21,19 @@ while true do
             local playerList = {}
             if result then
                 -- Splitting the string at ': ' to isolate the player names
-                local splitResult = Utility.SplitString(message[1], ":")
-                if #splitResult > 1 then
-                    local players = splitResult[2]
-                
-                    -- Check if there's more than one player
-                    if string.find(players, ", ") then
-                        -- Split by ', ' for multiple players
-                        playerList = Utility.SplitString(players, ", ")
-                    else
-                        -- Directly insert the single player name
-                        table.insert(playerList, players)
+                function ExtractPlayerNames(inputstr)
+                    local names = {}
+                    local pattern = "online: (.+)$"
+                    local players = string.match(inputstr, pattern)
+                    if players then
+                        for name in string.gmatch(players, "([^, ]+)") do
+                            table.insert(names, name)
+                        end
                     end
+                    return names
                 end
-
+                local playerList = ExtractPlayerNames(message[2])
+                
                 -- Output the table of player names
                 for i, playerName in ipairs(playerList) do
                     print(playerName)
