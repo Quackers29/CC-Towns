@@ -12,7 +12,7 @@ while true do
             if OpLocation then
                 --commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
                 --commands.clone(RandomTown.x,RandomTown.y,RandomTown.z,RandomTown.x,RandomTown.y,RandomTown.z,OpLocation.x,OpLocation.y,OpLocation.z)
-                commands.setblock(OpLocation.x,OpLocation.y,OpLocation.z,"computercraft:computer_command{ComputerId:"..Admin.ComputerId..",On:1}")
+                Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,Admin.ComputerId)
                 os.sleep(60)
             end
         end
@@ -33,11 +33,6 @@ while true do
                     return names
                 end
                 playerList = ExtractPlayerNames(message[1])
-
-                -- Output the table of player names
-                for i, playerName in ipairs(playerList) do
-                    print(playerName)
-                end
             end
 
             if #playerList > 0 then
@@ -52,9 +47,9 @@ while true do
                         
                         local result, message, score = commands.data.get.entity(v,"Dimension")
                         local result1, message1, score1 = commands.data.get.entity(v,"playerGameType")
-                        if score1 and string.match(message[1],"minecraft:overworld") then
+                        if score1 == 1 and string.match(message[1],"minecraft:overworld") then
                             --commands.say(x,y,z)
-                            commands.setblock(x,y,z,"computercraft:computer_command{ComputerId:"..Admin.ComputerId..",On:1}")
+                            Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,Admin.ComputerId)
                         end
                     end
                 end

@@ -524,9 +524,9 @@ function Utility.SelfDestruct()
 end
 
 function Utility.Fireworks()
-    commands.exec("summon firework_rocket ~1 ~4 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:1,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
-    commands.exec("summon firework_rocket ~ ~4 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
-    commands.exec("summon firework_rocket ~-1 ~4 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:2,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
+    commands.exec("summon firework_rocket ~1 ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:1,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
+    commands.exec("summon firework_rocket ~ ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
+    commands.exec("summon firework_rocket ~-1 ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:2,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
 end
 
 -- Function to split the string by a delimiter
@@ -541,5 +541,9 @@ function Utility.SplitString(inputstr, sep)
     return t
 end
 
+function Utility.SpawnTown(x,y,z,Id)
+    commands.exec("setblock "..x.." "..(y-2).." "..z.."minecraft:structure_block{mode:\"LOAD\",name:\"structure_001\",posX:-10,posY:1,posZ:-8,sizeX:xSize,sizeY:ySize,sizeZ:zSize,integrity:1.0f,showboundingbox:1b} replace")
+    commands.setblock(x,y,z,"computercraft:computer_command{ComputerId:"..Id..",On:1}")
+end
 
 return Utility

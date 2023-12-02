@@ -143,7 +143,7 @@ if Settings then
         Settings.general.biomeDist = dist or nil
     end
     if Settings.town.name == nil then
-        Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "computercraft:monitor_advanced{width:1}")
+        --Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "computercraft:monitor_advanced{width:1}")
 
         local townNamesList = nil
         if not fs.exists(townNames) then
@@ -969,7 +969,7 @@ function AdminLoop()
             local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(townFolder), Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z}, Admin.Generation.spread)
             if OpLocation then
                 --commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
-                commands.setblock(OpLocation.x,OpLocation.y,OpLocation.z,"computercraft:computer_command{ComputerId:"..Admin.ComputerId..",On:1}")
+                Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,Admin.ComputerId)
                 os.sleep(60)
             end
         end
