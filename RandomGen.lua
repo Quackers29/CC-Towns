@@ -32,8 +32,8 @@ while true do
                     end
                     return names
                 end
-                local playerList = ExtractPlayerNames(message[2])
-                
+                playerList = ExtractPlayerNames(message[1])
+
                 -- Output the table of player names
                 for i, playerName in ipairs(playerList) do
                     print(playerName)
@@ -48,6 +48,7 @@ while true do
                         local c= b[1]
                         local d=string.match(c, 'Pos:.-.]')
                         local x,y,z = string.match(d, "(%--%d*%.?%d+).,.(%--%d*%.?%d+).,.(%--%d*%.?%d+)")
+                        local x,y,z = Utility.round(x),Utility.round(y),Utility.round(z)
                         commands.say(x,y,z)
                         commands.setblock(x,y,z,"computercraft:computer_command{ComputerId:"..Admin.ComputerId..",On:1}")
                     end
