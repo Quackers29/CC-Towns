@@ -49,8 +49,13 @@ while true do
                         local d=string.match(c, 'Pos:.-.]')
                         local x,y,z = string.match(d, "(%--%d*%.?%d+).,.(%--%d*%.?%d+).,.(%--%d*%.?%d+)")
                         local x,y,z = Utility.round(x),Utility.round(y),Utility.round(z)
-                        commands.say(x,y,z)
-                        commands.setblock(x,y,z,"computercraft:computer_command{ComputerId:"..Admin.ComputerId..",On:1}")
+                        
+                        local result, message, score = commands.data.get.entity(v,"Dimension")
+                        local result1, message1, score1 = commands.data.get.entity(v,"playerGameType")
+                        if score1 and string.match(message[1],"minecraft:overworld") then
+                            --commands.say(x,y,z)
+                            commands.setblock(x,y,z,"computercraft:computer_command{ComputerId:"..Admin.ComputerId..",On:1}")
+                        end
                     end
                 end
                 commands.exec("scoreboard players reset * useCarrot")

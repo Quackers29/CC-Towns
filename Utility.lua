@@ -529,10 +529,6 @@ function Utility.Fireworks()
     commands.exec("summon firework_rocket ~-1 ~4 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:2,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
 end
 
-
-local inputString = "There are ... online: gazer29, player2, player3"  -- Example string
-local playerList = {}
-
 -- Function to split the string by a delimiter
 function Utility.SplitString(inputstr, sep)
     if sep == nil then
@@ -544,10 +540,6 @@ function Utility.SplitString(inputstr, sep)
     end
     return t
 end
-
-
-
-
 
 
 return Utility
