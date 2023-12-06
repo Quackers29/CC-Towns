@@ -187,10 +187,10 @@ if Settings then
         end
         if not foundName then
             commands.say("No town name available, deleting town: "..townFolder)
+            Monitor.clear()
             Utility.SelfDestruct()
         end
 
-        Utility.SpawnStructure(x,y-1,z,"structure_001")
         Settings.town.name = townName
         Settings.town.born = os.date("%Y-%m-%d %H:%M:%S", os.epoch("utc")/1000)
         Settings.town.timestamp = os.epoch("utc") -- milliseconds
@@ -952,6 +952,7 @@ function AdminLoop()
                 townNamesList.used[Settings.town.name] = nil
                 Utility.writeJsonFile(townNames,townNamesList)
             end
+            Monitor.clear()
             Utility.SelfDestruct()
         end
         local result, message, score = commands.scoreboard.players.get("Restart", "AllTowns")

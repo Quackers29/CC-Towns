@@ -30,5 +30,10 @@
       "minecraft:bread":1000
     }
   },
-  "lastRestarted": null
+  "lastRestarted": null,
+  "Population":{
+    "Current":0,
+    "Capacity":100,
+    "ThresholdRatio":0.2
+  }
 }
