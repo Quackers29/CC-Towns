@@ -945,8 +945,8 @@ function AdminLoop()
         local wait = Admin.Town.AdminWait or 60
         os.sleep(wait)
         local Admin = Utility.readJsonFile(adminFile)
-        local result, message, score = commands.scoreboard.players.get("SelfDestruct", "AllTowns")
-        if score == 1 then
+        
+        if Utility.ScoreGet("SelfDestruct", "AllTowns") == 1 then
             local townNamesList = Utility.readJsonFile(townNames)
             if townNamesList and townNamesList.used and Settings then
                 townNamesList.used[Settings.town.name] = nil
@@ -955,8 +955,8 @@ function AdminLoop()
             Monitor.clear()
             Utility.SelfDestruct()
         end
-        local result, message, score = commands.scoreboard.players.get("Restart", "AllTowns")
-        if score == 1 then
+        
+        if Utility.ScoreGet("Restart", "AllTowns") == 1 then
             commands.scoreboard.players.set("Restart", "AllTowns", 0)
             if Admin then
                 Admin.Town.Restart = os.epoch("utc")
@@ -966,8 +966,8 @@ function AdminLoop()
             Monitor.write("Offline",1,1)
             os.reboot()
         end
-        local result, message, score = commands.scoreboard.players.get("GenState", "AllTowns")
-        if Admin and score == 1 then
+
+        if Admin and Utility.ScoreGet("GenState", "AllTowns") == 1 then
             local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(townFolder), Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z}, Admin.Generation.spread)
             if OpLocation then
                 --commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)

@@ -542,7 +542,9 @@ function Utility.SplitString(inputstr, sep)
 end
 
 function Utility.SpawnTown(x,y,z,Id)
-    Utility.SpawnStructure(x,y-1,z,"structure_001")
+    if Utility.ScoreGet("GenStructure", "AllTowns") == 1 then
+        Utility.SpawnStructure(x,y-1,z,"structure_001")
+    end
     commands.setblock(x,y,z,"computercraft:computer_command{ComputerId:"..Id..",On:1}")
 end
 
@@ -551,10 +553,15 @@ function Utility.SpawnStructure(x,y,z,name)
     commands.exec("setblock "..x.." "..(y-1).." "..z.." minecraft:redstone_block")
 end
 
-
-
-
-
+function Utility.ScoreGet(player, objective)
+    local result, message, score = commands.scoreboard.players.get(player, objective)
+    if string.match(message[1], "Can't get value") then
+        return score
+    else
+        --No score set
+        return nil
+    end
+end
 
 function Utility.PopCheck()
 
