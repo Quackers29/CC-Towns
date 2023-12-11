@@ -935,7 +935,7 @@ function CheckRestart()
             Monitor.clear()
             Monitor.write("Offline",1,1)
             os.reboot()
-        end 
+        end
     end
 end
 
