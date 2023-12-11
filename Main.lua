@@ -143,7 +143,9 @@ if Settings then
         Settings.general.biomeDist = dist or nil
     end
     if Settings.town.name == nil then
-        --Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "computercraft:monitor_advanced{width:1}")
+        if Utility.isAirBlock(x, y+1, z) then
+            Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "computercraft:monitor_advanced{width:1}")
+        end
 
         local townNamesList = nil
         if not fs.exists(townNames) then
