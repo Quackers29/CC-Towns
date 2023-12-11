@@ -10,7 +10,7 @@ print("Computer will Self Destruct in 5 seconds")
 os.sleep(5)
 local townNamesList = Utility.readJsonFile(townNames)
 local Settings = Utility.readJsonFile(SettingsFile)
-if townNamesList and townNamesList.used and Settings then
+if townNamesList and townNamesList.used and Settings and Settings.town.name ~= nil then
     townNamesList.used[Settings.town.name] = nil
     Utility.writeJsonFile(townNames,townNamesList)
 end
