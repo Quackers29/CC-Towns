@@ -350,9 +350,6 @@ end
 
 
 
-
-
-
 function Utility.degreesToRadians(deg)
     return deg * (math.pi / 180)
 end
