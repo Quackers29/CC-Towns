@@ -33,9 +33,12 @@
   "lastRestarted": null,
   "population":{
     "lastUpkeep":null,
-    "startedGain":null,
+    "lastGain":null,
+    "lastTourist":null,
     "wait":60,
     "upkeepTime":600,
+    "touristTime":1200,
+    "touristRatio":0.1,
     "current":10,
     "cap":100,
     "capFactors":{
