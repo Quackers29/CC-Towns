@@ -31,9 +31,30 @@
     }
   },
   "lastRestarted": null,
-  "Population":{
-    "Current":0,
-    "Capacity":100,
-    "ThresholdRatio":0.2
+  "population":{
+    "lastUpkeep":null,
+    "startedGain":null,
+    "wait":60,
+    "upkeepTime":600,
+    "current":10,
+    "cap":100,
+    "capFactors":{
+      "Base":100
+    },
+    "gain":1,
+    "gainFactors":{
+      "Base":1
+    },
+    "gainSpeed":60,
+    "gainSpeedFactors":{
+      "Base":60
+    },
+    "thresholdRatio":0.2,
+    "genCosts": {
+      "Bread": 50
+    },
+    "upkeeep": {
+      "Bread": 1
+    }
   }
 }

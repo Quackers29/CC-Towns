@@ -561,7 +561,8 @@ function Utility.ScoreGet(player, objective)
 end
 
 function Utility.PopCheck()
-
+    --Initial idea of Population, basic slow gen to Cap
+    
 end
 
 

@@ -15,6 +15,11 @@
     "toggle": false,
     "cost": {
       "Iron": 100
+    },
+    "effects":{
+      "Production.*.WoodFactor":10,
+      "Settings.Population.GainFactors":10,
+      "Settings.Resources.Capacity":1000
     }
   }
 }
