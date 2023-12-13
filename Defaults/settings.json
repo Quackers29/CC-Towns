@@ -33,31 +33,33 @@
   "lastRestarted": null,
   "population":{
     "lastUpkeep":null,
-    "lastGain":null,
+    "lastGen":null,
     "lastTourist":null,
     "wait":60,
     "upkeepTime":600,
     "touristTime":1200,
     "touristRatio":0.1,
-    "current":10,
+    "emigrationRatio":0.1,
+    "currentPop":10,
+    "currentTourists":10,
     "cap":100,
     "capFactors":{
-      "Base":100
+      "base":100
     },
-    "gain":1,
-    "gainFactors":{
-      "Base":1
+    "gen":1,
+    "genFactors":{
+      "base":1
     },
-    "gainSpeed":60,
-    "gainSpeedFactors":{
-      "Base":60
+    "genTime":60,
+    "genTimeFactors":{
+      "base":60
     },
     "thresholdRatio":0.2,
     "genCosts": {
-      "Bread": 50
+      "minecraft:bread": 50
     },
-    "upkeeep": {
-      "Bread": 1
+    "upkeepCosts": {
+      "minecraft:bread": 1
     }
   }
 }

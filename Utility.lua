@@ -560,11 +560,83 @@ function Utility.ScoreGet(player, objective)
     end
 end
 
-function Utility.PopCheck()
-    --Initial idea of Population, basic slow gen to Cap
-    
+function Utility.GetTimestamp()
+    return os.epoch("utc")
 end
 
+function Utility.PopCheck(SettingsFile,resFile)
+    --Initial idea of Population, basic slow gen to Cap
+    --1. Check upkeep
+    --2. Tourists
+    --3. POP
+    local currentTimeSec = Utility.GetTimestamp()*1000
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local resTable = Utility.readJsonFile(resFile)
+    local upkeepComplete = true
+    if Settings and resTable then
+        if Settings.population.lastUpKeep == nil or currentTimeSec > (Settings.population.lastUpkeep + (Settings.population.upkeepTime)) then
+            --Upkeep
+            Settings.population.lastUpKeep = currentTimeSec
+            if Settings.population.current > 0  then
+                for item,quantity in pairs(Settings.population.upkeepCosts) do
+                    local upkeepQuantity = quantity * Settings.population.current
+                    local currentQuantity = Utility.GetMcItemCount(item, resTable)
+                    upkeepQuantity = Utility.round(upkeepQuantity)
+                    if upkeepQuantity > currentQuantity then
+                        upkeepComplete = false
+                    else
+                        Utility.AddMcItemToTable(item, resTable, upkeepQuantity*-1)
+                    end
+                end
+            end
+        end
+        --2. Tourists
+        if Settings.population.lastTourist == nil or currentTimeSec > (Settings.population.lastTourist + (Settings.population.touristTime)) then
+            Settings.population.currentTourists = Utility.random(Settings.population.currentPop * Settings.population.touristRatio)
+        end
+
+        --3. PopGen
+        if upkeepComplete then
+            if Settings.population.lastGen == nil or currentTimeSec > (Settings.population.lastGen + (Settings.population.genTime)) then
+                local continueGen = true
+                for x = 1, Settings.population.gen do
+                    if Settings.population.currentPop < Settings.population.cap and continueGen then
+
+                        for item,quantity in pairs(Settings.population.genCosts) do
+                            local GenQuantity = quantity * Settings.population.current
+                            local currentQuantity = Utility.GetMcItemCount(item, resTable)
+                            GenQuantity = Utility.round(GenQuantity)
+                            if GenQuantity > currentQuantity then
+                                continueGen = false
+                            else
+                                Utility.AddMcItemToTable(item, resTable, GenQuantity*-1)
+                            end
+                        end
+                        -- add gen to the pop
+                        if continueGen then
+                            Settings.population.currentPop = Settings.population.currentPop + Settings.population.gen
+                        end
+
+                    end
+                end
+            end
+        end
+
+        Utility.writeJsonFile(SettingsFile,Settings)
+        Utility.writeJsonFile(resFile,resTable)
+    end
+end
+
+function Utility.OutputPOP(x,y,z,name)
+    commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
+end
+
+function Utility.InputPOP(x,y,z,range)
+    local test1 = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,limit=1]"
+    local boolean,table,count = commands.kill(test1)
+    local result = string.match(table[1], "Killed (.+)")
+    return result
+end
 
 
 return Utility

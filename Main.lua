@@ -894,6 +894,7 @@ end
 function productionTimer()
     while mainflag do
             productionCheck()
+            Utility.PopCheck(SettingsFile,resFile)
             TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
             TradeAPI.BuyerSearchOffers(Utility.FindOtherTowns(townFolder),townFolder,tradeFile,SettingsFile,resFile)
             TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile)
