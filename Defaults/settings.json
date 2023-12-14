@@ -32,16 +32,18 @@
   },
   "lastRestarted": null,
   "population":{
+    "Input": { "x": 0, "y": 0, "z": 0, "range":10 },
+    "Output": { "x": 0, "y": 0, "z": 0 },
     "lastUpkeep":null,
     "lastGen":null,
     "lastTourist":null,
     "wait":60,
     "upkeepTime":600,
     "touristTime":1200,
-    "touristRatio":0.1,
+    "touristRatio":0.2,
     "emigrationRatio":0.1,
     "currentPop":10,
-    "currentTourists":10,
+    "currentTourists":1,
     "cap":100,
     "capFactors":{
       "base":100
@@ -50,7 +52,7 @@
     "genFactors":{
       "base":1
     },
-    "genTime":60,
+    "genTime":1200,
     "genTimeFactors":{
       "base":60
     },
@@ -60,6 +62,9 @@
     },
     "upkeepCosts": {
       "minecraft:bread": 1
+    },
+    "popList":{
+      "Villager":10
     }
   }
 }

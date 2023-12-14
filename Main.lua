@@ -36,6 +36,7 @@ local currentZoom = 1 -- 1 for 1
 -- PushButtons
 local minWidth = 8
 local minHeight = 2
+local townName = nil
 
 local PINx,PINy,PINz = 11,-59,-37 --population input coords
 local POUTx,POUTy,POUTz = 11,-59,-47 --population output coords
@@ -160,7 +161,7 @@ if Settings then
         end
         
         local foundName = false
-        local townName = nil
+        townName = nil
         if townNamesList then
             if #townNamesList.available == 0 then
                 local townNamesListSource = Utility.readJsonFile(townNamesSource)
@@ -693,16 +694,11 @@ function ChangeOutputChest(ax,ay,az)
 end
 
 function OutputPOP()
-    local timeX = os.clock()
-    commands.summon("minecraft:villager",POUTx,POUTy,POUTz,"{CustomName:'{\"text\":\""..Settings.town.name.."\"}'}")
-    commands.summon("minecraft:villager",POUTx,POUTy,POUTz,"{CustomName:'{\"text\":\"".."Clock"..timeX.."\"}'}")
+    Utility.OutputPop(SettingsFile,1,townName)
 end
 
 function InputPOP()
-    local test1 = "@e[type=minecraft:villager,x="..tostring(PINx)..",y="..tostring(PINy)..",z="..tostring(PINz)..",distance=..8,name=!Villager,limit=1]" --OR "..Settings.town.name.."
-    local boolean,table,count = commands.kill(test1)
-    local result = string.match(table[1], "Killed (.+)")
-    print(result)
+    Utility.InputPop(SettingsFile)
 end
 
 function RefreshButton()

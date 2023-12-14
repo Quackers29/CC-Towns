@@ -574,8 +574,9 @@ function Utility.PopCheck(SettingsFile,resFile)
     local resTable = Utility.readJsonFile(resFile)
     local upkeepComplete = true
     if Settings and resTable then
+        
+        --1. Upkeep
         if Settings.population.lastUpKeep == nil or currentTimeSec > (Settings.population.lastUpkeep + (Settings.population.upkeepTime)) then
-            --Upkeep
             Settings.population.lastUpKeep = currentTimeSec
             if Settings.population.current > 0  then
                 for item,quantity in pairs(Settings.population.upkeepCosts) do
@@ -590,6 +591,7 @@ function Utility.PopCheck(SettingsFile,resFile)
                 end
             end
         end
+
         --2. Tourists
         if Settings.population.lastTourist == nil or currentTimeSec > (Settings.population.lastTourist + (Settings.population.touristTime)) then
             Settings.population.currentTourists = Utility.random(Settings.population.currentPop * Settings.population.touristRatio)
@@ -627,16 +629,66 @@ function Utility.PopCheck(SettingsFile,resFile)
     end
 end
 
-function Utility.OutputPOP(x,y,z,name)
+function Utility.SummonPop(x,y,z,name)
     commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
 end
 
-function Utility.InputPOP(x,y,z,range)
+function Utility.KillPop(x,y,z,range)
     local test1 = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,limit=1]"
     local boolean,table,count = commands.kill(test1)
     local result = string.match(table[1], "Killed (.+)")
     return result
 end
 
+function Utility.OutputPop(SettingsFile, count, townName, name)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    if Settings then
+        local x,y,z = Settings.population.Output.x,Settings.population.Output.y,Settings.population.Output.z
+        for i = 1,count do
+            if name ~= nil then
+                if Settings.population.popList[name] then
+                    if Settings.population.popList[name] > 1 then
+                        Settings.population.popList[name] = Settings.population.popList[name] - 1
+                        Utility.SummonPop(x,y,z,name)
+                    end
+                end
+            else
+                local foundPop = false
+                for i,v in pairs(Settings.population.popList) do
+                    if foundPop == false then
+                        if v > 0 then
+                            local outName = "nil"
+                            if i == "Villager" then
+                                outName = townName
+                            else
+                                outName = v
+                            end
+                            Settings.population.popList[i] = Settings.population.popList[i] - 1
+                            Utility.SummonPop(x,y,z,outName)
+                            foundPop = true
+                        end
+                    end
+                end
+            end
+        end
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+end
+
+function Utility.InputPop(SettingsFile)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    if Settings then
+        local x,y,z,range = Settings.population.Input.x,Settings.population.Input.y,Settings.population.Input.z,Settings.population.Input.range
+        local killed = Utility.KillPop(x,y,z,10)
+        if killed then
+            if Settings.population.popList[killed] then
+                Settings.population.popList[killed] = Settings.population.popList[killed] + 1
+            else
+                Settings.population.popList[killed] = 1
+            end
+        end
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+end
 
 return Utility
