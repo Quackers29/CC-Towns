@@ -201,6 +201,8 @@ if Settings then
         print("Created (utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
         commands.say("New Town: "..townName.." ("..x..","..y..","..z.."). Founded(utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
         Utility.Fireworks()
+    else
+        townName = Settings.town.name
     end
 
     if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then

@@ -661,7 +661,7 @@ function Utility.OutputPop(SettingsFile, count, townName, name)
                             if i == "Villager" then
                                 outName = townName
                             else
-                                outName = v
+                                outName = i
                             end
                             Settings.population.popList[i] = Settings.population.popList[i] - 1
                             Utility.SummonPop(x,y,z,outName)
