@@ -630,6 +630,7 @@ function Utility.PopCheck(SettingsFile,resFile)
 end
 
 function Utility.SummonPop(x,y,z,name)
+    print("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
     commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
 end
 
@@ -637,6 +638,8 @@ function Utility.KillPop(x,y,z,range)
     local test1 = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,limit=1]"
     local boolean,table,count = commands.kill(test1)
     local result = string.match(table[1], "Killed (.+)")
+    print(test1)
+    print(result)
     return result
 end
 
