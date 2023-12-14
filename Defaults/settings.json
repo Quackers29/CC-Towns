@@ -32,8 +32,8 @@
   },
   "lastRestarted": null,
   "population":{
-    "Input": { "x": 0, "y": 0, "z": 0, "range":10 },
-    "Output": { "x": 0, "y": 0, "z": 0 },
+    "input": { "x": null, "y": 0, "z": 0, "range":10 },
+    "output": { "x": null, "y": 0, "z": 0 },
     "lastUpkeep":null,
     "lastGen":null,
     "lastTourist":null,

@@ -679,7 +679,7 @@ function Utility.InputPop(SettingsFile)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
         local x,y,z,range = Settings.population.Input.x,Settings.population.Input.y,Settings.population.Input.z,Settings.population.Input.range
-        local killed = Utility.KillPop(x,y,z,10)
+        local killed = Utility.KillPop(x,y,z,range)
         if killed then
             if Settings.population.popList[killed] then
                 Settings.population.popList[killed] = Settings.population.popList[killed] + 1
@@ -689,6 +689,11 @@ function Utility.InputPop(SettingsFile)
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end
+end
+
+function Utility.ParticleMarker(x,y,z)
+    commands.particle("block_marker", "chest", x, y, z, 0, 0, 0, 0.5, 10, "normal")
+    commands.particle("end_rod", x, y, z, 0, 0, 0, 0.03, 100, "normal")
 end
 
 return Utility

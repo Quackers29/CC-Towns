@@ -30,6 +30,7 @@ local displayItem = nil
 local INx,INy,INz = nil,nil,nil
 local OUTx,OUTy,OUTz = nil,nil,nil
 local ChestRange = 5 -- blocks away from the Town PC
+local PopRange = 50 -- blocks away from the Town PC
 local LastX,LastY = 1,1 -- use for map coordinates
 local adminFile = "AdminSettings.json"
 local currentZoom = 1 -- 1 for 1
@@ -37,9 +38,8 @@ local currentZoom = 1 -- 1 for 1
 local minWidth = 8
 local minHeight = 2
 local townName = nil
-
-local PINx,PINy,PINz = 11,-59,-37 --population input coords
-local POUTx,POUTy,POUTz = 11,-59,-47 --population output coords
+local PINx,PINy,PINz = nil,nil,nil
+local POUTx,POUTy,POUTz = nil,nil,nil
 
 local scheduledActions = {} -- A table to keep track of scheduled actions
 
@@ -202,6 +202,7 @@ if Settings then
         commands.say("New Town: "..townName.." ("..x..","..y..","..z.."). Founded(utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
         Utility.Fireworks()
     end
+
     if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then
         INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
     else
@@ -209,6 +210,7 @@ if Settings then
         Settings.Input.x, Settings.Input.y, Settings.Input.z = x+1,y,z
         INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
     end
+
     if Settings.Output and math.abs(Settings.Output.x - x) <= ChestRange and math.abs(Settings.Output.y - y) <= ChestRange then
         OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
     else
@@ -216,6 +218,23 @@ if Settings then
         Settings.Output.x, Settings.Output.y, Settings.Output.z = x+1,y+2,z
         OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
     end
+
+    if Settings.population.input.x == nil then
+        Settings.population.input = {}
+        Settings.population.input.x, Settings.population.input.y, Settings.population.input.z, Settings.population.input.range = x+1,y,z,10
+        PINx,PINy,PINz = Settings.population.input.x, Settings.population.input.y, Settings.population.input.z
+    else
+        PINx,PINy,PINz = Settings.population.input.x, Settings.population.input.y, Settings.population.input.z
+    end
+
+    if Settings.population.output.x == nil then
+        Settings.population.output = {}
+        Settings.population.output.x, Settings.population.output.y, Settings.population.output.z = x+1,y,z
+        POUTx,POUTy,POUTz = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
+    else
+        POUTx,POUTy,POUTz = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
+    end
+
     --Add restart timer to settings file
     Settings.lastRestarted = os.epoch("utc")
 end
@@ -303,17 +322,32 @@ function drawButtonsForCurrentPage()
     elseif currentPage == "settings_InputChest" then
         Monitor.write("Settings - Input Chest!", 1, 1, colors.white)
         Monitor.write("X: "..INx.." Y: "..INy.." Z: "..INz,1, 5, colors.white)
-        commands.particle("block_marker", "chest", INx, INy, INz, 0, 0, 0, 0.5, 10, "normal")
-        commands.particle("end_rod", INx, INy, INz, 0, 0, 0, 0.03, 100, "normal")
+        Utility.ParticleMarker(INx, INy, INz)
         for i,v in ipairs(pageButtons["button"]) do
+
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
 
     elseif currentPage == "settings_OutputChest" then
         Monitor.write("Settings - Output Chest!", 1, 1, colors.white)
         Monitor.write("X: "..OUTx.." Y: "..OUTy.." Z: "..OUTz,1, 5, colors.white)
-        commands.particle("block_marker", "chest", OUTx, OUTy, OUTz, 0, 0, 0, 0.5, 10, "normal")
-        commands.particle("end_rod", OUTx, OUTy, OUTz, 0, 0, 0, 0.03, 100, "normal")
+        Utility.ParticleMarker(OUTx, OUTy, OUTz)
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+
+    elseif currentPage == "settings_InputPop" then
+        Monitor.write("Settings - Input Pop!", 1, 1, colors.white)
+        Monitor.write("X: "..INx.." Y: "..INy.." Z: "..INz,1, 5, colors.white)
+        Utility.ParticleMarker(INx, INy, INz)
+        for i,v in ipairs(pageButtons["button"]) do
+            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+        end
+
+    elseif currentPage == "settings_OutputPop" then
+        Monitor.write("Settings - Output Pop!", 1, 1, colors.white)
+        Monitor.write("X: "..OUTx.." Y: "..OUTy.." Z: "..OUTz,1, 5, colors.white)
+        Utility.ParticleMarker(OUTx, OUTy, OUTz)
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
@@ -632,11 +666,10 @@ function drawButtonsForCurrentPage()
         end
     else
         -- Add back to Main button if no buttons assigned to page
+        Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage.." Pop: "..Settings.population.currentPop, 1, 1, colors.white)
         if pageButtons == {} or pageButtons["push"] == nil then
-            Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
             Monitor.drawButton(Monitor.OffsetCheck(-1, endX),Monitor.OffsetCheck(0, endY),{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "all"})
         else
-            Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage, 1, 1, colors.white)
             Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
         end
         if pageButtons["button"] then
@@ -689,6 +722,26 @@ function ChangeOutputChest(ax,ay,az)
     OUTy = math.max(y - ChestRange, math.min(OUTy + ay, y + ChestRange))
     OUTz = math.max(z - ChestRange, math.min(OUTz + az, z + ChestRange))
     Settings.Output.x,Settings.Output.y,Settings.Output.z = OUTx,OUTy,OUTz
+    Utility.writeJsonFile(SettingsFile,Settings)
+    drawButtonsForCurrentPage()
+end
+
+function ChangeInputPop(ax,ay,az)
+    Settings = Utility.readJsonFile(SettingsFile)
+    PINx = math.max(x - PopRange, math.min(PINx + ax, x + PopRange))
+    PINy = math.max(y - PopRange, math.min(PINy + ay, y + PopRange))
+    PINz = math.max(z - PopRange, math.min(PINz + az, z + PopRange))
+    Settings.population.input.x,Settings.population.input.y,Settings.population.input.z = PINx,PINy,PINz
+    Utility.writeJsonFile(SettingsFile,Settings)
+    drawButtonsForCurrentPage()
+end
+
+function ChangeOutputPop(ax,ay,az)
+    Settings = Utility.readJsonFile(SettingsFile)
+    POUTx = math.max(x - PopRange, math.min(POUTx + ax, x + PopRange))
+    POUTy = math.max(y - PopRange, math.min(POUTy + ay, y + PopRange))
+    POUTz = math.max(z - PopRange, math.min(POUTz + az, z + PopRange))
+    Settings.population.output.x,Settings.population.output.y,Settings.population.output.z = POUTx,POUTy,POUTz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
 end
