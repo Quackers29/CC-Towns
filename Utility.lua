@@ -643,7 +643,7 @@ end
 function Utility.OutputPop(SettingsFile, count, townName, name)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
-        local x,y,z = Settings.population.Output.x,Settings.population.Output.y,Settings.population.Output.z
+        local x,y,z = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
         for i = 1,count do
             if name ~= nil then
                 if Settings.population.popList[name] then
@@ -678,7 +678,7 @@ end
 function Utility.InputPop(SettingsFile)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
-        local x,y,z,range = Settings.population.Input.x,Settings.population.Input.y,Settings.population.Input.z,Settings.population.Input.range
+        local x,y,z,range = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.range
         local killed = Utility.KillPop(x,y,z,range)
         if killed then
             if Settings.population.popList[killed] then
