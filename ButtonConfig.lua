@@ -60,6 +60,20 @@ local ButtonConfig = {
 {id = "Subtract",width = 3,x = 8,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputChest(0,-1,0) end,enabled = true, type = "button",page = "settings_OutputChest"},
 {id = "Add",width = 3,x = 14,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputChest(0,0,1) end,enabled = true, type = "button",page = "settings_OutputChest"},
 {id = "Subtract",width = 3,x = 14,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputChest(0,0,-1) end,enabled = true, type = "button",page = "settings_OutputChest"},
+--InputPop
+{id = "Add",width = 3,x = 2,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeInputPop(1,0,0) end,enabled = true, type = "button",page = "settings_InputPop"},
+{id = "Subtract",width = 3,x = 2,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeInputPop(-1,0,0) end,enabled = true, type = "button",page = "settings_InputPop"},
+{id = "Add",width = 3,x = 8,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeInputPop(0,1,0) end,enabled = true, type = "button",page = "settings_InputPop"},
+{id = "Subtract",width = 3,x = 8,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeInputPop(0,-1,0) end,enabled = true, type = "button",page = "settings_InputPop"},
+{id = "Add",width = 3,x = 14,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeInputPop(0,0,1) end,enabled = true, type = "button",page = "settings_InputPop"},
+{id = "Subtract",width = 3,x = 14,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeInputPop(0,0,-1) end,enabled = true, type = "button",page = "settings_InputPop"},
+--OutputPop
+{id = "Add",width = 3,x = 2,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputPop(1,0,0) end,enabled = true, type = "button",page = "settings_OutputPop"},
+{id = "Subtract",width = 3,x = 2,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(-1,0,0) end,enabled = true, type = "button",page = "settings_OutputPop"},
+{id = "Add",width = 3,x = 8,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputPop(0,1,0) end,enabled = true, type = "button",page = "settings_OutputPop"},
+{id = "Subtract",width = 3,x = 8,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(0,-1,0) end,enabled = true, type = "button",page = "settings_OutputPop"},
+{id = "Add",width = 3,x = 14,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputPop(0,0,1) end,enabled = true, type = "button",page = "settings_OutputPop"},
+{id = "Subtract",width = 3,x = 14,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(0,0,-1) end,enabled = true, type = "button",page = "settings_OutputPop"},
 --trades
 {label = "Selling",id = "t_sell",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Trade",action = function()    goToPage("Trade_Selling") end},
 {id = "toggle",justify = "right",width = 3,colorOn = colors.green,colorOff = colors.gray,charOn = "+",enabled = true, type= "list",page = "Trade_Selling"},
