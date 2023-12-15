@@ -648,27 +648,31 @@ function Utility.OutputPop(SettingsFile, count, townName, name)
     if Settings then
         local x,y,z = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
         for i = 1,count do
-            if name ~= nil then
-                if Settings.population.popList[name] then
-                    if Settings.population.popList[name] > 1 then
-                        Settings.population.popList[name] = Settings.population.popList[name] - 1
-                        Utility.SummonPop(x,y,z,name)
+            if Settings.population.currentPop > Settings.population.cap - (Settings.population.cap * Settings.population.emigrationRatio) then
+                if name ~= nil then
+                    if Settings.population.popList[name] then
+                        if Settings.population.popList[name] > 1 then
+                            Settings.population.popList[name] = Settings.population.popList[name] - 1
+                            Utility.SummonPop(x,y,z,name)
+                            Settings.population.currentPop = Settings.population.currentPop - 1
+                        end
                     end
-                end
-            else
-                local foundPop = false
-                for i,v in pairs(Settings.population.popList) do
-                    if foundPop == false then
-                        if v > 0 then
-                            local outName = "nil"
-                            if i == "Villager" then
-                                outName = townName
-                            else
-                                outName = i
+                else
+                    local foundPop = false
+                    for i,v in pairs(Settings.population.popList) do
+                        if foundPop == false then
+                            if v > 0 then
+                                local outName = "nil"
+                                if i == "Villager" then
+                                    outName = townName
+                                else
+                                    outName = i
+                                end
+                                Settings.population.popList[i] = Settings.population.popList[i] - 1
+                                Utility.SummonPop(x,y,z,outName)
+                                Settings.population.currentPop = Settings.population.currentPop - 1
+                                foundPop = true
                             end
-                            Settings.population.popList[i] = Settings.population.popList[i] - 1
-                            Utility.SummonPop(x,y,z,outName)
-                            foundPop = true
                         end
                     end
                 end
@@ -684,6 +688,7 @@ function Utility.InputPop(SettingsFile)
         local x,y,z,range = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.range
         local killed = Utility.KillPop(x,y,z,range)
         if killed then
+            Settings.population.currentPop = Settings.population.currentPop + 1
             if Settings.population.popList[killed] then
                 Settings.population.popList[killed] = Settings.population.popList[killed] + 1
             else
