@@ -594,7 +594,7 @@ function Utility.PopCheck(SettingsFile,resFile)
 
         --2. Tourists
         if Settings.population.lastTourist == nil or currentTimeSec > (Settings.population.lastTourist + (Settings.population.touristTime)) then
-            Settings.population.currentTourists = Utility.random(Settings.population.currentPop * Settings.population.touristRatio)
+            Settings.population.currentTourists = Utility.round(Settings.population.currentPop * Settings.population.touristRatio)
         end
 
         --3. PopGen
