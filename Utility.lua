@@ -578,9 +578,9 @@ function Utility.PopCheck(SettingsFile,resFile)
         --1. Upkeep
         if Settings.population.lastUpKeep == nil or currentTimeSec > (Settings.population.lastUpkeep + (Settings.population.upkeepTime)) then
             Settings.population.lastUpKeep = currentTimeSec
-            if Settings.population.current > 0  then
+            if Settings.population.currentPop > 0  then
                 for item,quantity in pairs(Settings.population.upkeepCosts) do
-                    local upkeepQuantity = quantity * Settings.population.current
+                    local upkeepQuantity = quantity * Settings.population.currentPop
                     local currentQuantity = Utility.GetMcItemCount(item, resTable)
                     upkeepQuantity = Utility.round(upkeepQuantity)
                     if upkeepQuantity > currentQuantity then

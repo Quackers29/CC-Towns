@@ -341,16 +341,16 @@ function drawButtonsForCurrentPage()
 
     elseif currentPage == "settings_InputPop" then
         Monitor.write("Settings - Input Pop!", 1, 1, colors.white)
-        Monitor.write("X: "..INx.." Y: "..INy.." Z: "..INz,1, 5, colors.white)
-        Utility.ParticleMarker(INx, INy, INz)
+        Monitor.write("X: "..PINx.." Y: "..PINy.." Z: "..PINz,1, 5, colors.white)
+        Utility.ParticleMarker(PINx, PINy, PINz)
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
 
     elseif currentPage == "settings_OutputPop" then
         Monitor.write("Settings - Output Pop!", 1, 1, colors.white)
-        Monitor.write("X: "..OUTx.." Y: "..OUTy.." Z: "..OUTz,1, 5, colors.white)
-        Utility.ParticleMarker(OUTx, OUTy, OUTz)
+        Monitor.write("X: "..POUTx.." Y: "..POUTy.." Z: "..POUTz,1, 5, colors.white)
+        Utility.ParticleMarker(POUTx, POUTy, POUTz)
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
