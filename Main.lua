@@ -757,6 +757,10 @@ function InputPOP()
     Utility.InputPop(SettingsFile)
 end
 
+function OutputTourist()
+    Utility.OutputTourist(SettingsFile, 1, townName)
+end
+
 function RefreshButton()
     Manager.inputItems(resFile,INx,INy,INz)
     Manager.checkItems(resFile,OUTx,OUTy,OUTz)

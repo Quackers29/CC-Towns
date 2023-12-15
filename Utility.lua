@@ -710,4 +710,18 @@ function Utility.ParticleMarker(x,y,z)
     commands.particle("end_rod", x, y, z, 0, 0, 0, 0.03, 100, "normal")
 end
 
+function Utility.OutputTourist(SettingsFile, count, townName)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    if Settings then
+        local x,y,z = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
+        for i = 1,count do
+            if Settings.population.currentTourists > Settings.population.cap - (Settings.population.cap * Settings.population.touristRatio) then
+                Utility.SummonPop(x,y,z,"(T)"..townName)
+                Settings.population.currentTourists = Settings.population.currentTourists - 1
+            end
+        end
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+end
+
 return Utility

@@ -41,6 +41,7 @@ local ButtonConfig = {
 {label = "OutputPop",id = "settings_outputPopButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_OutputPop") end},
 {label = "InPOP",id = "settings_inputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    InputPOP() end},
 {label = "OutPOP",id = "settings_outputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputPOP() end},
+{label = "OutTourist",id = "settings_outputTORButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputTourist() end},
 
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_InputChest"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_OutputChest"},
