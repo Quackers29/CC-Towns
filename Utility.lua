@@ -569,7 +569,7 @@ function Utility.PopCheck(SettingsFile,resFile)
     --1. Check upkeep
     --2. Tourists
     --3. POP
-    local currentTimeSec = Utility.GetTimestamp()*1000
+    local currentTimeSec = Utility.GetTimestamp()/1000
     local Settings = Utility.readJsonFile(SettingsFile)
     local resTable = Utility.readJsonFile(resFile)
     local upkeepComplete = true
