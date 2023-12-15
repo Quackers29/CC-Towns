@@ -594,12 +594,14 @@ function Utility.PopCheck(SettingsFile,resFile)
 
         --2. Tourists
         if Settings.population.lastTourist == nil or currentTimeSec > (Settings.population.lastTourist + (Settings.population.touristTime)) then
+            Settings.population.lastTourist = currentTimeSec
             Settings.population.currentTourists = Utility.round(Settings.population.currentPop * Settings.population.touristRatio)
         end
 
         --3. PopGen
         if upkeepComplete then
             if Settings.population.lastGen == nil or currentTimeSec > (Settings.population.lastGen + (Settings.population.genTime)) then
+                Settings.population.lastGen = currentTimeSec
                 local continueGen = true
                 for x = 1, Settings.population.gen do
                     if Settings.population.currentPop < Settings.population.cap and continueGen then
