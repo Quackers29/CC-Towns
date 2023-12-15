@@ -607,9 +607,9 @@ function Utility.PopCheck(SettingsFile,resFile)
                     if Settings.population.currentPop < Settings.population.cap and continueGen then
 
                         for item,quantity in pairs(Settings.population.genCosts) do
-                            local GenQuantity = quantity * Settings.population.currentPop
+                            local GenQuantity = quantity
                             local currentQuantity = Utility.GetMcItemCount(item, resTable)
-                            GenQuantity = Utility.round(GenQuantity)
+                            --GenQuantity = Utility.round(GenQuantity)
                             if GenQuantity > currentQuantity then
                                 continueGen = false
                             else

@@ -52,7 +52,7 @@
     "genFactors":{
       "base":1
     },
-    "genTime":1200,
+    "genTime":120,
     "genTimeFactors":{
       "base":60
     },
