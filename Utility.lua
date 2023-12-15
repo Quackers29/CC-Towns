@@ -715,7 +715,7 @@ function Utility.OutputTourist(SettingsFile, count, townName)
     if Settings then
         local x,y,z = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
         for i = 1,count do
-            if Settings.population.currentTourists > Settings.population.cap - (Settings.population.cap * Settings.population.touristRatio) then
+            if Settings.population.currentTourists > 0 then
                 Utility.SummonPop(x,y,z,"(T)"..townName)
                 Settings.population.currentTourists = Settings.population.currentTourists - 1
             end
