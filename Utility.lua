@@ -618,11 +618,11 @@ function Utility.PopCheck(SettingsFile,resFile)
                         end
                         -- add gen to the pop
                         if continueGen then
-                            Settings.population.currentPop = Settings.population.currentPop + Settings.population.gen
+                            Settings.population.currentPop = Settings.population.currentPop + 1
                             if Settings.population.popList[Settings.town.name] then
-                                Settings.population.popList[Settings.town.name] = Settings.population.popList[Settings.town.name] + Settings.population.gen
+                                Settings.population.popList[Settings.town.name] = Settings.population.popList[Settings.town.name] + 1
                             else
-                                Settings.population.popList[Settings.town.name] = Settings.population.gen
+                                Settings.population.popList[Settings.town.name] = 1
                             end
                         end
                     end
