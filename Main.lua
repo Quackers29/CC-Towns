@@ -268,6 +268,7 @@ if not fs.exists(productionFile) then
 end
 
 function drawButtonsForCurrentPage()
+    Settings = Utility.readJsonFile(SettingsFile)
     Monitor.clear()
     Monitor.ClearButtons()
     -- Filter the buttons for the current page
