@@ -577,7 +577,7 @@ function Utility.PopCheck(SettingsFile,resFile)
         
         --1. Upkeep
         if not Settings.population.lastUpkeep or currentTimeSec > (Settings.population.lastUpkeep + (Settings.population.upkeepTime)) then
-            Settings.population.lastUpKeep = currentTimeSec
+            Settings.population.lastUpkeep = currentTimeSec
             if Settings.population.currentPop > 0  then
                 for item,quantity in pairs(Settings.population.upkeepCosts) do
                     local upkeepQuantity = quantity * Settings.population.currentPop
@@ -617,8 +617,12 @@ function Utility.PopCheck(SettingsFile,resFile)
                         -- add gen to the pop
                         if continueGen then
                             Settings.population.currentPop = Settings.population.currentPop + Settings.population.gen
+                            if Settings.population.popList[Settings.town.name] then
+                                Settings.population.popList[Settings.town.name] = Settings.population.popList[Settings.town.name] + Settings.population.gen
+                            else
+                                Settings.population.popList[Settings.town.name] = Settings.population.gen
+                            end
                         end
-
                     end
                 end
             end
