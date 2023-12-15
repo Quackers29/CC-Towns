@@ -576,7 +576,7 @@ function Utility.PopCheck(SettingsFile,resFile)
     if Settings and resTable then
         
         --1. Upkeep
-        if not Settings.population.lastUpKeep or currentTimeSec > (Settings.population.lastUpkeep + (Settings.population.upkeepTime)) then
+        if not Settings.population.lastUpkeep or currentTimeSec > (Settings.population.lastUpkeep + (Settings.population.upkeepTime)) then
             Settings.population.lastUpKeep = currentTimeSec
             if Settings.population.currentPop > 0  then
                 for item,quantity in pairs(Settings.population.upkeepCosts) do
