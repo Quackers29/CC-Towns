@@ -694,12 +694,25 @@ function Utility.InputPop(SettingsFile)
         local x,y,z,range = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.range
         local killed = Utility.KillPop(x,y,z,range)
         if killed then
-            Settings.population.currentPop = Settings.population.currentPop + 1
-            if Settings.population.popList[killed] then
-                Settings.population.popList[killed] = Settings.population.popList[killed] + 1
+            if string.match(killed,"(T)") then
+                -- Tourist handle
+                local fromTown = string.match(killed,"(T)(.+)")
+                if fromTown == Settings.town.name then
+                    --Own tourist, add
+                else
+                    --from elsewhere, handle
+                    
+                end
             else
-                Settings.population.popList[killed] = 1
+                -- Population
+                Settings.population.currentPop = Settings.population.currentPop + 1
+                if Settings.population.popList[killed] then
+                    Settings.population.popList[killed] = Settings.population.popList[killed] + 1
+                else
+                    Settings.population.popList[killed] = 1
+                end
             end
+
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end
