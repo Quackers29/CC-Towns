@@ -553,7 +553,7 @@ end
 function Utility.ScoreGet(player, objective)
     local result, message, score = commands.scoreboard.players.get(player, objective)
     if string.match(message[1], "Can't get value") then
-        --No score set
+        --No score set  
         return nil
     else
         return score
@@ -688,7 +688,7 @@ function Utility.OutputPop(SettingsFile, count, townName, name)
     end
 end
 
-function Utility.InputPop(SettingsFile)
+function Utility.InputPop(SettingsFile, townNames, townName)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
         local x,y,z,range = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.range
@@ -699,9 +699,16 @@ function Utility.InputPop(SettingsFile)
                 local fromTown = string.match(killed,"(T)(.+)")
                 if fromTown == Settings.town.name then
                     --Own tourist, add
+                    Settings.population.currentTourists = Settings.population.currentTourists + 1
                 else
                     --from elsewhere, handle
-
+                    local townNamesList = Utility.readJsonFile(townNames)
+                    if townNamesList and townNamesList.used[fromTown] then
+                        local ax,ay,az = Utility.ParseTownCords(townNamesList.used[fromTown])
+                        local x,y,z = Utility.ParseTownCords(townName)
+                        local distance = Utility.CalcDist({ax,az}, {x,z})
+                        Utility.say("Tourist travelled (m): "..distance)
+                    end
                 end
             else
                 -- Population
@@ -735,6 +742,19 @@ function Utility.OutputTourist(SettingsFile, count, townName)
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end
+end
+
+function Utility.ParseTownCords(name)
+    local x, y, z = string.match(name, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
+    if x and y and z then
+        return x,y,z
+    else
+        return nil
+    end
+end
+
+function Utility.Say(text)
+    commands.say(text)
 end
 
 return Utility
