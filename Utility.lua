@@ -709,7 +709,7 @@ function Utility.InputPop(SettingsFile, townNames,townX,townZ)
                             local distance = Utility.round(Utility.CalcDist({x = ax,z = az}, {x = townX,z = townZ}))
                             local pay = Utility.round(distance / 10)
                             Utility.Say("Tourist travelled (m): "..distance..", for: "..pay.." emeralds")
-                            Utility.SummonItem(x,y,z, "minecraft:emeralds",pay)
+                            Utility.SummonItem(x,y,z, "minecraft:emerald",pay)
                         end
                     end
                 end
