@@ -251,7 +251,15 @@ weaponsmith
 }
 
 
+commands.summon("minecraft:villager",-38,-57,-70,"{CustomName:'{\"text\":\"test2\"}',VillagerData:{profession:farmer,level:2}}")
+{VillagerData:{profession:farmer,level:2}}
+
+NoAI:1 == hovers in mid air
 
 
 
+{Silent:1} 
 
+Attributes:[{Name:"generic.movement_speed",Base:0f}]
+Attributes:[{Name:\"generic.movement_speed\",Base:0.01}]
+commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..VilList[math.random(1,#VilList)]..",level:6}}")

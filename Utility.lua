@@ -643,9 +643,9 @@ function Utility.SummonPop(x,y,z,name, profession)
             "fisherman","fletcher","leatherworker","librarian",
             "masons","shepherd","toolsmith","weaponsmith"
             }
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',VillagerData:'{profession:"..VilList[math.random(1,#VilList)]..",level:6}'")
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..VilList[math.random(1,#VilList)]..",level:6}}")
     elseif profession and profession ~= "" then
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',VillagerData:'{profession:"..profession..",level:6}'")
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',VillagerData:{profession:"..profession..",level:6}}")
     else
         commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
     end
