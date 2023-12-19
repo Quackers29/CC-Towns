@@ -637,8 +637,15 @@ end
 
 function Utility.SummonPop(x,y,z,name, profession)
     --print("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
-    if profession and profession ~= "" then
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Profession:"..profession.."}")
+    if profession and profession == "random" then
+        local VilList = {
+            "armourer","butcher","cartographer","cleric","farmer",
+            "fisherman","fletcher","leatherworker","librarian",
+            "masons","shepherd","toolsmith","weaponsmith"
+            }
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',VillagerData:'{profession:"..VilList[math.random(1,#VilList)]..",level:6}'")
+    elseif profession and profession ~= "" then
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',VillagerData:'{profession:"..profession..",level:6}'")
     else
         commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
     end
@@ -744,7 +751,7 @@ function Utility.OutputTourist(SettingsFile, count, townName)
         local x,y,z = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
         for i = 1,count do
             if Settings.population.currentTourists > 0 then
-                Utility.SummonPop(x,y,z,"(T)"..townName, "Cartographer")
+                Utility.SummonPop(x,y,z,"(T)"..townName, "random")
                 Settings.population.currentTourists = Settings.population.currentTourists - 1
             end
         end

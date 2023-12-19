@@ -202,11 +202,56 @@ commands.summon("item",x,y,z,"{Item:{id:\"minecraft:emerald\",Count:"..quantity.
 
 {Profession:librarian}
 
-Farmer
-Librarian
-Priest
-Blacksmith
-Butcher
-Nitwit
-Armorer
-Cartographer
+farmer
+librarian
+priest
+blacksmith
+butcher
+nitwit
+armorer
+cartographer
+
+commands.summon("minecraft:villager",1,-57,1,"{CustomName:'{\"text\":\"test1\"}',Profession:Farmer}")
+
+/summon minecraft:villager ~ ~ ~ {VillagerData:{profession:farmer,level:5,type:plains}}
+
+level 2 to 5 works
+level 0 and 1 dont 
+level 6+ make farmer, no Trade 
+
+
+armourer: Blast Furnace
+butcher: Smoker
+cartographer: Cartography Table
+cleric: Brewing Stand
+farmer: Composter
+fisherman: Barrel
+fletcher: Fletching Table
+leatherworker: Cauldron
+librarian: Lectern
+masons: Stonecutter
+shepherd: Loom
+toolsmith: Smithing Table
+weaponsmith: Grindstone
+
+{
+armourer,
+butcher,
+cartographer,
+cleric,
+farmer,
+fisherman,
+fletcher,
+leatherworker,
+librarian,
+masons,
+shepherd,
+toolsmith,
+weaponsmith
+}
+
+
+
+
+
+
