@@ -553,10 +553,10 @@ end
 function Utility.ScoreGet(player, objective)
     local result, message, score = commands.scoreboard.players.get(player, objective)
     if string.match(message[1], "Can't get value") then
-        return score
-    else
         --No score set
         return nil
+    else
+        return score
     end
 end
 
@@ -701,7 +701,7 @@ function Utility.InputPop(SettingsFile)
                     --Own tourist, add
                 else
                     --from elsewhere, handle
-                    
+
                 end
             else
                 -- Population
