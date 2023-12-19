@@ -194,12 +194,19 @@ Town PC FOR
 
 UI, ADD RES, ADD POP, INFLUENCE
 
+Purchasable Towns, check if player has a contract in hand after using carrot..
+
+commands.summon("item",x,y,z,"{Item:{id:\"minecraft:emerald\",Count:"..quantity.."},PickupDelay:10}")
+/summon item ~ ~ ~ "{Item:{id:\"minecraft:emerald\",Count:1},PickupDelay:10}"
 
 
+{Profession:librarian}
 
-
-
-
-
-
-
+Farmer
+Librarian
+Priest
+Blacksmith
+Butcher
+Nitwit
+Armorer
+Cartographer

@@ -635,9 +635,14 @@ function Utility.PopCheck(SettingsFile,resFile)
     end
 end
 
-function Utility.SummonPop(x,y,z,name)
-    print("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
-    commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
+function Utility.SummonPop(x,y,z,name, profession)
+    --print("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
+    if profession and profession ~= "" then
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Profession:"..profession.."}")
+    else
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
+    end
+    
 end
 
 function Utility.KillPop(x,y,z,range)
@@ -739,7 +744,7 @@ function Utility.OutputTourist(SettingsFile, count, townName)
         local x,y,z = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
         for i = 1,count do
             if Settings.population.currentTourists > 0 then
-                Utility.SummonPop(x,y,z,"(T)"..townName)
+                Utility.SummonPop(x,y,z,"(T)"..townName, "Cartographer")
                 Settings.population.currentTourists = Settings.population.currentTourists - 1
             end
         end
