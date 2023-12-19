@@ -754,7 +754,7 @@ function OutputPOP()
 end
 
 function InputPOP()
-    Utility.InputPop(SettingsFile,townNames,townName)
+    Utility.InputPop(SettingsFile,townNames,x,z)
 end
 
 function OutputTourist()

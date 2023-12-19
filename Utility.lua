@@ -688,7 +688,7 @@ function Utility.OutputPop(SettingsFile, count, townName, name)
     end
 end
 
-function Utility.InputPop(SettingsFile, townNames, townName)
+function Utility.InputPop(SettingsFile, townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
         local x,y,z,range = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.range
@@ -696,7 +696,7 @@ function Utility.InputPop(SettingsFile, townNames, townName)
         if killed then
             if string.match(killed,"(T)") then
                 -- Tourist handle
-                local fromTown = string.match(killed,"(T)(.+)")
+                local fromTown = string.match(killed,"%)(.*)")
                 if fromTown == Settings.town.name then
                     --Own tourist, add
                     Settings.population.currentTourists = Settings.population.currentTourists + 1
@@ -705,9 +705,10 @@ function Utility.InputPop(SettingsFile, townNames, townName)
                     local townNamesList = Utility.readJsonFile(townNames)
                     if townNamesList and townNamesList.used[fromTown] then
                         local ax,ay,az = Utility.ParseTownCords(townNamesList.used[fromTown])
-                        local x,y,z = Utility.ParseTownCords(townName)
-                        local distance = Utility.CalcDist({ax,az}, {x,z})
-                        Utility.say("Tourist travelled (m): "..distance)
+                        if ax and az then
+                            local distance = Utility.CalcDist({x = ax,z = az}, {x = townX,z = townZ})
+                            Utility.say("Tourist travelled (m): "..distance)
+                        end
                     end
                 end
             else
