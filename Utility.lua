@@ -706,8 +706,10 @@ function Utility.InputPop(SettingsFile, townNames,townX,townZ)
                     if townNamesList and townNamesList.used[fromTown] then
                         local ax,ay,az = Utility.ParseTownCords(townNamesList.used[fromTown])
                         if ax and az then
-                            local distance = Utility.CalcDist({x = ax,z = az}, {x = townX,z = townZ})
-                            Utility.say("Tourist travelled (m): "..distance)
+                            local distance = Utility.round(Utility.CalcDist({x = ax,z = az}, {x = townX,z = townZ}))
+                            local pay = Utility.round(distance / 10)
+                            Utility.Say("Tourist travelled (m): "..distance..", for: "..pay.." emeralds")
+                            Utility.SummonItem(x,y,z, "minecraft:emeralds",pay)
                         end
                     end
                 end
@@ -756,6 +758,10 @@ end
 
 function Utility.Say(text)
     commands.say(text)
+end
+
+function Utility.SummonItem(x,y,z, item,count)
+    commands.summon("item",x,y,z,"{Item:{id:\""..item.."\",Count:"..count.."},PickupDelay:10}")
 end
 
 return Utility
