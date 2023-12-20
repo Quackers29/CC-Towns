@@ -636,7 +636,6 @@ function Utility.PopCheck(SettingsFile,resFile)
 end
 
 function Utility.SummonPop(x,y,z,name, profession)
-    --print("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
     if profession and profession == "random" then
         local VilList = {
             "armourer","butcher","cartographer","cleric","farmer",
