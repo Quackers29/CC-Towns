@@ -171,31 +171,6 @@ commands.setblock(1,1,1,"computercraft:computer_command{ComputerId:1,On:1}")
 /summon firework_rocket ~ ~1 ~ {LifeTime:20,FireworksItem:{id:"minecraft:firework_rocket",Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}
 commands.exec("summon firework_rocket ~ ~1 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
 
-
-
-
-Handle tourists
-
-placement gen, timer difference > 10s dont do anything
-2 marker placement
-marker within structure for pop out/in
-
-player direction
-
-sales tax
-
-
-
-Control PC needs to process unchunk loaded towns..
-
-TRADE UPGRADES RESOURCES PRODUCTION Population
-
-Town PC FOR
-
-UI, ADD RES, ADD POP, INFLUENCE
-
-Purchasable Towns, check if player has a contract in hand after using carrot..
-
 commands.summon("item",x,y,z,"{Item:{id:\"minecraft:emerald\",Count:"..quantity.."},PickupDelay:10}")
 /summon item ~ ~ ~ "{Item:{id:\"minecraft:emerald\",Count:1},PickupDelay:10}"
 
@@ -250,16 +225,60 @@ toolsmith,
 weaponsmith
 }
 
-
 commands.summon("minecraft:villager",-38,-57,-70,"{CustomName:'{\"text\":\"test2\"}',VillagerData:{profession:farmer,level:2}}")
 {VillagerData:{profession:farmer,level:2}}
 
 NoAI:1 == hovers in mid air
-
-
 
 {Silent:1} 
 
 Attributes:[{Name:"generic.movement_speed",Base:0f}]
 Attributes:[{Name:\"generic.movement_speed\",Base:0.01}]
 commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..VilList[math.random(1,#VilList)]..",level:6}}")
+
+/effect give @e[x=X,y=Y,z=Z,distance=..radius] minecraft:potion_effect duration amplifier
+/effect clear @e[x=X,y=Y,z=Z,distance=..radius]
+
+
+
+
+
+
+max towns
+
+Handle tourists
+
+placement gen, timer difference > 10s dont do anything
+2 marker placement
+marker within structure for pop out/in
+
+player direction
+
+sales tax
+
+
+
+Control PC needs to process unchunk loaded towns..
+
+TRADE UPGRADES RESOURCES PRODUCTION Population
+
+Town PC FOR
+
+UI, ADD RES, ADD POP, INFLUENCE
+
+Purchasable Towns, check if player has a contract in hand after using carrot..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

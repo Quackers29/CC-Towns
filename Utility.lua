@@ -644,9 +644,9 @@ function Utility.SummonPop(x,y,z,name, profession)
             }
         commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..VilList[math.random(1,#VilList)]..",level:6}}")
     elseif profession and profession ~= "" then
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',VillagerData:{profession:"..profession..",level:6}}")
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..profession..",level:6}}")
     else
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}'}")
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}]}")
     end
     
 end
@@ -773,6 +773,12 @@ end
 
 function Utility.SummonItem(x,y,z, item,count)
     commands.summon("item",x,y,z,"{Item:{id:\""..item.."\",Count:"..count.."},PickupDelay:10}")
+end
+
+function Utility.GetVillagerCount(x,y,z, radius)
+    local boolean,message,count = commands.exec("/effect give @e[name=!Villager,type=minecraft:villager,x="..x..",y="..y..",z="..z..",distance=.."..radius.."] minecraft:slowness 1")
+    commands.exec("/effect clear @e[name=!Villager,type=minecraft:villager,x="..x..",y="..y..",z="..z..",distance=.."..radius.."]")
+    return count
 end
 
 return Utility

@@ -39,7 +39,7 @@
     "lastTourist":null,
     "wait":60,
     "upkeepTime":600,
-    "touristTime":1200,
+    "touristTime":120,
     "touristRatio":0.2,
     "emigrationRatio":0.4,
     "currentPop":10,
