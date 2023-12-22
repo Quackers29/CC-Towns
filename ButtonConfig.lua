@@ -85,7 +85,8 @@ local ButtonConfig = {
 --population
 {id = "touristOut",width = 3,x = -1,y = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("touristOuput") end,enabled = false, type = "button",page = "Pop_Settings"},
 {id = "autoInput",width = 3,x = -1,y = 4,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("autoInput") end,enabled = false, type = "button",page = "Pop_Settings"},
-{id = "Back",width = 3,x = -1,y = 1,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Pop") end,enabled = true, type = "button",page = "Pop"},
+{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Pop") end,enabled = true, type = "button",page = "Pop"},
+{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Pop") end,enabled = true, type = "button",page = "Pop_Settings"},
 
 {label = "Settings",id = "Settings",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Pop",action = function()    goToPage("Pop_Settings") end},
 } 

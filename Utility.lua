@@ -758,10 +758,13 @@ function Utility.OutputTourist(SettingsFile, count, townName)
     end
 end
 
-function Utility.CheckTourist(SettingsFile, count, townName)
+function Utility.CheckTourist(SettingsFile, count, townName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings and Settings.population.touristOutput == true then
         Utility.OutputTourist(SettingsFile, count, townName)
+    end
+    if Settings and Settings.population.autoInput == true then
+        Utility.InputPop(SettingsFile,townNames,townX,townZ)
     end
 end
 

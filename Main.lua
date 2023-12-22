@@ -514,7 +514,6 @@ function drawButtonsForCurrentPage()
         Monitor.write("Population Settings", 1, 1)
         Monitor.write("Tourist Output", 1, 3)
         Monitor.write("Population Input", 1, 4)
-        Monitor.write("History", 1, 1)
         local output = false
         local input = false
         if Settings.population.touristOutput then
@@ -911,7 +910,7 @@ function productionTimer()
             TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile)
             TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
             TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
-            Utility.CheckTourist(SettingsFile, 1, townName)
+            Utility.CheckTourist(SettingsFile, 1, townName,townNames,x,y)
         os.sleep(productionWait)
     end
 end
