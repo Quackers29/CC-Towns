@@ -4,7 +4,7 @@ local ButtonConfig = {
     {label = "Production",id = "productionButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("production") end},
     {label = "Trade",id = "tradeButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("Trade") end},
     {label = "Contracts",id = "contractsButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("Contracts") end},
-    {label = "Stats",id = "statsButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("Stats") end},
+    {label = "Pop",id = "popButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("Pop") end},
     {label = "Settings",id = "settignsButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("settings") end},
     {label = "Map",id = "mapButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("Map") end},
     {label = "Back",id = "backButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("Main") end},
@@ -76,25 +76,17 @@ local ButtonConfig = {
 {id = "Add",width = 3,x = 14,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputPop(0,0,1) end,enabled = true, type = "button",page = "settings_OutputPop"},
 {id = "Subtract",width = 3,x = 14,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(0,0,-1) end,enabled = true, type = "button",page = "settings_OutputPop"},
 --trades
-{label = "Selling",id = "t_sell",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Trade",action = function()    goToPage("Trade_Selling") end},
-{id = "toggle",justify = "right",width = 3,colorOn = colors.green,colorOff = colors.gray,charOn = "+",enabled = true, type= "list",page = "Trade_Selling"},
-
-{label = "Buying",id = "t_buy",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Trade",action = function()    goToPage("Trade_Buying") end},
 {label = "Trading",id = "t_trade",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Trade",action = function()    goToPage("Trade_Trading") end},
 {label = "History",id = "t_history",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Trade",action = function()    goToPage("Trade_History") end},
-{id = "toggle",justify = "right",width = 3,colorOn = colors.green,colorOff = colors.gray,charOn = "+",enabled = true, type= "list",page = "Trade_Buying"},
 
-{label = "Sold",id = "t_sold",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Trade",action = function()    goToPage("Trade_Sold") end},
-{label = "Bought",id = "t_bought",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Trade",action = function()    goToPage("Trade_Bought") end},
-
-{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Trade") end,enabled = true, type = "button",page = "Trade_Selling"},
-{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Trade") end,enabled = true, type = "button",page = "Trade_Buying"},
-{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Trade") end,enabled = true, type = "button",page = "Trade_Sold"},
-{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Trade") end,enabled = true, type = "button",page = "Trade_Bought"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Trade") end,enabled = true, type = "button",page = "Trade_Trading"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Trade") end,enabled = true, type = "button",page = "Trade_History"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "Trade"},
+--population
+{id = "Up",width = 3,x = -1,y = 1,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handleTourist() end,enabled = false, type = "button",page = "Pop_Tourist"},
+{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Pop") end,enabled = true, type = "button",page = "Pop"},
 
+{label = "Tourist",id = "Tourist",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Pop",action = function()    goToPage("Pop_Tourist") end},
 } 
 
 return ButtonConfig

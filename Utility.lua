@@ -758,6 +758,13 @@ function Utility.OutputTourist(SettingsFile, count, townName)
     end
 end
 
+function Utility.checkTourist(SettingsFile, count, townName)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    if Settings and Settings.population.touristOutput == true then
+        Utility.OutputTourist(SettingsFile, count, townName)
+    end
+end
+
 function Utility.ParseTownCords(name)
     local x, y, z = string.match(name, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
     if x and y and z then
