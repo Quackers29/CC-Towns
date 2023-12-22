@@ -651,8 +651,8 @@ function Utility.SummonPop(x,y,z,name, profession)
     
 end
 
-function Utility.KillPop(x,y,z,range)
-    local test1 = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,limit=1]"
+function Utility.KillPop(x,y,z,range,notName)
+    local test1 = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!"..notName..",limit=1]"
     local boolean,table,count = commands.kill(test1)
     local result = string.match(table[1], "Killed (.+)")
     print(test1)
@@ -699,11 +699,11 @@ function Utility.OutputPop(SettingsFile, count, townName, name)
     end
 end
 
-function Utility.InputPop(SettingsFile, townNames,townX,townZ)
+function Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
         local x,y,z,range = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.range
-        local killed = Utility.KillPop(x,y,z,range)
+        local killed = Utility.KillPop(x,y,z,range,townName)
         if killed then
             if string.match(killed,"(T)") then
                 -- Tourist handle
@@ -764,7 +764,7 @@ function Utility.CheckTourist(SettingsFile, count, townName,townNames,townX,town
         Utility.OutputTourist(SettingsFile, count, townName)
     end
     if Settings and Settings.population.autoInput == true then
-        Utility.InputPop(SettingsFile,townNames,townX,townZ)
+        Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
     end
 end
 
