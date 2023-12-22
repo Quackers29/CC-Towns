@@ -764,7 +764,7 @@ function Utility.CheckTourist(SettingsFile, count, townName,townNames,townX,town
         Utility.OutputTourist(SettingsFile, count, townName)
     end
     if Settings and Settings.population.autoInput == true then
-        Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
+        Utility.InputPop(SettingsFile,"(T)"..townName,townNames,townX,townZ)
     end
 end
 
