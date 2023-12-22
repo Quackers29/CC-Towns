@@ -524,7 +524,7 @@ function drawButtonsForCurrentPage()
         end
 
         for i,v in ipairs(pageButtons["button"]) do
-            if v.id == "touristOut" then
+            if v.id == "touristOutput" then
                 v.enabled = output
             elseif v.id == "autoInput" then
                 v.enabled = input
