@@ -32,7 +32,7 @@
   },
   "lastRestarted": null,
   "population":{
-    "input": { "x": null, "y": 0, "z": 0, "range":10 },
+    "input": { "x": null, "y": 0, "z": 0, "range":4 },
     "output": { "x": null, "y": 0, "z": 0 },
     "lastUpkeep":null,
     "lastGen":null,
