@@ -45,6 +45,7 @@
     "currentPop":10,
     "currentTouists":1,
     "touristOutput":false,
+    "autoInput":false,
     "cap":12,
     "capFactors":{
       "base":12

@@ -510,15 +510,25 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
 
-    elseif Settings and currentPage == "Pop_Tourist" then
+    elseif Settings and currentPage == "Pop_Settings" then
+        Monitor.write("Population Settings", 1, 1)
+        Monitor.write("Tourist Output", 1, 3)
+        Monitor.write("Population Input", 1, 4)
+        Monitor.write("History", 1, 1)
         local output = false
+        local input = false
         if Settings.population.touristOutput then
             output = true
         end
+        if Settings.population.autoInput then
+            input = true
+        end
 
         for i,v in ipairs(pageButtons["button"]) do
-            if v.id == "Up" then
+            if v.id == "touristOut" then
                 v.enabled = output
+            elseif v.id == "autoInput" then
+                v.enabled = input
             end
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
@@ -736,13 +746,13 @@ function handleItem(button)
     drawButtonsForCurrentPage()
 end
 
-function handleTourist()
+function handlePop(x)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
-        if Settings.population.touristOutput == false then
-            Settings.population.touristOutput = true
+        if Settings.population[x] == false then
+            Settings.population[x] = true
         else
-            Settings.population.touristOutput = false
+            Settings.population[x] = false
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end
