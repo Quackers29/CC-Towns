@@ -652,7 +652,7 @@ function Utility.SummonPop(x,y,z,name, profession)
 end
 
 function Utility.KillPop(x,y,z,range,notName)
-    local test1 = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!"..notName..",limit=1]"
+    local test1 = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',limit=1]"
     local boolean,table,count = commands.kill(test1)
     local result = string.match(table[1], "Killed (.+)")
     print(test1)
