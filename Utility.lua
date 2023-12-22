@@ -758,7 +758,7 @@ function Utility.OutputTourist(SettingsFile, count, townName)
     end
 end
 
-function Utility.checkTourist(SettingsFile, count, townName)
+function Utility.CheckTourist(SettingsFile, count, townName)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings and Settings.population.touristOutput == true then
         Utility.OutputTourist(SettingsFile, count, townName)
