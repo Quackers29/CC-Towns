@@ -33,7 +33,7 @@
   "lastRestarted": null,
   "population":{
     "input": { "x": null, "y": 0, "z": 0, "range":4 },
-    "output": { "x": null, "y": 0, "z": 0 },
+    "output": { "x": null, "y": 0, "z": 0, "radius":5 },
     "lastUpkeep":null,
     "lastGen":null,
     "lastTourist":null,
