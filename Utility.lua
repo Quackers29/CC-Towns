@@ -749,7 +749,7 @@ function Utility.OutputTourist(SettingsFile, count, townName)
     if Settings then
         local x,y,z,radius, max = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z,Settings.population.output.radius, Settings.population.output.max
         for i = 1,count do
-            local VillagerCount = Utility.GetVillagerCount(x,y,z, radius)
+            local VillagerCount = Utility.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.1)) -- add 10% check
             print(VillagerCount)
             if Settings.population.currentTourists > 0 and VillagerCount < max then
                 Utility.SummonPop(x,y,z,"(T)"..townName, "random")
