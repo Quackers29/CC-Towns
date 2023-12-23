@@ -747,10 +747,11 @@ end
 function Utility.OutputTourist(SettingsFile, count, townName)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
-        local x,y,z,radius = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z,Settings.population.output.radius
+        local x,y,z,radius, max = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z,Settings.population.output.radius, Settings.population.output.max
         for i = 1,count do
             local VillagerCount = Utility.GetVillagerCount(x,y,z, radius)
-            if Settings.population.currentTourists > 0 and VillagerCount < 4 then
+            print(VillagerCount)
+            if Settings.population.currentTourists > 0 and VillagerCount < max then
                 Utility.SummonPop(x,y,z,"(T)"..townName, "random")
                 Settings.population.currentTourists = Settings.population.currentTourists - 1
             end
