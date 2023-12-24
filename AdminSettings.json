@@ -13,7 +13,9 @@
     "Startup": false,
     "MinDistance": 8,
     "Restart": 0,
-    "AdminWait": 20
+    "AdminWait": 20,
+    "reachDistance": 100,
+    "maxVillagerOut": 20
   },
   "Generation": {
     "State": true,
