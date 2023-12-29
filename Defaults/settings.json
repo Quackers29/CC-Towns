@@ -43,7 +43,7 @@
     "touristRatio":0.2,
     "emigrationRatio":0.4,
     "currentPop":10,
-    "currentTouists":1,
+    "currentTourists":1,
     "touristOutput":false,
     "autoInput":false,
     "cap":12,

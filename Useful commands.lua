@@ -270,7 +270,12 @@ Purchasable Towns, check if player has a contract in hand after using carrot..
 
 
 
+tourist spawn in a line 
 
+EMERALD SHOP CUSTOM
+
+
+ini files are better for admin settings - can explain 
 
 
 
