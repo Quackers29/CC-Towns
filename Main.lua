@@ -354,6 +354,7 @@ function drawButtonsForCurrentPage()
 
         if Settings.population.output.method == "Line" then
             Monitor.write("X: "..POUTx2.." Y: "..POUTy2.." Z: "..POUTz2,1, 11, colors.white)
+            Utility.ParticleMarker(POUTx2, POUTy2, POUTz2)
             for i,v in ipairs(pageButtons["button2"]) do
                 Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
             end
@@ -688,12 +689,19 @@ function ChangeInputPop(ax,ay,az)
     drawButtonsForCurrentPage()
 end
 
-function ChangeOutputPop(ax,ay,az)
+function ChangeOutputPop(ax,ay,az,select)
     Settings = Utility.readJsonFile(SettingsFile)
-    POUTx = math.max(x - PopRange, math.min(POUTx + ax, x + PopRange))
-    POUTy = math.max(y - PopRange, math.min(POUTy + ay, y + PopRange))
-    POUTz = math.max(z - PopRange, math.min(POUTz + az, z + PopRange))
-    Settings.population.output.x,Settings.population.output.y,Settings.population.output.z = POUTx,POUTy,POUTz
+    if select == 1 then
+        POUTx = math.max(x - PopRange, math.min(POUTx + ax, x + PopRange))
+        POUTy = math.max(y - PopRange, math.min(POUTy + ay, y + PopRange))
+        POUTz = math.max(z - PopRange, math.min(POUTz + az, z + PopRange))
+        Settings.population.output.x,Settings.population.output.y,Settings.population.output.z = POUTx,POUTy,POUTz
+    else
+        POUTx2 = math.max(x - PopRange, math.min(POUTx2 + ax, x + PopRange))
+        POUTy2 = math.max(y - PopRange, math.min(POUTy2 + ay, y + PopRange))
+        POUTz2 = math.max(z - PopRange, math.min(POUTz2 + az, z + PopRange))
+        Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2 = POUTx2,POUTy2,POUTz2
+    end
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
 end
