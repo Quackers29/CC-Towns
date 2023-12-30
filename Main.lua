@@ -366,7 +366,7 @@ function drawButtonsForCurrentPage()
 
     elseif currentPage == "Map" then
         Monitor.write(Settings.town.name.." - Map (Zoom:"..currentZoom..")", 1, 1, colors.white)
-        local currentTown = {x = x, z = z}
+        local currentTown = {x = x, z = z} 
         local topLeftX, topLeftY = 1, 2  -- x,y
         local mapWidth, mapHeight = width - topLeftX, height - topLeftY
         local zoom = 1
