@@ -83,7 +83,7 @@ local ButtonConfig = {
 {id = "Add",width = 3,x = 14,y = 10,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputPop(0,0,1,2) end,enabled = true, type = "button2",page = "settings_OutputPop"},
 {id = "Subtract",width = 3,x = 14,y = 14,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(0,0,-1,2) end,enabled = true, type = "button2",page = "settings_OutputPop"},
 
-{id = "method",width = 3,x = 1,y = 9,colorOn = colors.yellow,colorOff = colors.gray,charOn = "X",action = function(x) handlePopMethod() end,enabled = true, type = "button",page = "settings_OutputPop"},
+{id = "method",width = 3,x = 1,y = 8,colorOn = colors.yellow,colorOff = colors.gray,charOn = "X",action = function(x) handlePopMethod() end,enabled = true, type = "button",page = "settings_OutputPop"},
 
 --trades
 {label = "Trading",id = "t_trade",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Trade",action = function()    goToPage("Trade_Trading") end},

@@ -353,7 +353,7 @@ function drawButtonsForCurrentPage()
         Utility.ParticleMarker(POUTx, POUTy, POUTz)
 
         if Settings.population.output.method == "Line" then
-            Monitor.write("X: "..POUTx2.." Y: "..POUTy2.." Z: "..POUTz2,1, 11, colors.white)
+            Monitor.write("X: "..POUTx2.." Y: "..POUTy2.." Z: "..POUTz2,1, 13, colors.white)
             Utility.ParticleMarker(POUTx2, POUTy2, POUTz2)
             for i,v in ipairs(pageButtons["button2"]) do
                 Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
