@@ -278,7 +278,8 @@ EMERALD SHOP CUSTOM
 ini files are better for admin settings - can explain 
 
 
-
+/forge mods 
+outputs list of mods and version numbers so could work
 
 
 

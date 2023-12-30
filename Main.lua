@@ -40,6 +40,7 @@ local minHeight = 2
 local townName = nil
 local PINx,PINy,PINz = nil,nil,nil
 local POUTx,POUTy,POUTz = nil,nil,nil
+local POUTx2,POUTy2,POUTz2 = nil,nil,nil
 
 local scheduledActions = {} -- A table to keep track of scheduled actions
 
@@ -232,10 +233,9 @@ if Settings then
     if Settings.population.output.x == nil then
         Settings.population.output = {}
         Settings.population.output.x, Settings.population.output.y, Settings.population.output.z = x+1,y,z
-        POUTx,POUTy,POUTz = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
-    else
-        POUTx,POUTy,POUTz = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
     end
+    POUTx,POUTy,POUTz = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
+    POUTx2,POUTy2,POUTz2 = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
 
     --Add restart timer to settings file
     Settings.lastRestarted = os.epoch("utc")
@@ -351,6 +351,14 @@ function drawButtonsForCurrentPage()
         Monitor.write("Settings - Output Pop!", 1, 1, colors.white)
         Monitor.write("X: "..POUTx.." Y: "..POUTy.." Z: "..POUTz,1, 5, colors.white)
         Utility.ParticleMarker(POUTx, POUTy, POUTz)
+
+        if Settings.population.output.method == "Line" then
+            Monitor.write("X: "..POUTx2.." Y: "..POUTy2.." Z: "..POUTz2,1, 11, colors.white)
+            for i,v in ipairs(pageButtons["button2"]) do
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+        end
+
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
@@ -545,7 +553,7 @@ function drawButtonsForCurrentPage()
         local costTable = {}
         local PreRecTable = {}
         if type(displayItem.requires) ~= "table" then
-            displayItem.requires ={displayItem.requires}
+            displayItem.requires = {displayItem.requires}
         end
 
         if displayTable and displayItem.requires then
@@ -752,6 +760,19 @@ function handlePop(x)
             Settings.population[x] = true
         else
             Settings.population[x] = false
+        end
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+    drawButtonsForCurrentPage()
+end
+
+function handlePopMethod()
+    local Settings = Utility.readJsonFile(SettingsFile)
+    if Settings then
+        if Settings.population.output.method == "Point" then
+            Settings.population.output.method = "Line"
+        else
+            Settings.population.output.method = "Point"
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end

@@ -75,6 +75,16 @@ local ButtonConfig = {
 {id = "Subtract",width = 3,x = 8,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(0,-1,0) end,enabled = true, type = "button",page = "settings_OutputPop"},
 {id = "Add",width = 3,x = 14,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputPop(0,0,1) end,enabled = true, type = "button",page = "settings_OutputPop"},
 {id = "Subtract",width = 3,x = 14,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(0,0,-1) end,enabled = true, type = "button",page = "settings_OutputPop"},
+
+{id = "Add",width = 3,x = 2,y = 8,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputPop(1,0,0) end,enabled = true, type = "button2",page = "settings_OutputPop"},
+{id = "Subtract",width = 3,x = 2,y = 12,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(-1,0,0) end,enabled = true, type = "button2",page = "settings_OutputPop"},
+{id = "Add",width = 3,x = 8,y = 8,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputPop(0,1,0) end,enabled = true, type = "button2",page = "settings_OutputPop"},
+{id = "Subtract",width = 3,x = 8,y = 12,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(0,-1,0) end,enabled = true, type = "button2",page = "settings_OutputPop"},
+{id = "Add",width = 3,x = 14,y = 8,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputPop(0,0,1) end,enabled = true, type = "button2",page = "settings_OutputPop"},
+{id = "Subtract",width = 3,x = 14,y = 12,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(0,0,-1) end,enabled = true, type = "button2",page = "settings_OutputPop"},
+
+{id = "method",width = 3,x = 1,y = 7,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePopMethod() end,enabled = false, type = "button",page = "settings_OutputPop"},
+
 --trades
 {label = "Trading",id = "t_trade",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Trade",action = function()    goToPage("Trade_Trading") end},
 {label = "History",id = "t_history",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Trade",action = function()    goToPage("Trade_History") end},

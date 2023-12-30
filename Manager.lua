@@ -241,6 +241,7 @@ function Manager.inputItems(filename,INx,INy,INz)
         commands.clone(INx,cloneHeight,INz,INx,cloneHeight,INz,INx,INy,INz, "replace", "move")
 
 		local output = Manager.removeFirstLevelBrackets(INb[1])
+        --print("Output: "..output)
 		for _, k in ipairs(output) do
 			local slot = string.match(k,"Slot: (%d+)")
 			local id = string.sub(string.match(k,"id: (.-.),"),2,-2)
@@ -250,6 +251,7 @@ function Manager.inputItems(filename,INx,INy,INz)
 			if tag ~= nil then
 				id = id..","..tag
 			end
+            --print(id.." : "..count)
             --start new parse here
             itemTable = Utility.AddMcItemToTable(id,itemTable,count)
 		end

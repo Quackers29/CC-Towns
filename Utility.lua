@@ -748,11 +748,13 @@ function Utility.OutputTourist(SettingsFile, count, townName)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
         local x,y,z,radius, max = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z,Settings.population.output.radius, Settings.population.output.max
+        local x2,y2,z2 = Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2
         for i = 1,count do
-            local VillagerCount = Utility.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.1)) -- add 10% check
-            print(VillagerCount)
+            local VillagerCount = Utility.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 10% check
+            --print(VillagerCount)
             if Settings.population.currentTourists > 0 and VillagerCount < max then
-                Utility.SummonPop(x,y,z,"(T)"..townName, "random")
+                local xr,zr = Utility.randomPointBetweenPoints(x,z,x2,z2)
+                Utility.SummonPop(xr,y,zr,"(T)"..townName, "random")
                 Settings.population.currentTourists = Settings.population.currentTourists - 1
             end
         end
@@ -792,5 +794,13 @@ function Utility.GetVillagerCount(x,y,z, radius)
     commands.exec("/effect clear @e[name=!Villager,type=minecraft:villager,x="..x..",y="..y..",z="..z..",distance=.."..radius.."]")
     return count
 end
+
+function Utility.randomPointBetweenPoints(x,z,x2,z2)
+    local t = math.random()  -- Random value between 0 and 1
+    local x = (1 - t) * x + t * x2
+    local z = (1 - t) * z + t * z2
+    return {x = x, z = z}
+end
+
 
 return Utility
