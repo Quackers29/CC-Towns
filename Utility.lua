@@ -799,7 +799,7 @@ function Utility.randomPointBetweenPoints(x,z,x2,z2)
     local t = math.random()  -- Random value between 0 and 1
     local x = (1 - t) * x + t * x2
     local z = (1 - t) * z + t * z2
-    return {x = x, z = z}
+    return x,z
 end
 
 
