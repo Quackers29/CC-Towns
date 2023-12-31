@@ -648,7 +648,6 @@ function Utility.SummonPop(x,y,z,name, profession)
     else
         commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}]}")
     end
-    
 end
 
 function Utility.KillPop(x,y,z,range,notName)
@@ -750,11 +749,18 @@ function Utility.OutputTourist(SettingsFile, count, townName)
         local x,y,z,radius, max = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z,Settings.population.output.radius, Settings.population.output.max
         local x2,y2,z2 = Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2
         for i = 1,count do
-            local VillagerCount = Utility.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 10% check
+            local VillagerCount = 0
+            if Settings.population.output.method == "Line" then
+                local dist = Utility.CalcDist({x=x,z=z},{x=x2,z=z2})
+                local xh,zh = Utility.PointBetweenPoints(x,z,x2,z2, 0.5)
+                VillagerCount = Utility.GetVillagerCount(xh,y,zh, dist+Utility.round(dist*0.2)) -- add 20% check
+            else
+                VillagerCount = Utility.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 50% check
+            end
             --print(VillagerCount)
             if Settings.population.currentTourists > 0 and VillagerCount < max then
                 if Settings.population.output.method == "Line" then
-                    x,z = Utility.randomPointBetweenPoints(x,z,x2,z2)
+                    x,z = Utility.PointBetweenPoints(x,z,x2,z2, -1)
                 end
                 Utility.SummonPop(x,y,z,"(T)"..townName, "random")
                 Settings.population.currentTourists = Settings.population.currentTourists - 1
@@ -797,8 +803,11 @@ function Utility.GetVillagerCount(x,y,z, radius)
     return count
 end
 
-function Utility.randomPointBetweenPoints(x,z,x2,z2)
-    local t = math.random()  -- Random value between 0 and 1
+function Utility.PointBetweenPoints(x,z,x2,z2, factor)
+    local t = factor
+    if factor == -1 then
+        t = math.random()  -- Random value between 0 and 1
+    end
     local x = (1 - t) * x + t * x2
     local z = (1 - t) * z + t * z2
     return x,z
