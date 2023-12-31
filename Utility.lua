@@ -753,8 +753,10 @@ function Utility.OutputTourist(SettingsFile, count, townName)
             local VillagerCount = Utility.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 10% check
             --print(VillagerCount)
             if Settings.population.currentTourists > 0 and VillagerCount < max then
-                local xr,zr = Utility.randomPointBetweenPoints(x,z,x2,z2)
-                Utility.SummonPop(xr,y,zr,"(T)"..townName, "random")
+                if Settings.population.output.method == "Line" then
+                    x,z = Utility.randomPointBetweenPoints(x,z,x2,z2)
+                end
+                Utility.SummonPop(x,y,z,"(T)"..townName, "random")
                 Settings.population.currentTourists = Settings.population.currentTourists - 1
             end
         end
