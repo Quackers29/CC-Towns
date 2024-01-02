@@ -700,6 +700,7 @@ end
 
 function Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
+    local hasKilled = false
     if Settings then
         local x,y,z,range = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.range
         local killed = Utility.KillPop(x,y,z,range,townName)
@@ -720,6 +721,7 @@ function Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
                             local pay = Utility.round(distance / 10)
                             Utility.Say("Tourist travelled (m): "..distance..", for: "..pay.." emeralds")
                             Utility.SummonItem(x,y,z, "minecraft:emerald",pay)
+                            hasKilled = true
                         end
                     end
                 end
@@ -736,6 +738,7 @@ function Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end
+    return hasKilled
 end
 
 function Utility.ParticleMarker(x,y,z)
@@ -776,7 +779,13 @@ function Utility.CheckTourist(SettingsFile, count, townName,townNames,townX,town
         Utility.OutputTourist(SettingsFile, count, townName)
     end
     if Settings and Settings.population.autoInput == true then
-        Utility.InputPop(SettingsFile,"(T)"..townName,townNames,townX,townZ)
+        local boolean = true
+        while boolean do
+            boolean = Utility.InputPop(SettingsFile,"(T)"..townName,townNames,townX,townZ)
+            if boolean then
+                os.sleep(0.2)
+            end
+        end
     end
 end
 

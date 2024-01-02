@@ -111,7 +111,7 @@ end
 
 local Settings = Utility.readJsonFile(SettingsFile)
 
-if Settings then
+if Settings and AdminSettings then
     if Settings.general.biome == nil then
         local currentBiome = nil
         local dist = 9999
@@ -122,7 +122,12 @@ if Settings then
                 print(i,v)
                 print(v.id)
                 local listItem = {}
-                local boolean, tableWithString, distance = commands.locate.biome(v.id)
+                local boolean, tableWithString, distance = nil,nil,nil
+                if AdminSettings.Admin.version == 1 then
+                    boolean, tableWithString, distance = commands.locate.biome(v.id)
+                else
+                    boolean, tableWithString, distance = commands.locatebiome(v.id)
+                end
                 local mod, key = string.match(tableWithString[1], "%((.-):(.-)%)")
                 local x, y, z = string.match(tableWithString[1], "%[([^,]+),([^,]+),([^%]]+)%]")
                 if boolean or string.match(tableWithString[1], "(0 blocks away)") then
@@ -719,7 +724,14 @@ function OutputTourist()
 end
 
 function RefreshButton()
-    Manager.inputItems(resFile,INx,INy,INz)
+    if AdminSettings then
+        if AdminSettings.Admin.version == 1 then
+            Manager.inputItems(resFile,INx,INy,INz,-64)
+        else
+            Manager.inputItems(resFile,INx,INy,INz,0)
+        end
+    end
+    
     Manager.checkItems(resFile,OUTx,OUTy,OUTz)
     if currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
         drawButtonsForCurrentPage()     

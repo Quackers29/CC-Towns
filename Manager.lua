@@ -5,7 +5,7 @@ local x,y,z = gps.locate()
 --local INx,INy,INz = x-1,y,z
 --local EXPx,EXPy,EXPz = x-1,y+2,z
 local headers = {"id", "count", "toggle"}
-local cloneHeight = -64 -- where to place the clone chest, -64 is in the bedrock layer just before the void
+--local cloneHeight = -64 -- where to place the clone chest, -64 is in the bedrock layer just before the void
 local timerSleep = 1
 
 
@@ -230,7 +230,7 @@ function Manager.handleTimer()
     scrollTimerID = os.startTimer(timerSleep) -- Reset the timer to x seconds
 end
 
-function Manager.inputItems(filename,INx,INy,INz)
+function Manager.inputItems(filename,INx,INy,INz, cloneHeight)
 	local itemTable = Utility.readJsonFile(filename)
 	local INq,INw = commands.data.get.block(INx,INy,INz,"Items")
 	if INq then

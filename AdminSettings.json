@@ -1,6 +1,7 @@
 {
   "ComputerId": 1,
   "Admin": {
+    "version": 1,
     "ControlPC": {
       "y": -61,
       "x": 0,
