@@ -240,7 +240,7 @@ if Settings and AdminSettings then
         Settings.population.output.x, Settings.population.output.y, Settings.population.output.z = x+1,y,z
     end
     POUTx,POUTy,POUTz = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
-    POUTx2,POUTy2,POUTz2 = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
+    POUTx2,POUTy2,POUTz2 = Settings.population.output.x2, Settings.population.output.y2, Settings.population.output.z2
 
     --Add restart timer to settings file
     Settings.lastRestarted = os.epoch("utc")
