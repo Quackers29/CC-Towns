@@ -2,6 +2,7 @@ local Monitor   = require("Monitor")
 local Manager   = require("Manager")
 local Utility   = require("Utility")
 local TradeAPI  = require("TradeAPI")
+local McAPI     = require("McAPI")
 local buttonConfig = require("ButtonConfig")
 local currentPage = "Main" -- Default page to start
 local x,y,z = gps.locate()
@@ -90,7 +91,7 @@ if AdminSettings and AdminSettings.Town.MinDistance then
             if IsInRange2DAngular(ax, az, x, z, AdminSettings.Town.MinDistance) then
                 print("NewTown is within another Town, deleting Computer")
                 os.sleep(10)
-                commands.fill(x,y,z,x,y,z,"cobblestone")
+                McAPI.setBlock(x,y,z,"cobblestone")
                 error("Program terminated, Computer deleted")
                 break
             end
@@ -98,6 +99,10 @@ if AdminSettings and AdminSettings.Town.MinDistance then
     end
 end
 
+-- Initialise McAPI with version number
+if AdminSettings and AdminSettings.Admin.version then
+    McAPI.Init(AdminSettings.Admin.version)
+end
 
 -- Initialize checks / file system
 
@@ -122,12 +127,7 @@ if Settings and AdminSettings then
                 print(i,v)
                 print(v.id)
                 local listItem = {}
-                local boolean, tableWithString, distance = nil,nil,nil
-                if AdminSettings.Admin.version == 1 then
-                    boolean, tableWithString, distance = commands.locate.biome(v.id)
-                else
-                    boolean, tableWithString, distance = commands.locatebiome(v.id)
-                end
+                local boolean, tableWithString, distance = McAPI.LocateBiome(v.id)
                 local mod, key = string.match(tableWithString[1], "%((.-):(.-)%)")
                 local x, y, z = string.match(tableWithString[1], "%[([^,]+),([^,]+),([^%]]+)%]")
                 if boolean or string.match(tableWithString[1], "(0 blocks away)") then
@@ -195,7 +195,7 @@ if Settings and AdminSettings then
             Utility.writeJsonFile(townNames,townNamesList)
         end
         if not foundName then
-            commands.say("No town name available, deleting town: "..townFolder)
+            McAPI.Say("No town name available, deleting town: "..townFolder)
             Monitor.clear()
             Utility.SelfDestruct()
         end
@@ -205,7 +205,7 @@ if Settings and AdminSettings then
         Settings.town.timestamp = os.epoch("utc") -- milliseconds
         print(townName)
         print("Created (utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
-        commands.say("New Town: "..townName.." ("..x..","..y..","..z.."). Founded(utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
+        McAPI.Say("New Town: "..townName.." ("..x..","..y..","..z.."). Founded(utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
         Utility.Fireworks()
     else
         townName = Settings.town.name
@@ -310,6 +310,7 @@ function drawButtonsForCurrentPage()
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
+
     elseif currentPage == "upgrades" then
         displayItem = nil
         Monitor.write("Upgrades!", 1, 1)
@@ -318,6 +319,7 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
         Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
+
     elseif currentPage == "production" then
         displayItem = nil
         Monitor.write("Production!", 1, 1)
@@ -379,6 +381,7 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
         Monitor.displayMap(Utility.FindOtherTowns(townFolder), currentTown, topLeftX, topLeftY, mapWidth, mapHeight, currentZoom)
+    
     elseif currentPage == "display_upgrade" then
         local canUp = true
         local resTable = Utility.readJsonFile(resFile)
@@ -583,6 +586,7 @@ function drawButtonsForCurrentPage()
             end
             Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
         end
+        
         for i,v in pairs(displayItem.cost) do
             local currentUp = true
             local c = Utility.convertItem(i)
@@ -846,7 +850,7 @@ function UpgradeSchedule(x)
 end
 
 -- Event loop reMains the same
-function main()
+function MonitorEvents()
     while mainflag do
         local event, side, x, y = os.pullEvent("monitor_touch")
         LastX, LastY = x,y
@@ -868,6 +872,7 @@ function second()
     end
 end
 
+-- decreases a timer, need to change to timestamps
 function productionCheck()
     local productionTable = Utility.readJsonFile(productionFile)
     local resTable = Utility.readJsonFile(resFile)
@@ -942,23 +947,27 @@ function productionCheck()
     Utility.writeJsonFile(productionFile,productionTable)
 end
 
-function productionTimer()
+function MainLoop()
     while mainflag do
-            productionCheck()
-            Utility.PopCheck(SettingsFile,resFile)
-            TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
-            TradeAPI.BuyerSearchOffers(Utility.FindOtherTowns(townFolder),townFolder,tradeFile,SettingsFile,resFile)
-            TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile)
-            TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
-            TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
-            Utility.CheckTourist(SettingsFile, 1, townName,townNames,x,y)
+        if AdminSettings then
+            if AdminSettings.main.packages.production then
+                productionCheck()
+            end
+            if AdminSettings.main.packages.trade then
+                TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
+                TradeAPI.BuyerSearchOffers(Utility.FindOtherTowns(townFolder),townFolder,tradeFile,SettingsFile,resFile)
+                TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile)
+                TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
+                TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
+            end
+            if AdminSettings.main.packages.population then
+                Utility.PopCheck(SettingsFile,resFile)
+            end
+            if AdminSettings.main.packages.tourists then
+                Utility.CheckTourist(SettingsFile, 1, townName,townNames,x,y)
+            end
+        end
         os.sleep(productionWait)
-    end
-end
-
-function AdminLoop()
-    while mainflag do
-
     end
 end
 
@@ -973,12 +982,10 @@ function handleScheduledActions()
     end
 end
 
-
 -- ScoreLoop checks the scoreboard to see if a player sets a score for All [Restart] to 1 
 -- could instead use timestamps but score can only go up to 999999999, 9 digits. 
 -- example timestamp is "timestamp": 1700144675566, 13 digits
 -- So admin could set the start of server time to in settings and the score only be the difference giving 9 digits of time...
-
 function CheckRestart()
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(adminFile)
@@ -1012,7 +1019,7 @@ function AdminLoop()
         end
         
         if Utility.ScoreGet("Restart", "AllTowns") == 1 then
-            commands.scoreboard.players.set("Restart", "AllTowns", 0)
+            McAPI.ScoreSet("Restart", "AllTowns", 0)
             if Admin then
                 Admin.Town.Restart = os.epoch("utc")
                 Utility.writeJsonFile(adminFile,Admin)
@@ -1035,7 +1042,7 @@ end
 
 
 -- Start the loops
-parallel.waitForAll(main, second, handleScheduledActions, productionTimer, AdminLoop)
+parallel.waitForAll(MonitorEvents, second, handleScheduledActions, MainLoop, AdminLoop)
 
 -- Code here continues after both loops have exited
 print("Both loops have exited.")

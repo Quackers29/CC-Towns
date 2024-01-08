@@ -1,4 +1,14 @@
 {
+  "main": {
+    "packages": {
+      "tourists": true,
+      "population": true,
+      "production": true,
+      "resources": true,
+      "upgrades": true,
+      "trade": true
+    }
+  },
   "ComputerId": 1,
   "Admin": {
     "version": 1,

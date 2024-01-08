@@ -1,4 +1,5 @@
 local Utility = {}
+local McAPI   = require("McAPI")
 local covertFile = "Defaults\\convert.json"
 os.loadAPI("json")
 
@@ -247,20 +248,13 @@ function Utility.sortArrayByKey(array, key)
 end
 
 function Utility.Start()
-    commands.scoreboard.players.set("StartUp", "AllTowns", 1)
+    McAPI.ScoreSet("StartUp", "AllTowns", 1)
 end
 
 function Utility.Stop()
-    commands.scoreboard.players.set("StartUp", "AllTowns", 0)
-    commands.scoreboard.players.set("Restart", "AllTowns", 1)
+    McAPI.ScoreSet("StartUp", "AllTowns", 0)
+    McAPI.ScoreSet("Restart", "AllTowns", 1)
 end
-
-
-
-
-
-
-
 
 
 function Utility.CalcDist(pos1, pos2)
@@ -277,19 +271,8 @@ function Utility.filterNearbyTowns(nearbyTowns, maxRange)
     return filteredTowns
 end
 
-function Utility.isChunkLoaded(x, z)
-    -- Function to check if the chunk at (x, z) is loaded
-    -- Return true if loaded, false otherwise
-    local boolean,table,count = commands.setblock(x,-65,z,"air")
-    print(table[1], x, z)
-    if table[1] == "That position is out of this world!" then --"That position is out of this world!"
-        return true
-    end
-    return false
-end
-
 function Utility.findSuitableY(x, z)
-    if not Utility.isChunkLoaded(x, z) then
+    if not McAPI.isChunkLoaded(x, z) then
         return nil -- Chunk is not loaded
     end
 
@@ -299,56 +282,23 @@ function Utility.findSuitableY(x, z)
     local groundY = nil
 
     -- Check upward if necessary
-    if not Utility.isAirBlock(x, startY, z) then
+    if not McAPI.isAirBlock(x, startY, z) then
         for y = startY, maxY do
-            if Utility.isAirBlock(x, y, z) then
-                groundY = Utility.findGroundLevel(x, y, z, minY)
+            if McAPI.isAirBlock(x, y, z) then
+                groundY = McAPI.findGroundLevel(x, y, z, minY)
                 break
             end
         end
     else
-        groundY = Utility.findGroundLevel(x, startY, z, minY)
+        groundY = McAPI.findGroundLevel(x, startY, z, minY)
     end
 
-    if groundY and Utility.isSpaceAboveClear(x, groundY, z, 11) then
+    if groundY and McAPI.isSpaceAboveClear(x, groundY, z, 11) then
         return groundY + 1
     else
         return nil
     end
 end
-
-function Utility.findGroundLevel(x, startY, z, minY)
-    for y = startY, minY, -1 do
-        if not Utility.isAirBlock(x, y, z) then
-            return y  -- Return the Y-coordinate of the ground level
-        end
-    end
-    return nil  -- Return nil if no ground is found (e.g., over a void or an unusual world)
-end
-
-
-function Utility.isAirBlock(x, y, z)
-    -- Check if the block at (x, y, z) is air
-    local table = commands.getBlockInfo(x,y,z)
-    if table and table.name == "minecraft:air" then
-        return true
-    end
-    return false
-end
-
-function Utility.isSpaceAboveClear(x, groundY, z, requiredSpace)
-    for y = groundY + 1, groundY + requiredSpace do
-        if not Utility.isAirBlock(x, y, z) then
-            return false  -- Return false if a non-air block is found
-        end
-    end
-    return true  -- Return true if all checked blocks are air
-end
-
--- Use findSuitableY in your town spawning logic
-
-
-
 
 function Utility.degreesToRadians(deg)
     return deg * (math.pi / 180)
@@ -436,8 +386,8 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
         --print(potentialNewPos.x,potentialNewPos.z,newX,newZ,randomizedAngle,math.cos(randomizedAngle),math.sin(randomizedAngle),angle,angleDeviationDegrees,oppositeDirectionZ, oppositeDirectionX,#relevantTowns)
 
         if not Utility.isLocationTooClose(potentialNewPos, relevantTowns, minRange, currentPos) then
-            if Utility.isChunkLoaded(newX, newZ) then
-                if Utility.isChunkLoaded(newX, safetyZpos) and Utility.isChunkLoaded(newX, safetyZneg) and Utility.isChunkLoaded(safetyXpos, newZ) and Utility.isChunkLoaded(safetyXneg, newZ) then
+            if McAPI.isChunkLoaded(newX, newZ) then
+                if McAPI.isChunkLoaded(newX, safetyZpos) and McAPI.isChunkLoaded(newX, safetyZneg) and McAPI.isChunkLoaded(safetyXpos, newZ) and McAPI.isChunkLoaded(safetyXneg, newZ) then
                     local OpY = Utility.findSuitableY(potentialNewPos.x, potentialNewPos.z)
                     if OpY then
                         potentialNewPos.y = OpY
@@ -484,46 +434,27 @@ function Utility.IsATown(townFolder)
     return false
 end
 
-
-
--- Function to execute the setblock command with optional orientation
-function Utility.setBlock(x, y, z, blockName)
-    local command = "setblock " .. x .. " " .. y .. " " .. z .. " " .. blockName
-    commands.exec(command)
-end
-
--- Main function to fill an area with optionally oriented blocks
-function Utility.fillArea(startX, startY, startZ, endX, endY, endZ, blockName)
-    for x = startX, endX do
-        for y = startY, endY do
-            for z = startZ, endZ do
-                Utility.setBlock(x, y, z, blockName)
-            end
-        end
-    end
-end
--- Example usage
--- Replace these values with your specific coordinates and desired block
--- Orientation is optional; remove or leave it empty for default orientation
--- Utility.fillArea(10, 64, 10, 12, 66, 12, "computercraft:monitor_advanced{width:1}", "facing=north")
-
-
+-- Deletes the current Town and associated files
 function Utility.SelfDestruct()
     local x,y,z = gps.locate()
     local townFolder = "Town_X"..x.."Y"..y.."Z"..z
     if Utility.IsATown(townFolder) then
         fs.delete("Towns\\"..townFolder.."\\")
     end
-    Utility.fillArea(x-1,y+1,z,x+1,y+3,z, "air","")
+    McAPI.fillArea(x-1,y+1,z,x+1,y+3,z, "air","")
     Utility.Fireworks()
-    commands.fill(x,y,z,x,y,z,"air")
+    McAPI.setBlock(x, y, z, "air")
     error("Program terminated, Computer deleted")
 end
 
+-- Summons fireworks for a Town realative to the computer
 function Utility.Fireworks()
-    commands.exec("summon firework_rocket ~1 ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:1,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
-    commands.exec("summon firework_rocket ~ ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
-    commands.exec("summon firework_rocket ~-1 ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:2,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
+    McAPI.SummonFirework(1,7,0,1)
+    McAPI.SummonFirework(0,7,0,4)
+    McAPI.SummonFirework(-1,7,0,2)
+    --commands.exec("summon firework_rocket ~1 ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:1,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
+    --commands.exec("summon firework_rocket ~ ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
+    --commands.exec("summon firework_rocket ~-1 ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:2,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
 end
 
 -- Function to split the string by a delimiter
@@ -539,25 +470,15 @@ function Utility.SplitString(inputstr, sep)
 end
 
 function Utility.SpawnTown(x,y,z,Id)
-    if Utility.ScoreGet("GenStructure", "AllTowns") == 1 then
+    if McAPI.ScoreGet("GenStructure", "AllTowns") == 1 then
         Utility.SpawnStructure(x,y-1,z,"structure_001")
     end
-    commands.setblock(x,y,z,"computercraft:computer_command{ComputerId:"..Id..",On:1}")
+    McAPI.setBlock(x,y,z,"computercraft:computer_command{ComputerId:"..Id..",On:1}")
 end
 
 function Utility.SpawnStructure(x,y,z,name)
-    commands.exec("setblock "..x.." "..y.." "..z.." minecraft:structure_block{mode:\"LOAD\",name:\""..name.."\",posX:-10,posY:1,posZ:-8,sizeX:xSize,sizeY:ySize,sizeZ:zSize,integrity:1.0f,showboundingbox:1b} replace")
-    commands.exec("setblock "..x.." "..(y-1).." "..z.." minecraft:redstone_block")
-end
-
-function Utility.ScoreGet(player, objective)
-    local result, message, score = commands.scoreboard.players.get(player, objective)
-    if string.match(message[1], "Can't get value") then
-        --No score set  
-        return nil
-    else
-        return score
-    end
+    McAPI.setBlock(x,y,z,"minecraft:structure_block{mode:\"LOAD\",name:\""..name.."\",posX:-10,posY:1,posZ:-8,sizeX:xSize,sizeY:ySize,sizeZ:zSize,integrity:1.0f,showboundingbox:1b} replace")
+    McAPI.setBlock(x,y-1,z,"minecraft:redstone_block")
 end
 
 function Utility.GetTimestamp()
@@ -635,30 +556,6 @@ function Utility.PopCheck(SettingsFile,resFile)
     end
 end
 
-function Utility.SummonPop(x,y,z,name, profession)
-    if profession and profession == "random" then
-        local VilList = {
-            "armourer","butcher","cartographer","cleric","farmer",
-            "fisherman","fletcher","leatherworker","librarian",
-            "masons","shepherd","toolsmith","weaponsmith"
-            }
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..VilList[math.random(1,#VilList)]..",level:6}}")
-    elseif profession and profession ~= "" then
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..profession..",level:6}}")
-    else
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}]}")
-    end
-end
-
-function Utility.KillPop(x,y,z,range,notName)
-    local test1 = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',limit=1]"
-    local boolean,table,count = commands.kill(test1)
-    local result = string.match(table[1], "Killed (.+)")
-    print(test1)
-    print(result)
-    return result
-end
-
 function Utility.OutputPop(SettingsFile, count, townName, name)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
@@ -669,7 +566,7 @@ function Utility.OutputPop(SettingsFile, count, townName, name)
                     if Settings.population.popList[name] then
                         if Settings.population.popList[name] > 1 then
                             Settings.population.popList[name] = Settings.population.popList[name] - 1
-                            Utility.SummonPop(x,y,z,name)
+                            McAPI.SummonCustomVill(x,y,z,name)
                             Settings.population.currentPop = Settings.population.currentPop - 1
                         end
                     end
@@ -685,7 +582,7 @@ function Utility.OutputPop(SettingsFile, count, townName, name)
                                     outName = i
                                 end
                                 Settings.population.popList[i] = Settings.population.popList[i] - 1
-                                Utility.SummonPop(x,y,z,outName)
+                                McAPI.SummonCustomVill(x,y,z,outName)
                                 Settings.population.currentPop = Settings.population.currentPop - 1
                                 foundPop = true
                             end
@@ -703,7 +600,7 @@ function Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
     local hasKilled = false
     if Settings then
         local x,y,z,range = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.range
-        local killed = Utility.KillPop(x,y,z,range,townName)
+        local killed = McAPI.KillCustomVill(x,y,z,range,townName)
         if killed then
             if string.match(killed,"(T)") then
                 -- Tourist handle
@@ -719,8 +616,8 @@ function Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
                         if ax and az then
                             local distance = Utility.round(Utility.CalcDist({x = ax,z = az}, {x = townX,z = townZ}))
                             local pay = Utility.round(distance / 10)
-                            Utility.Say("Tourist travelled (m): "..distance..", for: "..pay.." emeralds")
-                            Utility.SummonItem(x,y,z, "minecraft:emerald",pay)
+                            McAPI.Say("Tourist travelled (m): "..distance..", for: "..pay.." emeralds")
+                            McAPI.SummonItem(x,y,z, "minecraft:emerald",pay)
                             hasKilled = true
                         end
                     end
@@ -756,16 +653,16 @@ function Utility.OutputTourist(SettingsFile, count, townName)
             if Settings.population.output.method == "Line" then
                 local dist = Utility.CalcDist({x=x,z=z},{x=x2,z=z2})
                 local xh,zh = Utility.PointBetweenPoints(x,z,x2,z2, 0.5)
-                VillagerCount = Utility.GetVillagerCount(xh,y,zh, dist+Utility.round(dist*0.2)) -- add 20% check
+                VillagerCount = McAPI.GetVillagerCount(xh,y,zh, dist+Utility.round(dist*0.2)) -- add 20% check
             else
-                VillagerCount = Utility.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 50% check
+                VillagerCount = McAPI.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 50% check
             end
             --print(VillagerCount)
             if Settings.population.currentTourists > 0 and VillagerCount < max then
                 if Settings.population.output.method == "Line" then
                     x,z = Utility.PointBetweenPoints(x,z,x2,z2, -1)
                 end
-                Utility.SummonPop(x,y,z,"(T)"..townName, "random")
+                McAPI.SummonCustomVill(x,y,z,"(T)"..townName, "random")
                 Settings.population.currentTourists = Settings.population.currentTourists - 1
             end
         end
@@ -796,20 +693,6 @@ function Utility.ParseTownCords(name)
     else
         return nil
     end
-end
-
-function Utility.Say(text)
-    commands.say(text)
-end
-
-function Utility.SummonItem(x,y,z, item,count)
-    commands.summon("item",x,y,z,"{Item:{id:\""..item.."\",Count:"..count.."},PickupDelay:10}")
-end
-
-function Utility.GetVillagerCount(x,y,z, radius)
-    local boolean,message,count = commands.exec("/effect give @e[name=!Villager,type=minecraft:villager,x="..x..",y="..y..",z="..z..",distance=.."..radius.."] minecraft:slowness 1")
-    commands.exec("/effect clear @e[name=!Villager,type=minecraft:villager,x="..x..",y="..y..",z="..z..",distance=.."..radius.."]")
-    return count
 end
 
 function Utility.PointBetweenPoints(x,z,x2,z2, factor)

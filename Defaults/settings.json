@@ -1,4 +1,10 @@
 {
+  "main":{
+    "packages":{
+      "tourists":true
+    }
+    
+  },
   "general": {
     "biomeDist": 0,
     "biome": null
