@@ -1,5 +1,6 @@
 local Monitor = require("Monitor")
 local Utility = require("Utility")
+local adminFile = "AdminSettings.json"
 local waitForControl = 10
 
 term.clear()
@@ -9,7 +10,6 @@ print("Starting up (Waiting for Server)")
 
 os.sleep(1)
 
-local adminFile = "AdminSettings.json"
 local AdminSettings = Utility.readJsonFile(adminFile)
 local x,y,z = gps.locate()
 

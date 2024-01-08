@@ -947,30 +947,6 @@ function productionCheck()
     Utility.writeJsonFile(productionFile,productionTable)
 end
 
-function MainLoop()
-    while mainflag do
-        if AdminSettings then
-            if AdminSettings.main.packages.production then
-                productionCheck()
-            end
-            if AdminSettings.main.packages.trade then
-                TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
-                TradeAPI.BuyerSearchOffers(Utility.FindOtherTowns(townFolder),townFolder,tradeFile,SettingsFile,resFile)
-                TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile)
-                TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
-                TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
-            end
-            if AdminSettings.main.packages.population then
-                Utility.PopCheck(SettingsFile,resFile)
-            end
-            if AdminSettings.main.packages.tourists then
-                Utility.CheckTourist(SettingsFile, 1, townName,townNames,x,y)
-            end
-        end
-        os.sleep(productionWait)
-    end
-end
-
 -- Function to handle scheduled actions
 function handleScheduledActions()
     while mainflag do
@@ -996,6 +972,30 @@ function CheckRestart()
             Monitor.write("Offline",1,1)
             os.reboot()
         end
+    end
+end
+
+function MainLoop()
+    while mainflag do
+        if AdminSettings then
+            if AdminSettings.main.packages.production then
+                productionCheck()
+            end
+            if AdminSettings.main.packages.trade then
+                TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
+                TradeAPI.BuyerSearchOffers(Utility.FindOtherTowns(townFolder),townFolder,tradeFile,SettingsFile,resFile)
+                TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile)
+                TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
+                TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
+            end
+            if AdminSettings.main.packages.population then
+                Utility.PopCheck(SettingsFile,resFile)
+            end
+            if AdminSettings.main.packages.tourists then
+                Utility.CheckTourist(SettingsFile, 1, townName,townNames,x,y)
+            end
+        end
+        os.sleep(productionWait)
     end
 end
 

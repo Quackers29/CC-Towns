@@ -452,9 +452,6 @@ function Utility.Fireworks()
     McAPI.SummonFirework(1,7,0,1)
     McAPI.SummonFirework(0,7,0,4)
     McAPI.SummonFirework(-1,7,0,2)
-    --commands.exec("summon firework_rocket ~1 ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:1,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
-    --commands.exec("summon firework_rocket ~ ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:4,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
-    --commands.exec("summon firework_rocket ~-1 ~7 ~ {LifeTime:20,FireworksItem:{id:\"minecraft:firework_rocket\",Count:1,tag:{Fireworks:{Explosions:[{Type:2,Flicker:1,Trail:1,Colors:[I;255,65280,11743532],FadeColors:[I;14602026]}]}}}}")
 end
 
 -- Function to split the string by a delimiter
