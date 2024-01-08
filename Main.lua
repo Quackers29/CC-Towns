@@ -1007,7 +1007,7 @@ function AdminLoop()
         os.sleep(wait)
         local Admin = Utility.readJsonFile(adminFile)
         
-        if Utility.ScoreGet("SelfDestruct", "AllTowns") == 1 then
+        if McAPI.ScoreGet("SelfDestruct", "AllTowns") == 1 then
             local townNamesList = Utility.readJsonFile(townNames)
             if townNamesList and townNamesList.used and Settings then
                 townNamesList.used[Settings.town.name] = nil
@@ -1017,7 +1017,7 @@ function AdminLoop()
             Utility.SelfDestruct()
         end
         
-        if Utility.ScoreGet("Restart", "AllTowns") == 1 then
+        if McAPI.ScoreGet("Restart", "AllTowns") == 1 then
             McAPI.ScoreSet("Restart", "AllTowns", 0)
             if Admin then
                 Admin.Town.Restart = os.epoch("utc")
@@ -1028,7 +1028,7 @@ function AdminLoop()
             os.reboot()
         end
 
-        if Admin and Utility.ScoreGet("GenState", "AllTowns") == 1 then
+        if Admin and McAPI.ScoreGet("GenState", "AllTowns") == 1 then
             local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(townFolder), Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z}, Admin.Generation.spread)
             if OpLocation then
                 --commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
