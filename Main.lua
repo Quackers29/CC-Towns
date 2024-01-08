@@ -1,5 +1,4 @@
 local Monitor   = require("Monitor")
-local Manager   = require("Manager")
 local Utility   = require("Utility")
 local TradeAPI  = require("TradeAPI")
 local McAPI     = require("McAPI")
@@ -121,7 +120,7 @@ if Settings and AdminSettings then
         local currentBiome = nil
         local dist = 9999
         if not fs.exists(biomeFile) then
-            local biomeslist = Manager.readCSV(biomes)
+            local biomeslist = Utility.readCSV(biomes)
             local newList = {}
             for i,v in pairs(biomeslist) do
                 print(i,v)
@@ -730,13 +729,13 @@ end
 function RefreshButton()
     if AdminSettings then
         if AdminSettings.Admin.version == 1 then
-            Manager.inputItems(resFile,INx,INy,INz,-64)
+            Utility.inputItems(resFile,INx,INy,INz,-64)
         else
-            Manager.inputItems(resFile,INx,INy,INz,0)
+            Utility.inputItems(resFile,INx,INy,INz,0)
         end
     end
     
-    Manager.checkItems(resFile,OUTx,OUTy,OUTz)
+    Utility.checkItems(resFile,OUTx,OUTy,OUTz)
     if currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
         drawButtonsForCurrentPage()     
     end
