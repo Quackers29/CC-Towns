@@ -705,15 +705,15 @@ end
 
 
 
-
-
 -- Function to read data from a CSV file into a 2D array with a tab delimiter and handle Excel's escaped double quotes
 function Utility.readCSV(filename)
+    local headers = {"id", "count", "toggle"}
     local data = {} -- Initialize the 2D array
     local file = io.open(filename, "r+") -- Open the file in read mode
     if file then
         local headerRow = file:read("*line")
         if headerRow ~= nil then
+
             -- Read header row
             local headerValues = {}
             for value in headerRow:gmatch("[^,]+") do
