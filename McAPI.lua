@@ -1,5 +1,5 @@
 local McAPI = {}
-local McVersion = nil -- initialise to set version
+local McVersion = 0 -- initialise to set version
 
 --Initialises the apis Minecraft version number to alternate some commands
 function McAPI.Init(version)
@@ -145,7 +145,7 @@ end
 -- returns the biome, alternates commands based on initialised McVersion number
 function McAPI.LocateBiome(biome)
     local boolean, tableWithString, distance = nil,nil,nil
-    if McVersion == "1" then
+    if McVersion == 1 then
         boolean, tableWithString, distance = commands.locate.biome(biome)
     else
         boolean, tableWithString, distance = commands.locatebiome(biome)
