@@ -952,10 +952,11 @@ function MainLoop()
                 TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
             end
             if AdminSettings.main.packages.population then
-                Utility.PopCheck(SettingsFile,resFile)
+                Utility.PopGen(SettingsFile,resFile)
             end
             if AdminSettings.main.packages.tourists then
-                Utility.CheckTourist(SettingsFile, 1, townName,townNames,x,y)
+                Utility.TouristGen(SettingsFile,resFile)
+                Utility.TouristTransfer(SettingsFile, 1, townName,townNames,x,y)
             end
         end
         os.sleep(productionWait)

@@ -482,23 +482,23 @@ function Utility.GetTimestamp()
     return os.epoch("utc")
 end
 
-function Utility.PopCheck(SettingsFile,resFile)
+function Utility.PopGen(SettingsFile,resFile)
     --Initial idea of Population, basic slow gen to Cap
     --1. Check upkeep
-    --2. Tourists
-    --3. POP
+    --2. POP
     local currentTimeSec = Utility.GetTimestamp()/1000
     local Settings = Utility.readJsonFile(SettingsFile)
     local resTable = Utility.readJsonFile(resFile)
     local upkeepComplete = true
     if Settings and resTable then
-        
+        local pop = Settings.pop
+
         --1. Upkeep
-        if Settings.population.lastUpkeep == nil or currentTimeSec > (Settings.population.lastUpkeep + (Settings.population.upkeepTime)) then
-            Settings.population.lastUpkeep = currentTimeSec
-            if Settings.population.currentPop > 0  then
-                for item,quantity in pairs(Settings.population.upkeepCosts) do
-                    local upkeepQuantity = quantity * Settings.population.currentPop
+        if pop.lastUpkeep == nil or currentTimeSec > (pop.lastUpkeep + (pop.upkeepTime)) then
+            pop.lastUpkeep = currentTimeSec
+            if pop.popCurrent > 0  then
+                for item,quantity in pairs(pop.upkeepCosts) do
+                    local upkeepQuantity = quantity * pop.popCurrent
                     local currentQuantity = Utility.GetMcItemCount(item, resTable)
                     upkeepQuantity = Utility.round(upkeepQuantity)
                     if upkeepQuantity > currentQuantity then
@@ -510,21 +510,15 @@ function Utility.PopCheck(SettingsFile,resFile)
             end
         end
 
-        --2. Tourists
-        if Settings.population.lastTourist == nil or currentTimeSec > (Settings.population.lastTourist + (Settings.population.touristTime)) then
-            Settings.population.lastTourist = currentTimeSec
-            Settings.population.currentTourists = Utility.round(Settings.population.currentPop * Settings.population.touristRatio)
-        end
-
-        --3. PopGen
+        --2. PopGen
         if upkeepComplete then
-            if Settings.population.lastGen == nil or currentTimeSec > (Settings.population.lastGen + (Settings.population.genTime)) then
-                Settings.population.lastGen = currentTimeSec
+            if pop.lastGen == nil or currentTimeSec > (pop.lastGen + (pop.genTime)) then
+                pop.lastGen = currentTimeSec
                 local continueGen = true
-                for x = 1, Settings.population.gen do
-                    if Settings.population.currentPop < Settings.population.cap and continueGen then
+                for x = 1, pop.gen do
+                    if pop.popCurrent < pop.popCap and continueGen then
 
-                        for item,quantity in pairs(Settings.population.genCosts) do
+                        for item,quantity in pairs(pop.genCosts) do
                             local GenQuantity = quantity
                             local currentQuantity = Utility.GetMcItemCount(item, resTable)
                             --GenQuantity = Utility.round(GenQuantity)
@@ -536,18 +530,69 @@ function Utility.PopCheck(SettingsFile,resFile)
                         end
                         -- add gen to the pop
                         if continueGen then
-                            Settings.population.currentPop = Settings.population.currentPop + 1
-                            if Settings.population.popList[Settings.town.name] then
-                                Settings.population.popList[Settings.town.name] = Settings.population.popList[Settings.town.name] + 1
+                            pop.popCurrent = pop.popCurrent + 1
+                            if pop.popList[Settings.town.name] then
+                                pop.popList[Settings.town.name] = pop.popList[Settings.town.name] + 1
                             else
-                                Settings.population.popList[Settings.town.name] = 1
+                                pop.popList[Settings.town.name] = 1
                             end
                         end
                     end
                 end
             end
         end
+        Settings.population = pop
+        Utility.writeJsonFile(SettingsFile,Settings)
+        Utility.writeJsonFile(resFile,resTable)
+    end
+end
 
+function Utility.TouristGen(SettingsFile,resFile)
+    --Initial idea of Population, basic slow gen to Cap
+    --1. Tourists
+    --2. POP
+    local currentTimeSec = Utility.GetTimestamp()/1000
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local resTable = Utility.readJsonFile(resFile)
+    if Settings and resTable then
+        local pop = Settings.pop
+
+        --Generate tourists over time with cost
+        if pop.lastTourist == nil or currentTimeSec > (pop.lastTourist + (pop.touristTime)) then
+            pop.lastTourist = currentTimeSec
+            if pop.touristCurrent >= pop.touristCap then
+                pop.touristCurrent = pop.touristCap
+            else
+                pop.touristCurrent = pop.touristCurrent + 1
+            end
+        end
+
+        --TouristGen at cost
+        if pop.lastTourist == nil or currentTimeSec > (pop.lastTourist + (pop.touristTime)) then
+            pop.lastTourist = currentTimeSec
+            local continueGen = true
+            for x = 1, pop.gen do
+                if pop.touristCurrent < pop.touristCap and continueGen then
+
+                    for item,quantity in pairs(pop.genCosts) do
+                        local GenQuantity = quantity
+                        local currentQuantity = Utility.GetMcItemCount(item, resTable)
+                        --GenQuantity = Utility.round(GenQuantity)
+                        if GenQuantity > currentQuantity then
+                            continueGen = false
+                        else
+                            Utility.AddMcItemToTable(item, resTable, GenQuantity*-1)
+                        end
+                    end
+                    -- add gen to the pop
+                    if continueGen then
+                        pop.touristCap = pop.touristCap + 1
+                    end
+                end
+            end
+        end
+
+        Settings.population = pop
         Utility.writeJsonFile(SettingsFile,Settings)
         Utility.writeJsonFile(resFile,resTable)
     end
@@ -558,13 +603,13 @@ function Utility.OutputPop(SettingsFile, count, townName, name)
     if Settings then
         local x,y,z = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
         for i = 1,count do
-            if Settings.population.currentPop > Settings.population.cap - (Settings.population.cap * Settings.population.emigrationRatio) then
+            if Settings.population.popCurrent > Settings.population.popCap - (Settings.population.popCap * Settings.population.emigrationRatio) then
                 if name ~= nil then
                     if Settings.population.popList[name] then
                         if Settings.population.popList[name] > 1 then
                             Settings.population.popList[name] = Settings.population.popList[name] - 1
                             McAPI.SummonCustomVill(x,y,z,name)
-                            Settings.population.currentPop = Settings.population.currentPop - 1
+                            Settings.population.popCurrent = Settings.population.popCurrent - 1
                         end
                     end
                 else
@@ -580,7 +625,7 @@ function Utility.OutputPop(SettingsFile, count, townName, name)
                                 end
                                 Settings.population.popList[i] = Settings.population.popList[i] - 1
                                 McAPI.SummonCustomVill(x,y,z,outName)
-                                Settings.population.currentPop = Settings.population.currentPop - 1
+                                Settings.population.popCurrent = Settings.population.popCurrent - 1
                                 foundPop = true
                             end
                         end
@@ -604,7 +649,7 @@ function Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
                 local fromTown = string.match(killed,"%)(.*)")
                 if fromTown == Settings.town.name then
                     --Own tourist, add
-                    Settings.population.currentTourists = Settings.population.currentTourists + 1
+                    Settings.population.touristCurrent = Settings.population.touristCurrent + 1
                 else
                     --from elsewhere, handle
                     local townNamesList = Utility.readJsonFile(townNames)
@@ -621,7 +666,7 @@ function Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
                 end
             else
                 -- Population
-                Settings.population.currentPop = Settings.population.currentPop + 1
+                Settings.population.popCurrent = Settings.population.popCurrent + 1
                 if Settings.population.popList[killed] then
                     Settings.population.popList[killed] = Settings.population.popList[killed] + 1
                 else
@@ -655,19 +700,19 @@ function Utility.OutputTourist(SettingsFile, count, townName)
                 VillagerCount = McAPI.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 50% check
             end
             --print(VillagerCount)
-            if Settings.population.currentTourists > 0 and VillagerCount < max then
+            if Settings.population.touristCurrent > 0 and VillagerCount < max then
                 if Settings.population.output.method == "Line" then
                     x,z = Utility.PointBetweenPoints(x,z,x2,z2, -1)
                 end
                 McAPI.SummonCustomVill(x,y,z,"(T)"..townName, "random")
-                Settings.population.currentTourists = Settings.population.currentTourists - 1
+                Settings.population.touristCurrent = Settings.population.touristCurrent - 1
             end
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end
 end
 
-function Utility.CheckTourist(SettingsFile, count, townName,townNames,townX,townZ)
+function Utility.TouristTransfer(SettingsFile, count, townName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings and Settings.population.touristOutput == true then
         Utility.OutputTourist(SettingsFile, count, townName)
