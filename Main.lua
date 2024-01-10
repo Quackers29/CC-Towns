@@ -194,8 +194,8 @@ if Settings and AdminSettings then
     end
 
     if Settings.population.output.x == nil then
-        Settings.population.output.x, Settings.population.output.y, Settings.population.output.z = x+1,y,z
-        Settings.population.output.x2, Settings.population.output.y2, Settings.population.output.z2 = x+1,y,z
+        Settings.population.output.x, Settings.population.output.y, Settings.population.output.z = x+2,y,z
+        Settings.population.output.x2, Settings.population.output.y2, Settings.population.output.z2 = x+2,y,z
     end
     POUTx,POUTy,POUTz = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
     POUTx2,POUTy2,POUTz2 = Settings.population.output.x2, Settings.population.output.y2, Settings.population.output.z2
