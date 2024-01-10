@@ -34,15 +34,13 @@ local PopRange = 50 -- blocks away from the Town PC
 local LastX,LastY = 1,1 -- use for map coordinates
 local adminFile = "AdminSettings.json"
 local currentZoom = 1 -- 1 for 1
--- PushButtons
 local minWidth = 8
 local minHeight = 2
 local townName = nil
 local PINx,PINy,PINz = nil,nil,nil
 local POUTx,POUTy,POUTz = nil,nil,nil
 local POUTx2,POUTy2,POUTz2 = nil,nil,nil
-
-local scheduledActions = {} -- A table to keep track of scheduled actions
+local scheduledActions = {} -- keeps track of scheduled actions
 
 
 -- Initialize Checks if it exists or should exist
@@ -177,7 +175,6 @@ if Settings and AdminSettings then
     if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then
         INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
     else
-        Settings.Input = {}
         Settings.Input.x, Settings.Input.y, Settings.Input.z = x+1,y,z
         INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
     end
@@ -185,13 +182,11 @@ if Settings and AdminSettings then
     if Settings.Output and math.abs(Settings.Output.x - x) <= ChestRange and math.abs(Settings.Output.y - y) <= ChestRange then
         OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
     else
-        Settings.Output = {}
         Settings.Output.x, Settings.Output.y, Settings.Output.z = x+1,y+2,z
         OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
     end
 
     if Settings.population.input.x == nil then
-        Settings.population.input = {}
         Settings.population.input.x, Settings.population.input.y, Settings.population.input.z, Settings.population.input.range = x+1,y,z,10
         PINx,PINy,PINz = Settings.population.input.x, Settings.population.input.y, Settings.population.input.z
     else
@@ -199,7 +194,6 @@ if Settings and AdminSettings then
     end
 
     if Settings.population.output.x == nil then
-        Settings.population.output = {}
         Settings.population.output.x, Settings.population.output.y, Settings.population.output.z = x+1,y,z
     end
     POUTx,POUTy,POUTz = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
