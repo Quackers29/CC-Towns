@@ -80,20 +80,32 @@ function McAPI.findGroundLevel(x, startY, z, minY)
 end
 
 
--- Gets the scoreboard of a player on an objective, returns nil if none found
+-- Gets the scoreboard of a player on an objective, returns 0 if none found, handles unset objective
 function McAPI.ScoreGet(player, objective)
-    local result, message, score = commands.scoreboard.players.get(player, objective)
-    if string.match(message[1], "Can't get value") then
+    local result, tableWithString, score = commands.scoreboard.players.get(player, objective)
+    if string.match(tableWithString[1], "Can't get value") then
         --No score set  
-        return nil
+        return 0
+    elseif string.match(tableWithString[1], "Unknown scoreboard objective") then
+        --No objective set
+        McAPI.ScoreObjSet(objective)
+        return 0
     else
         return score
     end
 end
 
--- Sets the scoreboard of a player on an objective
+-- Sets the scoreboard of a player on an objective, handles unset objective
 function McAPI.ScoreSet(player, objective, score)
-    commands.scoreboard.players.set(player, objective, score)
+    local boolean, tableWithString, value = commands.scoreboard.players.set(player, objective, score)
+    if string.match(tableWithString[1], "Unknown scoreboard objective") then
+        McAPI.ScoreObjSet(objective)
+        commands.scoreboard.players.set(player, objective, score)
+    end
+end
+
+function McAPI.ScoreObjSet(objective)
+    commands.scoreboard.objectives.add(objective, "dummy")
 end
 
 -- Summons items at the coordinates

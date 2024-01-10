@@ -6,20 +6,20 @@
       "production": true,
       "resources": true,
       "upgrades": true,
-      "trade": true
-    }
-  },
-  "ComputerId": 1,
-  "Admin": {
+      "trade": true,
+      "generation": false
+    },
     "version": 1,
-    "ControlPC": {
+    "controlMethod": "all",
+    "controlPC": {
       "y": -61,
       "x": 0,
       "radius": 1,
       "z": -34,
-      "AutoUpdate": false
+      "autoUpdate": false
     }
   },
+  "ComputerId": 1,
   "Town": {
     "Startup": false,
     "MinDistance": 8,

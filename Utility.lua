@@ -878,4 +878,46 @@ function Utility.checkItems(filePath,OUTx,OUTy,OUTz)
     end
 end
 
+-- Currently unused
+function Utility.InRange(value, origin, range)
+    return math.max(origin - range, math.min(value, origin + range))
+end
+
+-- Currently unused
+function Utility.IsInRange(value, origin, range)
+    return value >= (origin - range) and value <= (origin + range)
+end
+
+-- Currently unused
+function Utility.IsInRange2DAngular(X, Z, originX, originZ, range)
+    local distance = math.sqrt((X - originX)^2 + (Z - originZ)^2)
+    return distance <= range
+end
+
+function Utility.CoerceInRange2DAngular(X, Z, originX, originZ, range)
+    local dx = X - originX
+    local dz = Z - originZ
+    local distance = math.sqrt(dx^2 + dz^2)
+    
+    if distance <= range then
+        return X, Z  -- Point is within range, return it as is
+    end
+
+    -- Calculate scaling factor
+    local scale = range / distance
+
+    -- Coerce point to be on the border of the circle with radius `range`
+    local coercedX = originX + dx * scale
+    local coercedZ = originZ + dz * scale
+    
+    return coercedX, coercedZ, distance
+end
+
+function Utility.CopyIfMissing(defaultFile,File)
+    if not fs.exists(File) then
+        Utility.copyFile(defaultFile,File)
+    end
+end
+
+
 return Utility

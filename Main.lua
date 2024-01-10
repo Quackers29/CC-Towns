@@ -44,37 +44,6 @@ local POUTx2,POUTy2,POUTz2 = nil,nil,nil
 
 local scheduledActions = {} -- A table to keep track of scheduled actions
 
-function InRange(value, origin, range)
-    return math.max(origin - range, math.min(value, origin + range))
-end
-
-function IsInRange(value, origin, range)
-    return value >= (origin - range) and value <= (origin + range)
-end
-
-function IsInRange2DAngular(X, Z, originX, originZ, range)
-    local distance = math.sqrt((X - originX)^2 + (Z - originZ)^2)
-    return distance <= range
-end
-
-function CoerceInRange2DAngular(X, Z, originX, originZ, range)
-    local dx = X - originX
-    local dz = Z - originZ
-    local distance = math.sqrt(dx^2 + dz^2)
-    
-    if distance <= range then
-        return X, Z  -- Point is within range, return it as is
-    end
-
-    -- Calculate scaling factor
-    local scale = range / distance
-
-    -- Coerce point to be on the border of the circle with radius `range`
-    local coercedX = originX + dx * scale
-    local coercedZ = originZ + dz * scale
-    
-    return coercedX, coercedZ, distance
-end
 
 -- Initialize Checks if it exists or should exist
 
@@ -87,7 +56,7 @@ if AdminSettings and AdminSettings.Town.MinDistance then
         print("Town does not already exist")
         for i,v in ipairs(fs.list("Towns")) do
             local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
-            if IsInRange2DAngular(ax, az, x, z, AdminSettings.Town.MinDistance) then
+            if Utility.IsInRange2DAngular(ax, az, x, z, AdminSettings.Town.MinDistance) then
                 print("NewTown is within another Town, deleting Computer")
                 os.sleep(10)
                 McAPI.setBlock(x,y,z,"cobblestone")
@@ -99,19 +68,14 @@ if AdminSettings and AdminSettings.Town.MinDistance then
 end
 
 -- Initialise McAPI with version number
-if AdminSettings and AdminSettings.Admin.version then
-    McAPI.Init(AdminSettings.Admin.version)
+if AdminSettings and AdminSettings.main.version then
+    McAPI.Init(AdminSettings.main.version)
 end
 
 -- Initialize checks / file system
 
-if not fs.exists(SettingsFile) then
-    Utility.copyFile(defaultSettingsFile,SettingsFile)
-end
-
-if not fs.exists(tradeFile) then
-    Utility.copyFile(tradeSource,tradeFile)
-end
+Utility.CopyIfMissing(defaultSettingsFile,SettingsFile)
+Utility.CopyIfMissing(tradeSource,tradeFile)
 
 local Settings = Utility.readJsonFile(SettingsFile)
 
@@ -585,7 +549,7 @@ function drawButtonsForCurrentPage()
             end
             Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
         end
-        
+
         for i,v in pairs(displayItem.cost) do
             local currentUp = true
             local c = Utility.convertItem(i)
@@ -728,7 +692,7 @@ end
 
 function RefreshButton()
     if AdminSettings then
-        if AdminSettings.Admin.version == 1 then
+        if AdminSettings.main.version == 1 then
             Utility.inputItems(resFile,INx,INy,INz,-64)
         else
             Utility.inputItems(resFile,INx,INy,INz,0)
@@ -1003,45 +967,47 @@ function AdminLoop()
     while mainflag do
         CheckRestart()
         local Admin = Utility.readJsonFile(adminFile)
-        local wait = Admin.Town.AdminWait or 60
+        local wait =  60
+        if Admin then
+            wait = Admin.Town.AdminWait
+            --Control Methods: none, all, pc, score
+            if Admin.main.controlMethod == "all" or Admin.main.controlMethod == "score" then
+                if McAPI.ScoreGet("SelfDestruct", "AllTowns") == 1 then
+                    local townNamesList = Utility.readJsonFile(townNames)
+                    if townNamesList and townNamesList.used and Settings then
+                        townNamesList.used[Settings.town.name] = nil
+                        Utility.writeJsonFile(townNames,townNamesList)
+                    end
+                    Monitor.clear()
+                    Utility.SelfDestruct()
+                end
+                
+                if McAPI.ScoreGet("Restart", "AllTowns") == 1 then
+                    McAPI.ScoreSet("Restart", "AllTowns", 0)
+                    if Admin then
+                        Admin.Town.Restart = os.epoch("utc")
+                        Utility.writeJsonFile(adminFile,Admin)
+                    end
+                    Monitor.clear()
+                    Monitor.write("Offline",1,1)
+                    os.reboot()
+                end
+    
+                if Admin and Admin.main.packages.generation and McAPI.ScoreGet("GenState", "AllTowns") == 1 then
+                    local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(townFolder), Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z}, Admin.Generation.spread)
+                    if OpLocation then
+                        Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,Admin.ComputerId)
+                        os.sleep(60)
+                    end
+                end
+            end
+        end
         os.sleep(wait)
-        local Admin = Utility.readJsonFile(adminFile)
-        
-        if McAPI.ScoreGet("SelfDestruct", "AllTowns") == 1 then
-            local townNamesList = Utility.readJsonFile(townNames)
-            if townNamesList and townNamesList.used and Settings then
-                townNamesList.used[Settings.town.name] = nil
-                Utility.writeJsonFile(townNames,townNamesList)
-            end
-            Monitor.clear()
-            Utility.SelfDestruct()
-        end
-        
-        if McAPI.ScoreGet("Restart", "AllTowns") == 1 then
-            McAPI.ScoreSet("Restart", "AllTowns", 0)
-            if Admin then
-                Admin.Town.Restart = os.epoch("utc")
-                Utility.writeJsonFile(adminFile,Admin)
-            end
-            Monitor.clear()
-            Monitor.write("Offline",1,1)
-            os.reboot()
-        end
-
-        if Admin and McAPI.ScoreGet("GenState", "AllTowns") == 1 then
-            local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(townFolder), Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z}, Admin.Generation.spread)
-            if OpLocation then
-                --commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
-                Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,Admin.ComputerId)
-                os.sleep(60)
-            end
-        end
     end
 end
-
 
 -- Start the loops
 parallel.waitForAll(MonitorEvents, second, handleScheduledActions, MainLoop, AdminLoop)
 
--- Code here continues after both loops have exited
-print("Both loops have exited.")
+-- Code here continues after loops have exited
+print("Loops have exited.")
