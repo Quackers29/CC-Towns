@@ -3,6 +3,17 @@ local McAPI   = require("McAPI")
 local covertFile = "Defaults\\convert.json"
 os.loadAPI("json")
 
+local SettingsFile = nil
+local AdminFile = nil
+local ResFile = nil
+
+-- Loads in the reused files so they do not need to be further referenced
+function Utility.LoadFiles(SettingsFileIn,AdminFileIn,ResFileIn)
+    SettingsFile = SettingsFileIn
+    AdminFile = AdminFileIn
+    ResFile = ResFileIn
+end
+
 function Utility.getArraySize(arr)
     local count = 0
     for _ in pairs(arr) do
@@ -397,7 +408,6 @@ function Utility.findNewTownLocation(nearbyTowns, minRange, maxRange, currentPos
             end
         end
     end
-
     return nil
 end
 
@@ -482,13 +492,13 @@ function Utility.GetTimestamp()
     return os.epoch("utc")
 end
 
-function Utility.PopGen(SettingsFile,resFile,upkeepBoolean,genCostBoolean)
+function Utility.PopGen(upkeepBoolean,genCostBoolean)
     --Initial idea of Population, basic slow gen to Cap
     --1. Check upkeep
     --2. POP
     local currentTimeSec = Utility.GetTimestamp()/1000
     local Settings = Utility.readJsonFile(SettingsFile)
-    local resTable = Utility.readJsonFile(resFile)
+    local resTable = Utility.readJsonFile(ResFile)
     local upkeepComplete = true
     if Settings and resTable then
         local pop = Settings.population
@@ -549,12 +559,12 @@ function Utility.PopGen(SettingsFile,resFile,upkeepBoolean,genCostBoolean)
         end
         Settings.population = pop
         Utility.writeJsonFile(SettingsFile,Settings)
-        Utility.writeJsonFile(resFile,resTable)
+        Utility.writeJsonFile(ResFile,resTable)
     end
 end
 
 --Increase tourist number over time at no cost
-function Utility.TouristGen(SettingsFile)
+function Utility.TouristGen()
     local currentTimeSec = Utility.GetTimestamp()/1000
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
@@ -574,10 +584,10 @@ function Utility.TouristGen(SettingsFile)
 end
 
 --Increase tourist number over time at cost
-function Utility.TouristGenCost(SettingsFile,resFile)
+function Utility.TouristGenCost()
     local currentTimeSec = Utility.GetTimestamp()/1000
     local Settings = Utility.readJsonFile(SettingsFile)
-    local resTable = Utility.readJsonFile(resFile)
+    local resTable = Utility.readJsonFile(ResFile)
     if Settings and resTable then
         local pop = Settings.population
 
@@ -608,11 +618,11 @@ function Utility.TouristGenCost(SettingsFile,resFile)
         end
         Settings.population = pop
         Utility.writeJsonFile(SettingsFile,Settings)
-        Utility.writeJsonFile(resFile,resTable)
+        Utility.writeJsonFile(ResFile,resTable)
     end
 end
 
-function Utility.OutputPop(SettingsFile, count, townName, name)
+function Utility.OutputPop(count, townName, name)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
         local x,y,z = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
@@ -651,10 +661,11 @@ function Utility.OutputPop(SettingsFile, count, townName, name)
     end
 end
 
-function Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
+function Utility.InputPop(townName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
     local hasKilled = false
-    if Settings then
+    if Settings and Admin then
         local x,y,z,range = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.range
         local killed = McAPI.KillCustomVill(x,y,z,range,townName)
         if killed then
@@ -673,7 +684,13 @@ function Utility.InputPop(SettingsFile,townName,townNames,townX,townZ)
                             local distance = Utility.round(Utility.CalcDist({x = ax,z = az}, {x = townX,z = townZ}))
                             local pay = Utility.round(distance / 10)
                             McAPI.Say("Tourist travelled (m): "..distance..", for: "..pay.." emeralds")
-                            McAPI.SummonItem(x,y,z, "minecraft:emerald",pay)
+                            if Admin.tourists.dropReward then
+                                McAPI.SummonItem(x,y,z, "minecraft:emerald",pay)
+                            else
+                                local Resources = Utility.readJsonFile(ResFile)
+                                Utility.AddMcItemToTable("minecraft:emerald",Resources,pay)
+                                Utility.writeJsonFile(ResFile,Resources)
+                            end
                             hasKilled = true
                         end
                     end
@@ -699,7 +716,7 @@ function Utility.ParticleMarker(x,y,z)
     commands.particle("end_rod", x, y, z, 0, 0, 0, 0.03, 100, "normal")
 end
 
-function Utility.OutputTourist(SettingsFile, count, townName)
+function Utility.OutputTourist(count, townName)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
         local x,y,z,radius, max = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z,Settings.population.output.radius, Settings.population.output.max
@@ -726,15 +743,15 @@ function Utility.OutputTourist(SettingsFile, count, townName)
     end
 end
 
-function Utility.TouristTransfer(SettingsFile, count, townName,townNames,townX,townZ)
+function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings and Settings.population.touristOutput == true then
-        Utility.OutputTourist(SettingsFile, count, townName)
+        Utility.OutputTourist(count, townName)
     end
     if Settings and Settings.population.autoInput == true then
         local boolean = true
         while boolean do
-            boolean = Utility.InputPop(SettingsFile,"(T)"..townName,townNames,townX,townZ)
+            boolean = Utility.InputPop("(T)"..townName,townNames,townX,townZ)
             if boolean then
                 os.sleep(0.2)
             end
@@ -760,8 +777,6 @@ function Utility.PointBetweenPoints(x,z,x2,z2, factor)
     local z = (1 - t) * z + t * z2
     return x,z
 end
-
-
 
 
 -- Function to read data from a CSV file into a 2D array with a tab delimiter and handle Excel's escaped double quotes
@@ -814,12 +829,12 @@ function Utility.readCSV(filename)
     return data
 end
 
-function Utility.outputItems(filename,itemString,EXPx,EXPy,EXPz)
+function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
 	local r1,r2 = commands.data.get.block(EXPx,EXPy,EXPz)
 	local r3 = string.find(r2[1],"Items: %[%]")
 	if r1 == true then
 		if r3 ~= nil then
-			local resTable = Utility.readJsonFile(filename)
+			local resTable = Utility.readJsonFile(ResFile)
 			if resTable ~= {} then
 				local flag = true
 				local outputID = ""
@@ -851,7 +866,7 @@ function Utility.outputItems(filename,itemString,EXPx,EXPy,EXPz)
                     end
                 end
                 if flag == false then
-                    Utility.writeJsonFile(filename, resTable)
+                    Utility.writeJsonFile(ResFile, resTable)
                     local temp = ""
                     if outputTag ~= "" then
                         temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,tag: {%s}}',0,outputID,count,outputTag))
@@ -860,7 +875,6 @@ function Utility.outputItems(filename,itemString,EXPx,EXPy,EXPz)
                     end
                     local export = "Items set value ["..temp.."]"
                     commands.data.modify.block(EXPx,EXPy,EXPz, export)
-                    
                 end
 			end
 		end
@@ -895,8 +909,8 @@ function Utility.removeFirstLevelBrackets(input)
 	return result
 end
 
-function Utility.inputItems(filename,INx,INy,INz, cloneHeight)
-	local itemTable = Utility.readJsonFile(filename)
+function Utility.inputItems(INx,INy,INz, cloneHeight)
+	local itemTable = Utility.readJsonFile(ResFile)
 	local INq,INw = commands.data.get.block(INx,INy,INz,"Items")
 	if INq then
 		-- Move chest using clone to preserve contents when reading it. 
@@ -920,17 +934,17 @@ function Utility.inputItems(filename,INx,INy,INz, cloneHeight)
             --start new parse here
             itemTable = Utility.AddMcItemToTable(id,itemTable,count)
 		end
-		Utility.writeJsonFile(filename, itemTable)
+		Utility.writeJsonFile(ResFile, itemTable)
 	end
 end
 
-function Utility.checkItems(filePath,OUTx,OUTy,OUTz)
-    local resTable = Utility.readJsonFile(filePath)
+function Utility.checkItems(OUTx,OUTy,OUTz)
+    local resTable = Utility.readJsonFile(ResFile)
     if resTable then
         for key,item in pairs(resTable) do
             if item.toggle == true or item.toggle == "true" then
                 if item.count > 0 then
-                    Utility.outputItems(filePath,key,OUTx,OUTy,OUTz)
+                    Utility.outputItems(key,OUTx,OUTy,OUTz)
                 end
             end
         end

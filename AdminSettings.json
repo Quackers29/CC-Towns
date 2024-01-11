@@ -36,7 +36,8 @@
     "spread": 45
   },
   "tourists": {
-    "generationCost": false
+    "generationCost": false,
+    "dropReward": false
   },
   "population": {
     "generationCost": true,

@@ -600,6 +600,11 @@ function drawButtonsForCurrentPage()
     end
 end
 
+-- Initialize Utility program with correct filepaths
+
+Utility.LoadFiles(SettingsFile,adminFile,resFile)
+
+
 -- Initialize the monitor and set the default page
 Monitor.init()
 drawButtonsForCurrentPage()
@@ -678,11 +683,11 @@ function OutputPOP()
 end
 
 function InputPOP()
-    Utility.InputPop(SettingsFile,"",townNames,x,z)
+    Utility.InputPop("",townNames,x,z)
 end
 
 function OutputTourist()
-    Utility.OutputTourist(SettingsFile, 1, townName)
+    Utility.OutputTourist(1, townName)
 end
 
 function RefreshButton()
@@ -694,7 +699,7 @@ function RefreshButton()
         end
     end
     
-    Utility.checkItems(resFile,OUTx,OUTy,OUTz)
+    Utility.checkItems(OUTx,OUTy,OUTz)
     if currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
         drawButtonsForCurrentPage()     
     end
@@ -947,15 +952,15 @@ function MainLoop()
                 TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
             end
             if AdminSettings.main.packages.population then
-                Utility.PopGen(SettingsFile,resFile,AdminSettings.population.upkeep,AdminSettings.population.generationCost)
+                Utility.PopGen(AdminSettings.population.upkeep,AdminSettings.population.generationCost)
             end
             if AdminSettings.main.packages.tourists then
                 if AdminSettings.tourists.generationCost then
-                    Utility.TouristGenCost(SettingsFile,resFile)
+                    Utility.TouristGenCost()
                 else
-                    Utility.TouristGen(SettingsFile)
+                    Utility.TouristGen()
                 end
-                Utility.TouristTransfer(SettingsFile, 1, townName,townNames,x,y)
+                Utility.TouristTransfer(1, townName,townNames,x,y)
             end
             drawButtonsForCurrentPage()
         end
