@@ -482,7 +482,7 @@ function Utility.GetTimestamp()
     return os.epoch("utc")
 end
 
-function Utility.PopGen(SettingsFile,resFile)
+function Utility.PopGen(SettingsFile,resFile,upkeepBoolean,genCostBoolean)
     --Initial idea of Population, basic slow gen to Cap
     --1. Check upkeep
     --2. POP
@@ -494,17 +494,19 @@ function Utility.PopGen(SettingsFile,resFile)
         local pop = Settings.population
 
         --1. Upkeep
-        if pop.lastUpkeep == nil or currentTimeSec > (pop.lastUpkeep + (pop.upkeepTime)) then
-            pop.lastUpkeep = currentTimeSec
-            if pop.popCurrent > 0  then
-                for item,quantity in pairs(pop.upkeepCosts) do
-                    local upkeepQuantity = quantity * pop.popCurrent
-                    local currentQuantity = Utility.GetMcItemCount(item, resTable)
-                    upkeepQuantity = Utility.round(upkeepQuantity)
-                    if upkeepQuantity > currentQuantity then
-                        upkeepComplete = false
-                    else
-                        Utility.AddMcItemToTable(item, resTable, upkeepQuantity*-1)
+        if upkeepBoolean then
+            if pop.lastUpkeep == nil or currentTimeSec > (pop.lastUpkeep + (pop.upkeepTime)) then
+                pop.lastUpkeep = currentTimeSec
+                if pop.popCurrent > 0  then
+                    for item,quantity in pairs(pop.upkeepCosts) do
+                        local upkeepQuantity = quantity * pop.popCurrent
+                        local currentQuantity = Utility.GetMcItemCount(item, resTable)
+                        upkeepQuantity = Utility.round(upkeepQuantity)
+                        if upkeepQuantity > currentQuantity then
+                            upkeepComplete = false
+                        else
+                            Utility.AddMcItemToTable(item, resTable, upkeepQuantity*-1)
+                        end
                     end
                 end
             end
@@ -517,19 +519,23 @@ function Utility.PopGen(SettingsFile,resFile)
                 local continueGen = true
                 for x = 1, pop.gen do
                     if pop.popCurrent < pop.popCap and continueGen then
-
-                        for item,quantity in pairs(pop.genCosts) do
-                            local GenQuantity = quantity
-                            local currentQuantity = Utility.GetMcItemCount(item, resTable)
-                            --GenQuantity = Utility.round(GenQuantity)
-                            if GenQuantity > currentQuantity then
-                                continueGen = false
-                            else
-                                Utility.AddMcItemToTable(item, resTable, GenQuantity*-1)
+                        if genCostBoolean then
+                            for item,quantity in pairs(pop.genCosts) do
+                                local GenQuantity = quantity
+                                local currentQuantity = Utility.GetMcItemCount(item, resTable)
+                                --GenQuantity = Utility.round(GenQuantity)
+                                if GenQuantity > currentQuantity then
+                                    continueGen = false
+                                end
                             end
                         end
-                        -- add gen to the pop
+                        -- remove res, add gen to the pop
                         if continueGen then
+                            if genCostBoolean then
+                                for item,quantity in pairs(pop.genCosts) do
+                                    Utility.AddMcItemToTable(item, resTable, quantity*-1)
+                                end
+                            end
                             pop.popCurrent = pop.popCurrent + 1
                             if pop.popList[Settings.town.name] then
                                 pop.popList[Settings.town.name] = pop.popList[Settings.town.name] + 1
@@ -578,21 +584,23 @@ function Utility.TouristGenCost(SettingsFile,resFile)
         if pop.lastTourist == nil or currentTimeSec > (pop.lastTourist + (pop.touristTime)) then
             pop.lastTourist = currentTimeSec
             local continueGen = true
+            local costTable = {}
             for x = 1, pop.gen do
                 if pop.touristCurrent < pop.touristCap and continueGen then
 
                     for item,quantity in pairs(pop.genCosts) do
                         local GenQuantity = quantity
                         local currentQuantity = Utility.GetMcItemCount(item, resTable)
-                        --GenQuantity = Utility.round(GenQuantity)
                         if GenQuantity > currentQuantity then
                             continueGen = false
-                        else
-                            Utility.AddMcItemToTable(item, resTable, GenQuantity*-1)
                         end
                     end
-                    -- add gen to the pop
+                    
+                    -- remove res, add gen to the pop
                     if continueGen then
+                        for item,quantity in pairs(pop.genCosts) do
+                            Utility.AddMcItemToTable(item, resTable, quantity*-1)
+                        end
                         pop.touristCurrent = pop.touristCurrent + 1
                     end
                 end

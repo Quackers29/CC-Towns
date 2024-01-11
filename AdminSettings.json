@@ -2,11 +2,11 @@
   "main": {
     "packages": {
       "tourists": true,
-      "population": true,
+      "population": false,
       "production": true,
       "resources": true,
       "upgrades": true,
-      "trade": true,
+      "trade": false,
       "generation": false
     },
     "version": 1,
@@ -37,5 +37,9 @@
   },
   "tourists": {
     "generationCost": false
+  },
+  "population": {
+    "generationCost": true,
+    "upkeep": false
   }
 }

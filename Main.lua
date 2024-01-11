@@ -947,7 +947,7 @@ function MainLoop()
                 TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
             end
             if AdminSettings.main.packages.population then
-                Utility.PopGen(SettingsFile,resFile)
+                Utility.PopGen(SettingsFile,resFile,AdminSettings.population.upkeep,AdminSettings.population.generationCost)
             end
             if AdminSettings.main.packages.tourists then
                 if AdminSettings.tourists.generationCost then
