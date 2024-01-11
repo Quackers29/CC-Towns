@@ -93,8 +93,8 @@ local ButtonConfig = {
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Trade") end,enabled = true, type = "button",page = "Trade_History"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "Trade"},
 --population
-{id = "touristOutput",width = 3,x = -1,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("touristOutput") end,enabled = false, type = "button",page = "Pop_Settings"},
-{id = "autoInput",width = 3,x = -1,y = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("autoInput") end,enabled = false, type = "button",page = "Pop_Settings"},
+{id = "touristOutput",width = 3,x = 1,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("touristOutput") end,enabled = false, type = "button",page = "Pop_Settings"},
+{id = "autoInput",width = 3,x = 1,y = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("autoInput") end,enabled = false, type = "button",page = "Pop_Settings"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "Pop"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Pop") end,enabled = true, type = "button",page = "Pop_Settings"},
 

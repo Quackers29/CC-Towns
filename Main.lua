@@ -487,8 +487,8 @@ function drawButtonsForCurrentPage()
 
     elseif Settings and currentPage == "Pop_Settings" then
         Monitor.write("Population Settings", 1, 1)
-        Monitor.write("Tourist Output", 1, 3)
-        Monitor.write("Population Input", 1, 4)
+        Monitor.write("Tourist Output", 5, 3)
+        Monitor.write("Population Input", 5, 4)
         local output = false
         local input = false
         if Settings.population.touristOutput then
@@ -953,7 +953,7 @@ function MainLoop()
                 if AdminSettings.tourists.generationCost then
                     Utility.TouristGenCost(SettingsFile,resFile)
                 else
-                    Utility.TouristGen(SettingsFile,resFile)
+                    Utility.TouristGen(SettingsFile)
                 end
                 Utility.TouristTransfer(SettingsFile, 1, townName,townNames,x,y)
             end

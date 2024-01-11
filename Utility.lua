@@ -491,7 +491,7 @@ function Utility.PopGen(SettingsFile,resFile)
     local resTable = Utility.readJsonFile(resFile)
     local upkeepComplete = true
     if Settings and resTable then
-        local pop = Settings.pop
+        local pop = Settings.population
 
         --1. Upkeep
         if pop.lastUpkeep == nil or currentTimeSec > (pop.lastUpkeep + (pop.upkeepTime)) then
@@ -548,12 +548,11 @@ function Utility.PopGen(SettingsFile,resFile)
 end
 
 --Increase tourist number over time at no cost
-function Utility.TouristGen(SettingsFile,resFile)
+function Utility.TouristGen(SettingsFile)
     local currentTimeSec = Utility.GetTimestamp()/1000
     local Settings = Utility.readJsonFile(SettingsFile)
-    local resTable = Utility.readJsonFile(resFile)
-    if Settings and resTable then
-        local pop = Settings.pop
+    if Settings then
+        local pop = Settings.population
 
         if pop.lastTourist == nil or currentTimeSec > (pop.lastTourist + (pop.touristTime)) then
             pop.lastTourist = currentTimeSec
@@ -565,7 +564,6 @@ function Utility.TouristGen(SettingsFile,resFile)
         end
         Settings.population = pop
         Utility.writeJsonFile(SettingsFile,Settings)
-        Utility.writeJsonFile(resFile,resTable)
     end
 end
 
@@ -575,7 +573,7 @@ function Utility.TouristGenCost(SettingsFile,resFile)
     local Settings = Utility.readJsonFile(SettingsFile)
     local resTable = Utility.readJsonFile(resFile)
     if Settings and resTable then
-        local pop = Settings.pop
+        local pop = Settings.population
 
         if pop.lastTourist == nil or currentTimeSec > (pop.lastTourist + (pop.touristTime)) then
             pop.lastTourist = currentTimeSec

@@ -43,7 +43,7 @@
     "popCurrent":10,
     "touristTime":120,
     "touristCap":10,
-    "touristCurrent":1,
+    "touristCurrent":5,
     "touristOutput":false,
     "autoInput":false,
     "popCap":12,
