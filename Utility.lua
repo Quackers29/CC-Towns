@@ -547,17 +547,14 @@ function Utility.PopGen(SettingsFile,resFile)
     end
 end
 
+--Increase tourist number over time at no cost
 function Utility.TouristGen(SettingsFile,resFile)
-    --Initial idea of Population, basic slow gen to Cap
-    --1. Tourists
-    --2. POP
     local currentTimeSec = Utility.GetTimestamp()/1000
     local Settings = Utility.readJsonFile(SettingsFile)
     local resTable = Utility.readJsonFile(resFile)
     if Settings and resTable then
         local pop = Settings.pop
 
-        --Generate tourists over time with cost
         if pop.lastTourist == nil or currentTimeSec > (pop.lastTourist + (pop.touristTime)) then
             pop.lastTourist = currentTimeSec
             if pop.touristCurrent >= pop.touristCap then
@@ -566,8 +563,20 @@ function Utility.TouristGen(SettingsFile,resFile)
                 pop.touristCurrent = pop.touristCurrent + 1
             end
         end
+        Settings.population = pop
+        Utility.writeJsonFile(SettingsFile,Settings)
+        Utility.writeJsonFile(resFile,resTable)
+    end
+end
 
-        --TouristGen at cost
+--Increase tourist number over time at cost
+function Utility.TouristGenCost(SettingsFile,resFile)
+    local currentTimeSec = Utility.GetTimestamp()/1000
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local resTable = Utility.readJsonFile(resFile)
+    if Settings and resTable then
+        local pop = Settings.pop
+
         if pop.lastTourist == nil or currentTimeSec > (pop.lastTourist + (pop.touristTime)) then
             pop.lastTourist = currentTimeSec
             local continueGen = true
@@ -591,7 +600,6 @@ function Utility.TouristGen(SettingsFile,resFile)
                 end
             end
         end
-
         Settings.population = pop
         Utility.writeJsonFile(SettingsFile,Settings)
         Utility.writeJsonFile(resFile,resTable)

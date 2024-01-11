@@ -34,5 +34,8 @@
     "minDistance": 10,
     "maxDistance": 12,
     "spread": 45
+  },
+  "tourists": {
+    "genrationCost": false
   }
 }
