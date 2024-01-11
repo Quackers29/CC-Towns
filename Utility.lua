@@ -593,7 +593,7 @@ function Utility.TouristGenCost(SettingsFile,resFile)
                     end
                     -- add gen to the pop
                     if continueGen then
-                        pop.touristCap = pop.touristCap + 1
+                        pop.touristCurrent = pop.touristCurrent + 1
                     end
                 end
             end

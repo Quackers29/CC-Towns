@@ -957,6 +957,7 @@ function MainLoop()
                 end
                 Utility.TouristTransfer(SettingsFile, 1, townName,townNames,x,y)
             end
+            drawButtonsForCurrentPage()
         end
         os.sleep(productionWait)
     end
