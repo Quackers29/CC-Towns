@@ -111,8 +111,19 @@ if Settings and AdminSettings then
         Settings.general.biomeDist = dist or nil
     end
     if Settings.town.name == nil then
+        
+        --Can be moved to Utility
         if McAPI.isAirBlock(x, y+1, z) then
-            McAPI.fillArea(x-1,y+1,z,x+1,y+3,z, "computercraft:monitor_advanced{width:1}")
+            local facing = McAPI.GetFacing(x,y,z)
+            local out = 2 -- blocks out from the centre of monitor
+            local high = 3 --  block high of monitor
+            if facing then
+                local x1,x2,z1,z2 = x,x,z+out,z-out
+                if facing == "north" or facing == "south" then
+                    x1,x2,z1,z2 = x+out,x-out,z,z
+                end
+                McAPI.fillArea(x1,y+1,z1,x2,y+high,z2, "computercraft:monitor_advanced[facing="..facing.."]{width:1}")
+            end
         end
 
         local townNamesList = nil
@@ -693,9 +704,9 @@ end
 function RefreshButton()
     if AdminSettings then
         if AdminSettings.main.version == 1 then
-            Utility.inputItems(resFile,INx,INy,INz,-64)
+            Utility.inputItems(INx,INy,INz,-64)
         else
-            Utility.inputItems(resFile,INx,INy,INz,0)
+            Utility.inputItems(INx,INy,INz,0)
         end
     end
     

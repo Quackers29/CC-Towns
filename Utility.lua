@@ -704,7 +704,6 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                     Settings.population.popList[killed] = 1
                 end
             end
-
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end

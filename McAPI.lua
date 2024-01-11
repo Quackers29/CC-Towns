@@ -153,4 +153,13 @@ function McAPI.LocateBiome(biome)
     return boolean, tableWithString, distance
 end
 
+-- Checks facing of block, returns nil otherwise
+function McAPI.GetFacing(x, y, z)
+    local table = commands.getBlockInfo(x,y,z)
+    if table and table.state.facing ~= nil then
+        return table.state.facing
+    end
+    return nil
+end
+
 return McAPI
