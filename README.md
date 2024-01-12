@@ -4,7 +4,7 @@
 
 # Current State
   View the Wiki for an overview of the project and it's current features
-
+  https://github.com/Quackers29/CC-Towns/wiki
 
 # Installation instructions
 
