@@ -23,8 +23,9 @@ local townNames = "Defaults\\townNames.json"
 local townNamesSource = "Defaults\\townNamesSource.json"
 local mainflag = true
 local secondflag = true
-local wait = 5 --IN/OUT wait timer
+local refreshWait = 5 --IN/OUT wait timer
 local productionWait = 10
+local mainWait = 10 -- MainLoop
 local refreshflag = true
 local displayItem = nil
 local INx,INy,INz = nil,nil,nil
@@ -170,7 +171,6 @@ if Settings and AdminSettings then
         end
         if not foundName then
             McAPI.Say("No town name available, deleting town: "..townFolder)
-            Monitor.clear()
             Utility.SelfDestruct()
         end
 
@@ -855,7 +855,7 @@ function second()
         if refreshflag then
             RefreshButton()
         end
-        os.sleep(wait)
+        os.sleep(refreshWait)
     end
 end
 
@@ -988,7 +988,7 @@ function MainLoop()
             end
             drawButtonsForCurrentPage()
         end
-        os.sleep(productionWait)
+        os.sleep(mainWait)
     end
 end
 

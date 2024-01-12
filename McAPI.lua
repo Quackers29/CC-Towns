@@ -162,4 +162,13 @@ function McAPI.GetFacing(x, y, z)
     return nil
 end
 
+-- Creates particle effect
+function McAPI.Particle(particle,x,y,z, speed, count, ...)
+    if select(1,...) then
+        commands.particle(particle, select(1,...), x, y, z, 0, 0, 0,speed, count, "normal")
+    else
+        commands.particle("end_rod", x, y, z, 0, 0, 0,speed, count, "normal")
+    end
+end
+
 return McAPI

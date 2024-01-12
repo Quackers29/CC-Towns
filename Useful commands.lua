@@ -288,4 +288,13 @@ Add Max length of the output line
 Add auto input is output pos
 
 
+--commands.particle("block_marker", "chest", x, y, z, 0, 0, 0, 0.5, 10, "normal")
+--commands.particle("end_rod", x, y, z, 0, 0, 0, 0.03, 100, "normal")
+effect  -- potion
+entity_effect -- same but multicoloured
+sonic_boom -- eyecatch
+electric_spark --short
+campfire_cosy_smoke -- long
+poof
+
 
