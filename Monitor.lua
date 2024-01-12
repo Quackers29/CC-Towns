@@ -14,7 +14,7 @@ function Monitor.init()
     --if not monitor then
     --    error("Monitor not found!")
     --end
-    while not monitor then
+    while not monitor do
         print("Waiting for Monitor")
         monitor = peripheral.find("monitor")
         os.sleep(5)
