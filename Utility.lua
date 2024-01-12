@@ -43,17 +43,19 @@ function Utility.readJsonFile(filePath)
 end
 
 function Utility.writeJsonFile(filePath, data)
-    --local serializedData = textutils.serializeJSON(data)
-    local serializedData = json.encodePretty(data)
-    
-    local file = io.open(filePath, "w+")
+    --Incase json is given an empty table, check if serialise works
+    local success, errorOrMessage = json.encodePretty(data)
+    if success then
+        local serializedData = errorOrMessage
+        local file = io.open(filePath, "w+")
 
-    if file then
-        file:write(serializedData)
-        file:close()
-        return true  -- Successfully saved to file
-    else
-        return false  -- Failed to open file
+        if file then
+            file:write(serializedData)
+            file:close()
+            return true  -- Successfully saved to file
+        else
+            return false  -- Failed to open file
+        end
     end
 end
 
