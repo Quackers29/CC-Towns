@@ -1,7 +1,3 @@
-local Monitor = require("Monitor")
-local Utility = require("Utility")
-local adminFile = "AdminSettings.json"
-local waitForControl = 10
 
 term.clear()
 term.setCursorPos(1,1)
@@ -18,6 +14,11 @@ if not fs.exists("Main.lua") then
     print("Rebooting...")
     os.sleep(2)
 end
+
+local Monitor = require("Monitor")
+local Utility = require("Utility")
+local adminFile = "AdminSettings.json"
+local waitForControl = 10
 
 print("Starting up (Waiting for Server)")
 
