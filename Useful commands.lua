@@ -283,8 +283,9 @@ outputs list of mods and version numbers so could work
 
 
 
-
-
+line, multiple checks over line but cannot overlap. easier to go with one radius. 
+Add Max length of the output line
+Add auto input is output pos
 
 
 

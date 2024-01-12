@@ -29,8 +29,6 @@ local refreshflag = true
 local displayItem = nil
 local INx,INy,INz = nil,nil,nil
 local OUTx,OUTy,OUTz = nil,nil,nil
-local ChestRange = 5 -- blocks away from the Town PC
-local PopRange = 50 -- blocks away from the Town PC
 local LastX,LastY = 1,1 -- use for map coordinates
 local adminFile = "AdminSettings.json"
 local currentZoom = 1 -- 1 for 1
@@ -71,6 +69,10 @@ if AdminSettings and AdminSettings.main.version then
 end
 
 -- Initialize checks / file system
+
+local ChestRange = AdminSettings.Town.maxChestRange -- blocks away from the Town PC
+local PopRange = AdminSettings.Town.maxSpawnRange -- blocks away from the Town PC
+local maxLineLength = AdminSettings.Town.maxLineLength
 
 Utility.CopyIfMissing(defaultSettingsFile,SettingsFile)
 Utility.CopyIfMissing(tradeSource,tradeFile)
@@ -216,6 +218,7 @@ if Settings and AdminSettings then
 end
 
 Utility.writeJsonFile(SettingsFile,Settings)
+
 
 if not fs.exists(upgradesFile) then
     local upgradeTable = Utility.readJsonFile(upgradesSource)
@@ -675,15 +678,23 @@ end
 function ChangeOutputPop(ax,ay,az,select)
     Settings = Utility.readJsonFile(SettingsFile)
     if select == 1 then
-        POUTx = math.max(x - PopRange, math.min(POUTx + ax, x + PopRange))
+        local tempx = math.max(x - PopRange, math.min(POUTx + ax, x + PopRange))
         POUTy = math.max(y - PopRange, math.min(POUTy + ay, y + PopRange))
-        POUTz = math.max(z - PopRange, math.min(POUTz + az, z + PopRange))
-        Settings.population.output.x,Settings.population.output.y,Settings.population.output.z = POUTx,POUTy,POUTz
+        local tempz = math.max(z - PopRange, math.min(POUTz + az, z + PopRange))
+        if Utility.IsInRange2DAngular(tempx,tempz,POUTx2,POUTz2,maxLineLength) then
+            POUTx = tempx
+            POUTz = tempz
+            Settings.population.output.x,Settings.population.output.y,Settings.population.output.z = POUTx,POUTy,POUTz
+        end
     else
-        POUTx2 = math.max(x - PopRange, math.min(POUTx2 + ax, x + PopRange))
+        local tempx = math.max(x - PopRange, math.min(POUTx2 + ax, x + PopRange))
         POUTy2 = math.max(y - PopRange, math.min(POUTy2 + ay, y + PopRange))
-        POUTz2 = math.max(z - PopRange, math.min(POUTz2 + az, z + PopRange))
-        Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2 = POUTx2,POUTy2,POUTz2
+        local tempz = math.max(z - PopRange, math.min(POUTz2 + az, z + PopRange))
+        if Utility.IsInRange2DAngular(tempx,tempz,POUTx,POUTz,maxLineLength) then
+            POUTx2 = tempx
+            POUTz2 = tempz
+            Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2 = POUTx2,POUTy2,POUTz2
+        end
     end
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
