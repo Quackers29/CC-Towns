@@ -125,8 +125,12 @@ function Utility.AddMcItemToTable(itemString, itemTable, count)
             end
         end
     end
-
     return itemTable
+end
+
+function Utility.ModifyRes(itemstring,amount)
+    local Resources = Utility.readJsonFile(ResFile)
+    Utility.writeJsonFile(ResFile,Utility.AddMcItemToTable(itemstring,Resources,amount))
 end
 
 function Utility.GetMcItemCount(itemString, itemTable)
@@ -691,8 +695,7 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                             if Admin.tourists.dropReward then
                                 McAPI.SummonItem(x,y,z, "minecraft:emerald",pay)
                             else
-                                local Resources = Utility.readJsonFile(ResFile)
-                                Utility.writeJsonFile(ResFile,Utility.AddMcItemToTable("minecraft:emerald",Resources,pay))
+                                Utility.ModifyRes("minecraft:emerald",pay)
                             end
                             hasKilled = true
                         end
