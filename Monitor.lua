@@ -20,7 +20,7 @@ function Monitor.init()
     --test is disconnect issue is still occuring
     local success, errorOrMessage = pcall(monitor.clear)
     if not success then
-        print("Fix Monitor")
+        print("Fix Monitor, break and replace... Rebooting in 30 seconds")
         os.sleep(30)
         os.reboot()
     end
