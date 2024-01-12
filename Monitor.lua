@@ -28,8 +28,6 @@ end
 
 -- Function to clear the monitor and set the cursor position
 function Monitor.clear()
-    --local success, errorOrMessage = pcall(monitor.clear)
-    local success, errorOrMessage = pcall(monitor.setCursorPos(1, 1))
     monitor.clear()
     monitor.setCursorPos(1, 1)
 end
