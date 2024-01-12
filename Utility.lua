@@ -101,23 +101,25 @@ function Utility.AddMcItemToTable(itemString, itemTable, count)
     local itemTable = itemTable or {}
     -- Check if the entry exists in the table
     local exists = false
-    if itemTable[itemString] ~= nil then
-        exists = true
-    end
-    if not exists then
-        -- Add to dataTable
-        itemTable[itemString] = {
-            attributes = parsedData.attributes,
-            count = count,
-            toggle = false,
-            key = parsedData.item
-        }
-    else
-        -- modify itemTable
-        if count then
-            itemTable[itemString].count = itemTable[itemString].count + count
-            if itemTable[itemString].count < 1 then
-                itemTable[itemString] = nil
+    if count ~= 0 then 
+        if itemTable[itemString] ~= nil then
+            exists = true
+        end
+        if not exists then
+            -- Add to dataTable
+            itemTable[itemString] = {
+                attributes = parsedData.attributes,
+                count = count,
+                toggle = false,
+                key = parsedData.item
+            }
+        else
+            -- modify itemTable
+            if count then
+                itemTable[itemString].count = itemTable[itemString].count + count
+                if itemTable[itemString].count < 1 then
+                    itemTable[itemString] = nil
+                end
             end
         end
     end
