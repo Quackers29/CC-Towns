@@ -68,6 +68,8 @@ local ButtonConfig = {
 {id = "Subtract",width = 3,x = 8,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeInputPop(0,-1,0) end,enabled = true, type = "button",page = "settings_InputPop"},
 {id = "Add",width = 3,x = 14,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeInputPop(0,0,1) end,enabled = true, type = "button",page = "settings_InputPop"},
 {id = "Subtract",width = 3,x = 14,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeInputPop(0,0,-1) end,enabled = true, type = "button",page = "settings_InputPop"},
+{id = "Add",width = 3,x = 22,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeInputPopR(1) end,enabled = true, type = "button",page = "settings_InputPop"},
+{id = "Subtract",width = 3,x = 22,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeInputPopR(-1) end,enabled = true, type = "button",page = "settings_InputPop"},
 --OutputPop
 {id = "Add",width = 3,x = 2,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() ChangeOutputPop(1,0,0,1) end,enabled = true, type = "button",page = "settings_OutputPop"},
 {id = "Subtract",width = 3,x = 2,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() ChangeOutputPop(-1,0,0,1) end,enabled = true, type = "button",page = "settings_OutputPop"},

@@ -163,6 +163,7 @@ function McAPI.GetFacing(x, y, z)
 end
 
 -- Creates particle effect
+--/particle <name> <x> <y> <z> <xd> <yd> <zd> <speed> [count] [mode] [player]
 function McAPI.Particle(particle,x,y,z, speed, count, ...)
     if select(1,...) then
         commands.particle(particle, select(1,...), x, y, z, 0, 0, 0,speed, count, "normal")

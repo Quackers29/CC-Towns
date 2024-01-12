@@ -666,8 +666,8 @@ function Utility.InputPop(townName,townNames,townX,townZ)
     local Admin = Utility.readJsonFile(AdminFile)
     local hasKilled = false
     if Settings and Admin then
-        local x,y,z,range = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.range
-        local killed = McAPI.KillCustomVill(x,y,z,range,townName)
+        local x,y,z,radius = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.radius
+        local killed = McAPI.KillCustomVill(x,y,z,radius,townName)
         if killed then
             if string.match(killed,"(T)") then
                 -- Tourist handle

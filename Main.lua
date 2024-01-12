@@ -321,7 +321,7 @@ function drawButtonsForCurrentPage()
 
     elseif currentPage == "settings_InputPop" then
         Monitor.write("Settings - Input Pop!", 1, 1, colors.white)
-        Monitor.write("X: "..PINx.." Y: "..PINy.." Z: "..PINz,1, 5, colors.white)
+        Monitor.write("X: "..PINx.." Y: "..PINy.." Z: "..PINz.." Radius: "..Settings.population.input.radius,1, 5, colors.white)
         Utility.ParticleMarker(PINx, PINy, PINz)
         for i,v in ipairs(pageButtons["button"]) do
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
@@ -675,6 +675,17 @@ function ChangeInputPop(ax,ay,az)
     Settings.population.input.x,Settings.population.input.y,Settings.population.input.z = PINx,PINy,PINz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
+end
+
+function ChangeInputPopR(a)
+    Settings = Utility.readJsonFile(SettingsFile)
+    if Settings and AdminSettings then
+        local radius = Settings.population.input.radius
+        local tempa = math.max(1, math.min(radius + a, AdminSettings.Town.maxSpawnRange))
+        Settings.population.input.radius = tempa
+        Utility.writeJsonFile(SettingsFile,Settings)
+        drawButtonsForCurrentPage()
+    end
 end
 
 function ChangeOutputPop(ax,ay,az,select)
