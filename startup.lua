@@ -13,6 +13,7 @@ if not fs.exists("Main.lua") then
     --reboot
     print("Rebooting...")
     os.sleep(2)
+    os.reboot()
 end
 
 local Monitor = require("Monitor")
