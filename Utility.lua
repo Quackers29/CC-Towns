@@ -46,7 +46,7 @@ function Utility.writeJsonFile(filePath, data)
     --Incase json is given an empty table, check if serialise works
     local success, errorOrMessage = json.encodePretty(data)
     if success then
-        local serializedData = errorOrMessage
+        local serializedData = json.encodePretty(data)
         local file = io.open(filePath, "w+")
 
         if file then
