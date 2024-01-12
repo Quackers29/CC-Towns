@@ -1,20 +1,5 @@
-
 term.clear()
 term.setCursorPos(1,1)
-
--- Assume blank install if Main.lua is not found, download gitget and use to get repo
-if not fs.exists("Main.lua") then
-    --get json
-    shell.run("pastebin get 4nRg9CHU json")
-    --get gitget
-    shell.run("pastebin get W5ZkVYSi gitget")
-    --use gitget to get repo
-    shell.run("gitget Quackers29 CC-Towns main")
-    --reboot
-    print("Rebooting...")
-    os.sleep(2)
-    os.reboot()
-end
 
 local Monitor = require("Monitor")
 local Utility = require("Utility")
