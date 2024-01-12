@@ -701,7 +701,7 @@ function ChangeOutputPop(ax,ay,az,select)
 end
 
 function OutputPOP()
-    Utility.OutputPop(SettingsFile,1,townName)
+    Utility.OutputPop(1,townName)
 end
 
 function InputPOP()
