@@ -724,7 +724,7 @@ function RefreshButton()
     end
     
     Utility.checkItems(OUTx,OUTy,OUTz)
-    if currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
+    if currentPage == "Map" or currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
         drawButtonsForCurrentPage()     
     end
 end
