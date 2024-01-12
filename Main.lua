@@ -354,7 +354,8 @@ function drawButtonsForCurrentPage()
             Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
         end
         Monitor.displayMap(Utility.FindOtherTowns(townFolder), currentTown, topLeftX, topLeftY, mapWidth, mapHeight, currentZoom)
-    
+        Monitor.write("o",LastX,LastY)
+
     elseif currentPage == "display_upgrade" then
         local canUp = true
         local resTable = Utility.readJsonFile(resFile)
