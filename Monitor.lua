@@ -2,7 +2,7 @@
 local Utility = require("Utility")
 
 local Monitor = {}
-local monitor
+local monitor = nil
 local buttons = {} -- Table to store drawn buttons
 
 local GAP = 4 -- This will add a space between buttons and wall
@@ -10,20 +10,22 @@ local ListOffset = {}
 local maxButtonsPerPage
 
 function Monitor.init()
+    monitor = nil
     monitor = peripheral.find("monitor")
-    --if not monitor then
-    --    error("Monitor not found!")
-    --end
-    while not monitor do
-        print("Waiting for Monitor")
-        monitor = peripheral.find("monitor")
-        os.sleep(5)
+
+    --test is disconnect issue is still occuring
+    local success, errorOrMessage = pcall(monitor.clear)
+    if not success then
+        print("Fix Monitor")
+        os.sleep(60)
+        os.reboot()
     end
 end
 
 -- Function to clear the monitor and set the cursor position
 function Monitor.clear()
     --local success, errorOrMessage = pcall(monitor.clear)
+    local success, errorOrMessage = pcall(monitor.setCursorPos(1, 1))
     monitor.clear()
     monitor.setCursorPos(1, 1)
 end
