@@ -12,7 +12,11 @@ local maxButtonsPerPage
 function Monitor.init()
     monitor = nil
     monitor = peripheral.find("monitor")
-
+    while not monitor do
+        print("Connect Monitor...")
+        monitor = peripheral.find("monitor")
+        os.sleep(5)
+    end
     --test is disconnect issue is still occuring
     local success, errorOrMessage = pcall(monitor.clear)
     if not success then
