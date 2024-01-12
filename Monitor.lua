@@ -11,8 +11,13 @@ local maxButtonsPerPage
 
 function Monitor.init()
     monitor = peripheral.find("monitor")
-    if not monitor then
-        error("Monitor not found!")
+    --if not monitor then
+    --    error("Monitor not found!")
+    --end
+    while not monitor then
+        print("Waiting for Monitor")
+        monitor = peripheral.find("monitor")
+        os.sleep(5)
     end
 end
 
