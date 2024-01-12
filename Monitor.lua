@@ -21,7 +21,7 @@ function Monitor.init()
     local success, errorOrMessage = pcall(monitor.clear)
     if not success then
         print("Fix Monitor")
-        os.sleep(60)
+        os.sleep(30)
         os.reboot()
     end
 end
