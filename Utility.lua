@@ -692,8 +692,7 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                                 McAPI.SummonItem(x,y,z, "minecraft:emerald",pay)
                             else
                                 local Resources = Utility.readJsonFile(ResFile)
-                                Utility.AddMcItemToTable("minecraft:emerald",Resources,pay)
-                                Utility.writeJsonFile(ResFile,Resources)
+                                Utility.writeJsonFile(ResFile,Utility.AddMcItemToTable("minecraft:emerald",Resources,pay))
                             end
                             hasKilled = true
                         end
