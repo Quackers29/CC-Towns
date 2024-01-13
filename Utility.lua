@@ -704,11 +704,11 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                                 McAPI.Say("Tourist travelled (m): "..distance.." (Min:"..Admin.tourists.payMinDist..")")
                             end
                             local mileArray = {}
-                            local mileCurrent = nil
+                            local mileCurrent = 0
                             if Admin.tourists.milestonesEnabled then
                                 for mile,array in pairs(Admin.tourists.milestones) do
                                     local mile = tonumber(mile)
-                                    if distance > mile and distance > mileCurrent then
+                                    if mile ~= nil and distance > mile and distance > mileCurrent then
                                         mileCurrent = mile
                                         mileArray = array
                                     end
