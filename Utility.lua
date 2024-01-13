@@ -708,7 +708,7 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                             if Admin.tourists.milestonesEnabled then
                                 for mile,array in pairs(Admin.tourists.milestones) do
                                     local mile = tonumber(mile)
-                                    if mile ~= nil and distance > mile and distance > mileCurrent then
+                                    if distance > mile and distance > mileCurrent then
                                         mileCurrent = mile
                                         mileArray = array
                                     end
@@ -769,11 +769,18 @@ function Utility.OutputTourist(count, townName)
             end
             --print(VillagerCount)
             if Settings.population.touristCurrent > 0 and VillagerCount < max then
-                if Settings.population.output.method == "Line" then
-                    x,z = Utility.PointBetweenPoints(x,z,x2,z2, -1)
+                local spawned = false
+                local xo,zo = x,z
+                for i=1, 10 and not spawned do
+                    if Settings.population.output.method == "Line" then
+                        xo,zo = Utility.PointBetweenPoints(x,z,x2,z2, -1)
+                    end
+                    if McAPI.GetVillagerCount(xo,y,zo,1) < 0 then
+                        McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random")
+                        Settings.population.touristCurrent = Settings.population.touristCurrent - 1
+                        spawned = true
+                    end
                 end
-                McAPI.SummonCustomVill(x,y,z,"(T)"..townName, "random")
-                Settings.population.touristCurrent = Settings.population.touristCurrent - 1
             end
         end
         Utility.writeJsonFile(SettingsFile,Settings)
