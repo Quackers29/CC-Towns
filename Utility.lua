@@ -705,8 +705,9 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                             end
                             local mileArray = {}
                             local mileCurrent = 0
-                            if Admin.tourists.payMinmilestonesEnabled then
+                            if Admin.tourists.milestonesEnabled then
                                 for mile,array in pairs(Admin.tourists.milestones) do
+                                    local mile = tonumber(mile)
                                     if distance > mile and distance > mileCurrent then
                                         mileCurrent = mile
                                         mileArray = array
