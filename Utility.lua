@@ -704,7 +704,7 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                                 McAPI.Say("Tourist travelled (m): "..distance.." (Min:"..Admin.tourists.payMinDist..")")
                             end
                             local mileArray = {}
-                            local mileCurrent = 0
+                            local mileCurrent = nil
                             if Admin.tourists.milestonesEnabled then
                                 for mile,array in pairs(Admin.tourists.milestones) do
                                     local mile = tonumber(mile)
@@ -714,8 +714,9 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                                     end
                                 end
                             end
-                            if mileArray ~= {} then
+                            if mileArray ~= {} and #mileArray > 0 then
                                 --a milestone was reached
+                                mileArray = mileArray[math.random(1, #mileArray)]
                                 for item,quantity in pairs(mileArray) do
                                     if Admin.tourists.dropReward then
                                         McAPI.SummonItem(x,y,z,item,quantity)

@@ -44,10 +44,14 @@
     "payMinDist": 50,
     "payDistPerItem": 10,
     "payItem": "minecraft:emerald",
-    "milestonesEnabled": true,
+    "milestonesEnabled": false,
     "milestones": {
-      "40": { "minecraft:cooked_beef": 5 },
-      "70": { "minecraft:nether_star": 1, "minecraft:emerald": 10 }
+      "40": [{ "minecraft:cooked_beef": 5 }],
+      "70": [
+        { "minecraft:nether_star": 1, "minecraft:emerald": 10 },
+        { "minecraft:cooked_beef": 5 },
+        { "minecraft:experience_bottle": 10 }
+      ]
     }
   },
   "population": {
