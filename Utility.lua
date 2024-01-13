@@ -771,14 +771,16 @@ function Utility.OutputTourist(count, townName)
             if Settings.population.touristCurrent > 0 and VillagerCount < max then
                 local spawned = false
                 local xo,zo = x,z
-                for i=1, 10 and not spawned do
+                --2 attempts at finding a free spot
+                for i=1, 2 do
                     if Settings.population.output.method == "Line" then
                         xo,zo = Utility.PointBetweenPoints(x,z,x2,z2, -1)
                     end
-                    if McAPI.GetVillagerCount(xo,y,zo,1) < 0 then
+                    if McAPI.GetVillagerCount(xo,y,zo,1) == 0 then
                         McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random")
                         Settings.population.touristCurrent = Settings.population.touristCurrent - 1
                         spawned = true
+                        break
                     end
                 end
             end
