@@ -690,13 +690,20 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                         local ax,ay,az = Utility.ParseTownCords(townNamesList.used[fromTown])
                         if ax and az then
                             local distance = Utility.round(Utility.CalcDist({x = ax,z = az}, {x = townX,z = townZ}))
-                            local pay = Utility.round(distance / 10)
-                            McAPI.Say("Tourist travelled (m): "..distance..", for: "..pay.." emeralds")
-                            if Admin.tourists.dropReward then
-                                McAPI.SummonItem(x,y,z, "minecraft:emerald",pay)
+                            
+                            --distance has to be greater than minDistance
+                            if distance >= Admin.tourists.payMinDist and Admin.tourists.payEnabled then
+                                local pay = Utility.round(distance / Admin.tourists.payDistPerItem)
+                                McAPI.Say("Tourist travelled (m): "..distance..", for: "..pay.."x "..Admin.tourists.payDistPerItem)
+                                if Admin.tourists.dropReward then
+                                    McAPI.SummonItem(x,y,z,Admin.tourists.payItem,pay)
+                                else
+                                    Utility.ModifyRes(Admin.tourists.payItem,pay)
+                                end
                             else
-                                Utility.ModifyRes("minecraft:emerald",pay)
+                                McAPI.Say("Tourist travelled (m): "..distance.." (Min:"..Admin.tourists.payMinDist..")")
                             end
+
                             hasKilled = true
                         end
                     end

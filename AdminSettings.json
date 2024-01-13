@@ -39,7 +39,11 @@
   },
   "tourists": {
     "generationCost": false,
-    "dropReward": false
+    "dropReward": false,
+    "payEnabled": true,
+    "payMinDist": 50,
+    "payDistPerItem": 10,
+    "payItem": "minecraft:nether_star"
   },
   "population": {
     "generationCost": true,
