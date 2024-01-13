@@ -703,7 +703,7 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                             else
                                 McAPI.Say("Tourist travelled (m): "..distance.." (Min:"..Admin.tourists.payMinDist..")")
                             end
-                            local mileArray = nil
+                            local mileArray = {}
                             local mileCurrent = 0
                             if Admin.tourists.payMinmilestonesEnabled then
                                 for mile,array in pairs(Admin.tourists.milestones) do
@@ -713,7 +713,7 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                                     end
                                 end
                             end
-                            if mileArray ~= nil then
+                            if mileArray ~= {} then
                                 --a milestone was reached
                                 for item,quantity in pairs(mileArray) do
                                     if Admin.tourists.dropReward then
