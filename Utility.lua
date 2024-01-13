@@ -694,7 +694,7 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                             --distance has to be greater than minDistance
                             if distance >= Admin.tourists.payMinDist and Admin.tourists.payEnabled then
                                 local pay = Utility.round(distance / Admin.tourists.payDistPerItem)
-                                McAPI.Say("Tourist travelled (m): "..distance..", for: "..pay.."x "..Admin.tourists.payDistPerItem)
+                                McAPI.Say("Tourist travelled (m): "..distance..", for: "..pay.."x "..Admin.tourists.payItem)
                                 if Admin.tourists.dropReward then
                                     McAPI.SummonItem(x,y,z,Admin.tourists.payItem,pay)
                                 else
@@ -702,6 +702,28 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                                 end
                             else
                                 McAPI.Say("Tourist travelled (m): "..distance.." (Min:"..Admin.tourists.payMinDist..")")
+                            end
+                            local mileArray = nil
+                            local mileCurrent = 0
+                            if Admin.tourists.payMinmilestonesEnabled then
+                                for mile,array in pairs(Admin.tourists.payMinmilestonesEnabled) do
+                                    if distance > mile and distance > mileCurrent then
+                                        mileCurrent = mile
+                                        mileArray = array
+                                    end
+                                end
+                            end
+                            if mileArray ~= nil then
+                                --a milestone was reached
+                                for item,quantity in pairs(mileArray) do
+                                    if Admin.tourists.dropReward then
+                                        McAPI.SummonItem(x,y,z,item,quantity)
+                                        McAPI.Say("Milestone reward for "..distance.."m :"..quantity.."x "..item)
+                                    else
+                                        Utility.ModifyRes(item,quantity)
+                                        McAPI.Say("Milestone reward for "..distance.."m :"..quantity.."x "..item)
+                                    end
+                                end
                             end
 
                             hasKilled = true

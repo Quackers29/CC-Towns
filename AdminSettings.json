@@ -43,7 +43,12 @@
     "payEnabled": true,
     "payMinDist": 50,
     "payDistPerItem": 10,
-    "payItem": "minecraft:nether_star"
+    "payItem": "minecraft:emerald",
+    "milestonesEnabled": true,
+    "milestones": {
+      "40": { "minecraft:cooked_beef": 5 },
+      "70": { "minecraft:nether_star": 1, "minecraft:emerald": 10 }
+    }
   },
   "population": {
     "generationCost": true,
