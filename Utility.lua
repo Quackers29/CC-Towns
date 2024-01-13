@@ -706,7 +706,7 @@ function Utility.InputPop(townName,townNames,townX,townZ)
                             local mileArray = nil
                             local mileCurrent = 0
                             if Admin.tourists.payMinmilestonesEnabled then
-                                for mile,array in pairs(Admin.tourists.payMinmilestonesEnabled) do
+                                for mile,array in pairs(Admin.tourists.milestones) do
                                     if distance > mile and distance > mileCurrent then
                                         mileCurrent = mile
                                         mileArray = array
