@@ -41,6 +41,9 @@ local POUTx,POUTy,POUTz = nil,nil,nil
 local POUTx2,POUTy2,POUTz2 = nil,nil,nil
 local scheduledActions = {} -- keeps track of scheduled actions
 
+-- Initialize Utility program with correct filepaths
+
+Utility.LoadFiles(SettingsFile,adminFile,resFile)
 
 -- Initialize Checks if it exists or should exist
 
@@ -615,9 +618,7 @@ function drawButtonsForCurrentPage()
     end
 end
 
--- Initialize Utility program with correct filepaths
 
-Utility.LoadFiles(SettingsFile,adminFile,resFile)
 
 
 -- Initialize the monitor and set the default page
