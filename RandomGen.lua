@@ -1,5 +1,7 @@
 local Utility = require("Utility")
+local McAPI     = require("McAPI")
 local adminFile = "AdminSettings.json"
+local x,y,z = gps.locate()
 
 while true do
     local Alltowns = Utility.FindAllTowns()
@@ -8,11 +10,11 @@ while true do
         local Admin = Utility.readJsonFile(adminFile)
         local result, message, score = commands.scoreboard.players.get("GenState", "AllTowns")
         if Admin and score == 2 then
-            local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(RandomTown.folderName), Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = RandomTown.x, z = RandomTown.z}, Admin.Generation.spread)
+            local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(RandomTown.folderName), Admin.generation.minDistance,Admin.generation.maxDistance, {x = RandomTown.x, z = RandomTown.z}, Admin.generation.spread)
             if OpLocation then
                 --commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
                 --commands.clone(RandomTown.x,RandomTown.y,RandomTown.z,RandomTown.x,RandomTown.y,RandomTown.z,OpLocation.x,OpLocation.y,OpLocation.z)
-                Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,Admin.ComputerId)
+                Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,McAPI.GetComputerId(x, y, z))
                 os.sleep(60)
             end
         end
@@ -42,14 +44,13 @@ while true do
                         local a,b,c = commands.data.get.entity(v)
                         local c= b[1]
                         local d=string.match(c, 'Pos:.-.]')
-                        local x,y,z = string.match(d, "(%--%d*%.?%d+).,.(%--%d*%.?%d+).,.(%--%d*%.?%d+)")
-                        local x,y,z = Utility.round(x),Utility.round(y),Utility.round(z)
+                        local xa,ya,za = string.match(d, "(%--%d*%.?%d+).,.(%--%d*%.?%d+).,.(%--%d*%.?%d+)")
+                        local xa,ya,za = Utility.round(xa),Utility.round(ya),Utility.round(za)
                         
                         local result, message, score = commands.data.get.entity(v,"Dimension")
                         local result1, message1, score1 = commands.data.get.entity(v,"playerGameType")
                         if score1 == 1 and string.match(message[1],"minecraft:overworld") then
-                            --commands.say(x,y,z)
-                            Utility.SpawnTown(x,y,z,Admin.ComputerId)
+                            Utility.SpawnTown(xa,ya,za,McAPI.GetComputerId(x, y, z))
                         end
                     end
                 end

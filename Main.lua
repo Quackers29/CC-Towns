@@ -47,13 +47,13 @@ local scheduledActions = {} -- keeps track of scheduled actions
 local TownFlag = Utility.IsATown(townFolder)
 
 local AdminSettings = Utility.readJsonFile(adminFile)
-if AdminSettings and AdminSettings.Town.MinDistance then
+if AdminSettings and AdminSettings.town.minDistance then
     local deleteTown = false
     if not TownFlag then
         print("Town does not already exist")
         for i,v in ipairs(fs.list("Towns")) do
             local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
-            if Utility.IsInRange2DAngular(ax, az, x, z, AdminSettings.Town.MinDistance) then
+            if Utility.IsInRange2DAngular(ax, az, x, z, AdminSettings.town.minDistance) then
                 print("NewTown is within another Town, deleting Computer")
                 os.sleep(10)
                 McAPI.setBlock(x,y,z,"cobblestone")
@@ -71,9 +71,9 @@ end
 
 -- Initialize checks / file system
 
-local ChestRange = AdminSettings.Town.maxChestRange -- blocks away from the Town PC
-local PopRange = AdminSettings.Town.maxSpawnRange -- blocks away from the Town PC
-local maxLineLength = AdminSettings.Town.maxLineLength
+local ChestRange = AdminSettings.town.maxChestRange -- blocks away from the Town PC
+local PopRange = AdminSettings.town.maxSpawnRange -- blocks away from the Town PC
+local maxLineLength = AdminSettings.town.maxLineLength
 
 Utility.CopyIfMissing(defaultSettingsFile,SettingsFile)
 Utility.CopyIfMissing(tradeSource,tradeFile)
@@ -116,6 +116,7 @@ if Settings and AdminSettings then
     if Settings.town.name == nil then
 
         --Can be moved to Utility
+        
         if McAPI.isAirBlock(x, y+1, z) then
             local facing = McAPI.GetFacing(x,y,z)
             local out = 2 -- blocks out from the centre of monitor
@@ -144,12 +145,15 @@ if Settings and AdminSettings then
         local foundName = false
         townName = nil
         if townNamesList then
+            --Get a new name list if no more names available
             if #townNamesList.available == 0 then
                 local townNamesListSource = Utility.readJsonFile(townNamesSource)
                 if townNamesListSource then
                     townNamesList["available"] = townNamesListSource["available"]
                 end
             end
+
+
             local randomIndex = math.random(1, #townNamesList.available)
             townName = townNamesList.available[randomIndex]
             table.remove(townNamesList.available,randomIndex)
@@ -164,6 +168,8 @@ if Settings and AdminSettings then
             else
                 foundName = true
             end
+
+
             if foundName then
                 townNamesList.used[townName] = townFolder
             end
@@ -185,18 +191,18 @@ if Settings and AdminSettings then
         townName = Settings.town.name
     end
 
-    if Settings.Input and math.abs(Settings.Input.x - x) <= ChestRange and math.abs(Settings.Input.y - y) <= ChestRange then
-        INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
+    if Settings.Input and math.abs(Settings.input.x - x) <= ChestRange and math.abs(Settings.input.y - y) <= ChestRange then
+        INx,INy,INz = Settings.input.x, Settings.input.y, Settings.input.z
     else
-        Settings.Input.x, Settings.Input.y, Settings.Input.z = x+1,y,z
-        INx,INy,INz = Settings.Input.x, Settings.Input.y, Settings.Input.z
+        Settings.input.x, Settings.input.y, Settings.input.z = x+1,y,z
+        INx,INy,INz = Settings.input.x, Settings.input.y, Settings.input.z
     end
 
-    if Settings.Output and math.abs(Settings.Output.x - x) <= ChestRange and math.abs(Settings.Output.y - y) <= ChestRange then
-        OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
+    if Settings.Output and math.abs(Settings.output.x - x) <= ChestRange and math.abs(Settings.output.y - y) <= ChestRange then
+        OUTx,OUTy,OUTz = Settings.output.x, Settings.output.y, Settings.output.z
     else
-        Settings.Output.x, Settings.Output.y, Settings.Output.z = x+1,y+2,z
-        OUTx,OUTy,OUTz = Settings.Output.x, Settings.Output.y, Settings.Output.z
+        Settings.output.x, Settings.output.y, Settings.output.z = x+1,y+2,z
+        OUTx,OUTy,OUTz = Settings.output.x, Settings.output.y, Settings.output.z
     end
 
     if Settings.population.input.x == nil then
@@ -652,7 +658,7 @@ function ChangeInputChest(ax,ay,az)
     INx = math.max(x - ChestRange, math.min(INx + ax, x + ChestRange))
     INy = math.max(y - ChestRange, math.min(INy + ay, y + ChestRange))
     INz = math.max(z - ChestRange, math.min(INz + az, z + ChestRange))
-    Settings.Input.x,Settings.Input.y,Settings.Input.z = INx,INy,INz
+    Settings.input.x,Settings.input.y,Settings.input.z = INx,INy,INz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
 end
@@ -662,7 +668,7 @@ function ChangeOutputChest(ax,ay,az)
     OUTx = math.max(x - ChestRange, math.min(OUTx + ax, x + ChestRange))
     OUTy = math.max(y - ChestRange, math.min(OUTy + ay, y + ChestRange))
     OUTz = math.max(z - ChestRange, math.min(OUTz + az, z + ChestRange))
-    Settings.Output.x,Settings.Output.y,Settings.Output.z = OUTx,OUTy,OUTz
+    Settings.output.x,Settings.output.y,Settings.output.z = OUTx,OUTy,OUTz
     Utility.writeJsonFile(SettingsFile,Settings)
     drawButtonsForCurrentPage()
 end
@@ -681,7 +687,7 @@ function ChangeInputPopR(a)
     Settings = Utility.readJsonFile(SettingsFile)
     if Settings and AdminSettings then
         local radius = Settings.population.input.radius
-        local tempa = math.max(1, math.min(radius + a, AdminSettings.Town.maxSpawnRange))
+        local tempa = math.max(1, math.min(radius + a, AdminSettings.town.maxSpawnRange))
         Settings.population.input.radius = tempa
         Utility.writeJsonFile(SettingsFile,Settings)
         drawButtonsForCurrentPage()
@@ -964,7 +970,7 @@ function CheckRestart()
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(adminFile)
     if Settings and Admin then
-        if Settings.lastRestarted < Admin.Town.Restart then
+        if Settings.lastRestarted < Admin.town.restart then
             --Reboot the Town
             Monitor.clear()
             Monitor.write("Offline",1,1)
@@ -1010,7 +1016,7 @@ function AdminLoop()
         local Admin = Utility.readJsonFile(adminFile)
         local wait =  60
         if Admin then
-            wait = Admin.Town.AdminWait
+            wait = Admin.town.adminWait
             --Control Methods: none, all, pc, score
             if Admin.main.controlMethod == "all" or Admin.main.controlMethod == "score" then
                 if McAPI.ScoreGet("SelfDestruct", "AllTowns") == 1 then
@@ -1026,7 +1032,7 @@ function AdminLoop()
                 if McAPI.ScoreGet("Restart", "AllTowns") == 1 then
                     McAPI.ScoreSet("Restart", "AllTowns", 0)
                     if Admin then
-                        Admin.Town.Restart = os.epoch("utc")
+                        Admin.town.restart = os.epoch("utc")
                         Utility.writeJsonFile(adminFile,Admin)
                     end
                     Monitor.clear()
@@ -1035,9 +1041,9 @@ function AdminLoop()
                 end
     
                 if Admin and Admin.main.packages.generation and McAPI.ScoreGet("GenState", "AllTowns") == 1 then
-                    local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(townFolder), Admin.Generation.minDistance,Admin.Generation.maxDistance, {x = x, z = z}, Admin.Generation.spread)
+                    local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(townFolder), Admin.generation.minDistance,Admin.generation.maxDistance, {x = x, z = z}, Admin.generation.spread)
                     if OpLocation then
-                        Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,Admin.ComputerId)
+                        Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,McAPI.GetComputerId(x, y, z))
                         os.sleep(60)
                     end
                 end

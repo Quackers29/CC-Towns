@@ -16,8 +16,8 @@
     "baseType": "Logging_Town",
     "description": "A town specialized in logging activities."
   },
-  "Input": { "x": 0, "y": 0, "z": 0 },
-  "Output": { "x": 0, "y": 0, "z": 0 },
+  "input": { "x": 0, "y": 0, "z": 0 },
+  "output": { "x": 0, "y": 0, "z": 0 },
   "resources":{
     "baseCapacity": 10000,
     "currentCapacity": 10000,

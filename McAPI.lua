@@ -162,6 +162,15 @@ function McAPI.GetFacing(x, y, z)
     return nil
 end
 
+-- Checks ComputerId, returns nil otherwise
+function McAPI.GetComputerId(x, y, z)
+    local table = commands.getBlockInfo(x,y,z)
+    if table and table.nbt.ComputerId ~= nil then
+        return table.nbt.ComputerId
+    end
+    return nil
+end
+
 -- Creates particle effect
 --/particle <name> <x> <y> <z> <xd> <yd> <zd> <speed> [count] [mode] [player]
 function McAPI.Particle(particle,x,y,z, speed, count, ...)

@@ -459,7 +459,7 @@ function Utility.SelfDestruct()
     if Utility.IsATown(townFolder) then
         fs.delete("Towns\\"..townFolder.."\\")
     end
-    McAPI.fillArea(x-1,y+1,z,x+1,y+3,z, "air","")
+    Utility.removeMonitor(x,y,z)
     Utility.Fireworks()
     McAPI.setBlock(x, y, z, "air")
     error("Program terminated, Computer deleted")
@@ -1038,5 +1038,36 @@ function Utility.CopyIfMissing(defaultFile,File)
     end
 end
 
+function Utility.buildMonitor(x,y,z)
+    local Admin = Utility.readJsonFile(AdminFile)
+    if McAPI.isAirBlock(x, y+1, z) and Admin then
+        local facing = McAPI.GetFacing(x,y,z)
+        local out = Admin.generation.monitorOut -- blocks out from the centre of monitor
+        local high = Admin.generation.monitorHigh --  block high of monitor
+        if facing then
+            local x1,x2,z1,z2 = x,x,z-out,z+out
+            if facing == "north" or facing == "south" then
+                x1,x2,z1,z2 = x-out,x+out,z,z
+            end
+            McAPI.fillArea(x1,y+1,z1,x2,y+high,z2, "computercraft:monitor_advanced[facing="..facing.."]{width:1}")
+        end
+    end
+end
+
+function Utility.removeMonitor(x,y,z)
+    local Admin = Utility.readJsonFile(AdminFile)
+    if Admin and Admin.generation.monitorBuild then
+        local facing = McAPI.GetFacing(x,y,z)
+        local out = Admin.generation.monitorOut -- blocks out from the centre of monitor
+        local high = Admin.generation.monitorHigh --  block high of monitor
+        if facing then
+            local x1,x2,z1,z2 = x,x,z-out,z+out
+            if facing == "north" or facing == "south" then
+                x1,x2,z1,z2 = x-out,x+out,z,z
+            end
+            McAPI.fillArea(x1,y+1,z1,x2,y+high,z2, "minecraft:air")
+        end
+    end
+end
 
 return Utility

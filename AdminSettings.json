@@ -12,30 +12,30 @@
     "version": 1,
     "controlMethod": "all",
     "controlPC": {
-      "y": -61,
       "x": 0,
-      "radius": 1,
       "z": -34,
       "autoUpdate": false
     }
   },
-  "ComputerId": 1,
-  "Town": {
-    "Startup": false,
-    "MinDistance": 8,
-    "Restart": 0,
-    "AdminWait": 20,
+  "town": {
+    "startup": false,
+    "minDistance": 8,
+    "restart": 0,
+    "adminWait": 20,
     "maxSpawnRange": 50,
     "maxVillagerOut": 20,
     "maxLineLength": 20,
     "maxChestRange": 20
   },
-  "Generation": {
+  "generation": {
     "State": true,
-    "Type": 1,
+    "Type": 0,
     "minDistance": 10,
     "maxDistance": 12,
-    "spread": 45
+    "spread": 45,
+    "monitorBuild": true,
+    "monitorOut": 2,
+    "monitorHigh": 3
   },
   "tourists": {
     "generationCost": false,
