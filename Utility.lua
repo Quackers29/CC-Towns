@@ -721,10 +721,10 @@ function Utility.InputPop(notName,townNames,townX,townZ)
                                 for item,quantity in pairs(mileArray) do
                                     if Admin.tourists.dropReward then
                                         McAPI.SummonItem(x,y,z,item,quantity)
-                                        McAPI.SayNear(townString.." Milestone reward for "..distance.."m :"..quantity.."x "..item,x,y,z,100)
+                                        McAPI.SayNear(townString.." Milestone reward for "..distance.."m :"..quantity.."x "..item,x,y,z,100,"yellow")
                                     else
                                         Utility.ModifyRes(item,quantity)
-                                        McAPI.SayNear(townString.." Milestone reward for "..distance.."m :"..quantity.."x "..item,x,y,z,100)
+                                        McAPI.SayNear(townString.." Milestone reward for "..distance.."m :"..quantity.."x "..item,x,y,z,100,"yellow")
                                     end
                                 end
                             end

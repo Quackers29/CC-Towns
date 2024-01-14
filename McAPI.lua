@@ -129,8 +129,12 @@ function McAPI.Say(text)
     commands.say(text)
 end
 
-function McAPI.SayNear(text,x,y,z,radius)
-    commands.exec("/execute as @a[x="..x..",y="..y..",z="..z..",distance=.."..radius.."] run tellraw @s {\"text\":\""..text.."\",\"color\":\"green\"}")
+-- Say a message in a radius of a position, optional color (default green)
+function McAPI.SayNear(text,x,y,z,radius,color)
+    if color == nil or color == "" then
+        color = "green"
+    end
+    commands.exec("/execute as @a[x="..x..",y="..y..",z="..z..",distance=.."..radius.."] run tellraw @s {\"text\":\""..text.."\",\"color\":\""..color.."\"}")
 end
 
 -- Summons a custom Villager, profession can be set to random
