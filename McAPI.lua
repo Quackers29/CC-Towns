@@ -41,9 +41,12 @@ end
 
 -- Function to execute the setblock command with optional orientation if not air
 function McAPI.SetBlockSafe(x,y,z, block, facing)
-    local facing = facing or "north"
     if McAPI.isAirBlock(x, y, z) then
-        McAPI.fillArea(x,y,z,x,y,z, block.."[facing="..facing.."]{width:1}")
+        if facing == nil or facing == "" then
+            McAPI.setBlock(x,y,z, block)
+        else
+            McAPI.setBlock(x,y,z, block.."[facing="..facing.."]")
+        end
     end
 end
 
