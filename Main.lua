@@ -117,6 +117,7 @@ if Settings and AdminSettings then
         -- Builds the Monitor
         if AdminSettings.generation.monitorBuild == true then
             Utility.buildMonitor(x,y,z)
+            --McAPI.SetBlockSafe(x,y,z, block, facing)
         end
 
         -- Town name search

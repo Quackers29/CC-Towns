@@ -33,10 +33,18 @@ end
 -- Orientation is optional; remove or leave it empty for default orientation
 -- Utility.fillArea(10, 64, 10, 12, 66, 12, "computercraft:monitor_advanced{width:1}", "facing=north")
 
--- Function to execute the setblock command with optional orientation
+-- Function to execute the setblock command
 function McAPI.setBlock(x, y, z, blockName)
     local command = "setblock " .. x .. " " .. y .. " " .. z .. " " .. blockName
     commands.exec(command)
+end
+
+-- Function to execute the setblock command with optional orientation if not air
+function McAPI.SetBlockSafe(x,y,z, block, facing)
+    local facing = facing or "north"
+    if McAPI.isAirBlock(x, y, z) then
+        McAPI.fillArea(x,y,z,x,y,z, block.."[facing="..facing.."]{width:1}")
+    end
 end
 
 -- Function to check if the chunk at (x, z) is loaded
