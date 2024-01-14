@@ -16,8 +16,6 @@
     "baseType": "Logging_Town",
     "description": "A town specialized in logging activities."
   },
-  "input": { "x": 0, "y": 0, "z": 0 },
-  "output": { "x": 0, "y": 0, "z": 0 },
   "resources":{
     "baseCapacity": 10000,
     "currentCapacity": 10000,
@@ -28,7 +26,9 @@
       "minecraft:iron_ingot":500,
       "minecraft:oak_log":2000,
       "minecraft:bread":1000
-    }
+    },
+    "input": { "x": 0, "y": 0, "z": 0 },
+    "output": { "x": 0, "y": 0, "z": 0 },
   },
   "lastRestarted": null,
   "population":{

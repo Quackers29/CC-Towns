@@ -1072,4 +1072,128 @@ function Utility.removeMonitor(x,y,z)
     end
 end
 
+function Utility.InitInOut(x,y,z)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    if Settings and Admin then
+        local facing = McAPI.GetFacing(x,y,z)
+        local ChestRange = Admin.town.maxChestRange
+
+        local inChest,outChest,inPop,outPop,outPop2 = {0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}
+        if facing == "north" then
+            inChest,outChest,inPop,outPop,outPop2 = {1,1,-3},{-1,1,-3},{3,1,-3},{3,1,-2},{3,1,-5}
+        elseif facing == "east" then
+            inChest,outChest,inPop,outPop,outPop2 = {3,1,1},{3,1,-1},{3,1,3},{2,1,3},{5,1,3}
+        elseif facing == "south" then
+            inChest,outChest,inPop,outPop,outPop2 = {-1,1,3},{1,1,3},{-3,1,3},{-3,1,2},{-3,1,5}
+        elseif facing == "west" then
+            inChest,outChest,inPop,outPop,outPop2 = {-3,1,-1},{-3,1,1},{-3,1,-3},{-2,1,-3},{-5,1,-3}
+        end
+
+        if Settings.resources.input and math.abs(Settings.resources.input.x - x) <= ChestRange and math.abs(Settings.resources.input.y - y) <= ChestRange then
+        else
+            Settings.resources.input.x, Settings.resources.input.y, Settings.resources.input.z = x+inChest[1],y+inChest[2],z+inChest[3]
+        end
+
+        if Settings.resources.output and math.abs(Settings.resources.output.x - x) <= ChestRange and math.abs(Settings.resources.output.y - y) <= ChestRange then
+        else
+            Settings.resources.output.x, Settings.resources.output.y, Settings.resources.output.z = x+outChest[1],y+outChest[2],z+outChest[3]
+        end
+
+        if Settings.population.input.x == nil then
+            Settings.population.input.x, Settings.population.input.y, Settings.population.input.z, Settings.population.input.range = x+inPop[1],y+inPop[2],z+inPop[3],10
+        end
+
+        if Settings.population.output.x == nil then
+            Settings.population.output.x, Settings.population.output.y, Settings.population.output.z = x+outPop[1],y+outPop[2],z+outPop[3]
+            Settings.population.output.x2, Settings.population.output.y2, Settings.population.output.z2 = x+outPop2[1],y+outPop2[2],z+outPop2[3]
+        end
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+end
+
+function Utility.ChangeInputChest(ax,ay,az)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    if Settings and Admin then
+        local ChestRange = Admin.town.maxChestRange
+        local INx,INy,INz = Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z
+        INx = math.max(x - ChestRange, math.min(INx + ax, x + ChestRange))
+        INy = math.max(y - ChestRange, math.min(INy + ay, y + ChestRange))
+        INz = math.max(z - ChestRange, math.min(INz + az, z + ChestRange))
+        Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z = INx,INy,INz
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+end
+
+function Utility.ChangeOutputChest(ax,ay,az)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    if Settings and Admin then
+        local ChestRange = Admin.town.maxChestRange
+        local OUTx,OUTy,OUTz = Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z
+        OUTx = math.max(x - ChestRange, math.min(OUTx + ax, x + ChestRange))
+        OUTy = math.max(y - ChestRange, math.min(OUTy + ay, y + ChestRange))
+        OUTz = math.max(z - ChestRange, math.min(OUTz + az, z + ChestRange))
+        Settings.output.x,Settings.output.y,Settings.output.z = OUTx,OUTy,OUTz
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+end
+
+function Utility.ChangeInputPop(ax,ay,az)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    if Settings and Admin then
+        local PopRange = Admin.town.maxSpawnRange 
+        local PINx,PINy,PINz = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z
+        PINx = math.max(x - PopRange, math.min(PINx + ax, x + PopRange))
+        PINy = math.max(y - PopRange, math.min(PINy + ay, y + PopRange))
+        PINz = math.max(z - PopRange, math.min(PINz + az, z + PopRange))
+        Settings.population.input.x,Settings.population.input.y,Settings.population.input.z = PINx,PINy,PINz
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+end
+
+function Utility.ChangeInputPopR(a)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    if Settings and Admin then
+        local radius = Settings.population.input.radius
+        local tempa = math.max(1, math.min(radius + a, Admin.town.maxSpawnRange))
+        Settings.population.input.radius = tempa
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+end
+
+function Utility.ChangeOutputPop(ax,ay,az,select)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    if Settings and Admin then
+        local POUTx,POUTy,POUTz = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
+        local POUTx2,POUTy2,POUTz2 = Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2
+        local PopRange = Admin.town.maxSpawnRange
+        local maxLineLength = Admin.town.maxLineLength
+        if select == 1 then
+            local tempx = math.max(x - PopRange, math.min(POUTx + ax, x + PopRange))
+            POUTy = math.max(y - PopRange, math.min(POUTy + ay, y + PopRange))
+            local tempz = math.max(z - PopRange, math.min(POUTz + az, z + PopRange))
+            if Utility.IsInRange2DAngular(tempx,tempz,POUTx2,POUTz2,maxLineLength) then
+                POUTx = tempx
+                POUTz = tempz
+                Settings.population.output.x,Settings.population.output.y,Settings.population.output.z = POUTx,POUTy,POUTz
+            end
+        else
+            local tempx = math.max(x - PopRange, math.min(POUTx2 + ax, x + PopRange))
+            POUTy2 = math.max(y - PopRange, math.min(POUTy2 + ay, y + PopRange))
+            local tempz = math.max(z - PopRange, math.min(POUTz2 + az, z + PopRange))
+            if Utility.IsInRange2DAngular(tempx,tempz,POUTx,POUTz,maxLineLength) then
+                POUTx2 = tempx
+                POUTz2 = tempz
+                Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2 = POUTx2,POUTy2,POUTz2
+            end
+        end
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+end
+
 return Utility

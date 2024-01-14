@@ -28,18 +28,14 @@ local productionWait = 10
 local mainWait = 10 -- MainLoop
 local refreshflag = true
 local displayItem = nil
-local INx,INy,INz = nil,nil,nil
-local OUTx,OUTy,OUTz = nil,nil,nil
 local LastX,LastY = 1,1 -- use for map coordinates
 local adminFile = "AdminSettings.json"
 local currentZoom = 1 -- 1 for 1
 local minWidth = 8
 local minHeight = 2
 local townName = nil
-local PINx,PINy,PINz = nil,nil,nil
-local POUTx,POUTy,POUTz = nil,nil,nil
-local POUTx2,POUTy2,POUTz2 = nil,nil,nil
 local scheduledActions = {} -- keeps track of scheduled actions
+local facing = McAPI.GetFacing(x,y,z)
 
 -- Initialize Utility program with correct filepaths
 
@@ -74,12 +70,10 @@ end
 
 -- Initialize checks / file system
 
-local ChestRange = AdminSettings.town.maxChestRange -- blocks away from the Town PC
-local PopRange = AdminSettings.town.maxSpawnRange -- blocks away from the Town PC
-local maxLineLength = AdminSettings.town.maxLineLength
-
 Utility.CopyIfMissing(defaultSettingsFile,SettingsFile)
 Utility.CopyIfMissing(tradeSource,tradeFile)
+
+Utility.InitInOut(x,y,z)
 
 local Settings = Utility.readJsonFile(SettingsFile)
 
@@ -187,39 +181,12 @@ if Settings and AdminSettings then
         townName = Settings.town.name
     end
 
-    if Settings.Input and math.abs(Settings.input.x - x) <= ChestRange and math.abs(Settings.input.y - y) <= ChestRange then
-        INx,INy,INz = Settings.input.x, Settings.input.y, Settings.input.z
-    else
-        Settings.input.x, Settings.input.y, Settings.input.z = x+1,y,z
-        INx,INy,INz = Settings.input.x, Settings.input.y, Settings.input.z
-    end
-
-    if Settings.Output and math.abs(Settings.output.x - x) <= ChestRange and math.abs(Settings.output.y - y) <= ChestRange then
-        OUTx,OUTy,OUTz = Settings.output.x, Settings.output.y, Settings.output.z
-    else
-        Settings.output.x, Settings.output.y, Settings.output.z = x+1,y+2,z
-        OUTx,OUTy,OUTz = Settings.output.x, Settings.output.y, Settings.output.z
-    end
-
-    if Settings.population.input.x == nil then
-        Settings.population.input.x, Settings.population.input.y, Settings.population.input.z, Settings.population.input.range = x+1,y,z,10
-        PINx,PINy,PINz = Settings.population.input.x, Settings.population.input.y, Settings.population.input.z
-    else
-        PINx,PINy,PINz = Settings.population.input.x, Settings.population.input.y, Settings.population.input.z
-    end
-
-    if Settings.population.output.x == nil then
-        Settings.population.output.x, Settings.population.output.y, Settings.population.output.z = x+2,y,z
-        Settings.population.output.x2, Settings.population.output.y2, Settings.population.output.z2 = x+2,y,z
-    end
-    POUTx,POUTy,POUTz = Settings.population.output.x, Settings.population.output.y, Settings.population.output.z
-    POUTx2,POUTy2,POUTz2 = Settings.population.output.x2, Settings.population.output.y2, Settings.population.output.z2
-
     --Add restart timer to settings file
     Settings.lastRestarted = os.epoch("utc")
 end
 
 Utility.writeJsonFile(SettingsFile,Settings)
+
 
 
 if not fs.exists(upgradesFile) then
@@ -246,7 +213,7 @@ if not fs.exists(productionFile) then
     Utility.writeJsonFile(productionFile,productionTable)
 end
 
-function drawButtonsForCurrentPage()
+function DrawButtonsForCurrentPage()
     Monitor.init()
     Settings = Utility.readJsonFile(SettingsFile)
     Monitor.clear()
@@ -268,351 +235,359 @@ function drawButtonsForCurrentPage()
     local endX = width - 1
     local endY = height -- -1
 
-    -- Call the function to draw the grid with buttons
-    if currentPage == "resources" then
-        Monitor.write("Resources!", 1, 1)
-        local resTable = Utility.readJsonFile(resFile)
-        local displayTable = {}
-        if resTable then
-            for i,v in pairs(resTable) do
-                if v.count > 0 then
-                    v.string = i
-                    table.insert(displayTable,v)
-                end
-            end
-            Monitor.drawList(2, endY, displayTable, pageButtons["list"], 1)
-        end
-        for i,v in ipairs(pageButtons["button"]) do
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-
-    elseif currentPage == "upgrades" then
-        displayItem = nil
-        Monitor.write("Upgrades!", 1, 1)
-        local displayTable = Utility.readJsonFile(upgradesFile)
-        for i,v in ipairs(pageButtons["button"]) do
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-        Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
-
-    elseif currentPage == "production" then
-        displayItem = nil
-        Monitor.write("Production!", 1, 1)
-        local displayTable = Utility.readJsonFile(productionFile)
-        for i,v in ipairs(pageButtons["button"]) do
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-        Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
-        
-    elseif currentPage == "settings_InputChest" then
-        Monitor.write("Settings - Input Chest!", 1, 1, colors.white)
-        Monitor.write("X: "..INx.." Y: "..INy.." Z: "..INz,1, 5, colors.white)
-        Utility.ParticleMarker(INx, INy, INz)
-        for i,v in ipairs(pageButtons["button"]) do
-
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-
-    elseif currentPage == "settings_OutputChest" then
-        Monitor.write("Settings - Output Chest!", 1, 1, colors.white)
-        Monitor.write("X: "..OUTx.." Y: "..OUTy.." Z: "..OUTz,1, 5, colors.white)
-        Utility.ParticleMarker(OUTx, OUTy, OUTz)
-        for i,v in ipairs(pageButtons["button"]) do
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-
-    elseif currentPage == "settings_InputPop" then
-        Monitor.write("Settings - Input Pop!", 1, 1, colors.white)
-        Monitor.write("X: "..PINx.." Y: "..PINy.." Z: "..PINz.." Radius: "..Settings.population.input.radius,1, 5, colors.white)
-        Utility.ParticleMarker(PINx, PINy, PINz)
-        for i,v in ipairs(pageButtons["button"]) do
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-
-    elseif currentPage == "settings_OutputPop" then
-        Monitor.write("Settings - Output Pop!", 1, 1, colors.white)
-        Monitor.write("X: "..POUTx.." Y: "..POUTy.." Z: "..POUTz,1, 5, colors.white)
-        Utility.ParticleMarker(POUTx, POUTy, POUTz)
-
-        if Settings.population.output.method == "Line" then
-            Monitor.write("X: "..POUTx2.." Y: "..POUTy2.." Z: "..POUTz2,1, 13, colors.white)
-            Utility.ParticleMarker(POUTx2, POUTy2, POUTz2)
-            for i,v in ipairs(pageButtons["button2"]) do
-                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-            end
-        end
-
-        for i,v in ipairs(pageButtons["button"]) do
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-
-    elseif currentPage == "Map" then
-        Monitor.write(Settings.town.name.." - Map (Zoom:"..currentZoom..")", 1, 1, colors.white)
-        local currentTown = {x = x, z = z}
-        local topLeftX, topLeftY = 1, 2  -- x,y
-        local mapWidth, mapHeight = width - topLeftX, height - topLeftY
-        local zoom = 1
-        for i,v in ipairs(pageButtons["button"]) do
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-        Monitor.displayMap(Utility.FindOtherTowns(townFolder), currentTown, topLeftX, topLeftY, mapWidth, mapHeight, currentZoom)
-        Monitor.write("o",LastX,LastY)
-
-    elseif currentPage == "display_upgrade" then
-        local canUp = true
-        local resTable = Utility.readJsonFile(resFile)
-        local displayTable = Utility.readJsonFile(upgradesFile)
-        Monitor.write("Upgrade: "..(displayItem.key or ""), 1, 1)
-        Monitor.write("duration: "..(displayItem.duration or ""), 10, 2)
-        Monitor.write("Cost: ", 10, 3)
-        Monitor.write("Prerequisites: ", 10, ((endY-2)/2)+3)
-        local index = 1
-        local costTable = {}
-        local PreRecTable = {}
-        if type(displayItem.requires) ~= "table" then
-            displayItem.requires ={displayItem.requires}
-        end
-
-        if displayItem and displayTable and displayItem.requires then
-            for i,v in ipairs(displayItem.requires) do --
-                --print(v)
-                local currentUp = false
-                for x,y in pairs(displayTable) do
-                    if x == v then
-                        if y.toggle then
-                            currentUp = true
-                        end
-                    end
-                end
-                if not currentUp then
-                    canUp = false
-                end
-                PreRecTable[v] = PreRecTable[v] or {}
-                PreRecTable[v]["key"] = v
-                PreRecTable[v]["extra"] = ""
-                PreRecTable[v]["toggle"] = currentUp
-            end
-            Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
-        end
-        for i,v in pairs(displayItem.cost) do
-            local currentUp = true
-            local c = Utility.convertItem(i)
-            local d = 0
+    if Settings then
+        -- Call the function to draw the grid with buttons
+        if currentPage == "resources" then
+            Monitor.write("Resources!", 1, 1)
+            local resTable = Utility.readJsonFile(resFile)
+            local displayTable = {}
             if resTable then
-                if resTable[c] ~= nil then
-                     d = resTable[c].count or 0
-                end
-                if d ~= nil then
-                    if d < v then
-                        canUp = false
-                        currentUp = false
-                    end
-                else
-                    canUp = false
-                    currentUp = false
-                end
-            else
-                currentUp = false
-                canUp = false
-            end
-            --Monitor.write(i.." = "..v.."        ", 1, 4 + index)
-            --Monitor.write((d or "0"), 20, 4 + index)
-            index = index + 1
-            costTable[i] = costTable[i] or {}
-            costTable[i]["key"] = i
-            costTable[i]["extra"] = " = "..v.." : "..d
-            costTable[i]["toggle"] = currentUp
-            costTable[i]["string"] = c
-        end
-        Monitor.drawKeyList(4, ((endY-2)/2)+2, costTable, pageButtons["list"], 1, 0)
-
-        for i,v in ipairs(pageButtons["button"]) do
-            if v.id == "Up" then
-                v.enabled = canUp
-                v.item = displayItem
-            end
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-
-    elseif currentPage == "Trade_Trading" then
-        Monitor.write("Trading", 1, 1)
-        Monitor.write("Buying: ", 10, 3)
-        Monitor.write("Selling: ", 10, ((endY-2)/2)+3)
-        local tradeTable = Utility.readJsonFile(tradeFile)
-        if tradeTable then
-            local PreRecTable = {}
-            if tradeTable.proposal then
-                for i,v in pairs(tradeTable.proposal) do --
-                    PreRecTable[v.item] = PreRecTable[v.item] or {}
-                    PreRecTable[v.item]["key"] = v.item
-                    PreRecTable[v.item]["extra"] = " x"..v.needed
-                    PreRecTable[v.item]["toggle"] = false
-                    PreRecTable[v.item]["string"] = v.item
-                end
-                Monitor.drawKeyList(4, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 0) 
-            end 
-            PreRecTable = {}
-            if tradeTable.selling then
-                for i,v in pairs(tradeTable.selling) do --
-                    PreRecTable[v.item] = PreRecTable[v.item] or {}
-                    PreRecTable[v.item]["key"] = v.item
-                    PreRecTable[v.item]["extra"] = " x"..v.maxQuantity
-                    PreRecTable[v.item]["toggle"] = false
-                    PreRecTable[v.item]["string"] = v.item
-                end
-                Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
-            end 
-        end
-        for i,v in ipairs(pageButtons["button"]) do
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-
-    elseif currentPage == "Trade_History" then
-        Monitor.write("History", 1, 1)
-        Monitor.write("Bought: ", 10, 3)
-        Monitor.write("Sold: ", 10, ((endY-2)/2)+3)
-        local tradeTable = Utility.readJsonFile(tradeFile)
-        if tradeTable then
-            local PreRecTable = {}
-            if tradeTable.bought then
-                for i,v in pairs(tradeTable.bought) do --
-                    -- key gets overwritten with [i] so fix or 
-                    local id = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
-                    PreRecTable[id] = PreRecTable[i] or {}
-                    PreRecTable[id]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
-                    PreRecTable[id]["extra"] = " x"..v.needed
-                    PreRecTable[id]["toggle"] = false
-                    PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
-                end
-                Monitor.drawKeyList(4, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 0)
-            end 
-            PreRecTable = {}
-            if tradeTable.sold then
-                for i,v in pairs(tradeTable.sold) do --
-                    local id = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
-                    PreRecTable[id] = PreRecTable[i] or {}
-                    PreRecTable[id]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
-                    PreRecTable[id]["extra"] = " x"..v.needed
-                    PreRecTable[id]["toggle"] = false
-                    PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
-                end
-                Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1)
-            end
-        end
-        for i,v in ipairs(pageButtons["button"]) do
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-
-    elseif Settings and currentPage == "Pop_Settings" then
-        Monitor.write("Population Settings", 1, 1)
-        Monitor.write("Tourist Output", 5, 3)
-        Monitor.write("Population Input", 5, 4)
-        local output = false
-        local input = false
-        if Settings.population.touristOutput then
-            output = true
-        end
-        if Settings.population.autoInput then
-            input = true
-        end
-
-        for i,v in ipairs(pageButtons["button"]) do
-            if v.id == "touristOutput" then
-                v.enabled = output
-            elseif v.id == "autoInput" then
-                v.enabled = input
-            end
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-
-    elseif displayItem and currentPage == "display_production" then
-        local canUp = true
-        local resTable = Utility.readJsonFile(resFile)
-        local displayTable = Utility.readJsonFile(upgradesFile)
-        local productionTable = Utility.readJsonFile(productionFile)
-        Monitor.write("Produce: "..((displayItem.key.." x"..displayItem.output) or ""), 1, 1)
-        Monitor.write("duration: "..(displayItem.duration or "").."("..displayItem.timer..")", 10, 2)
-        Monitor.write("Cost: ", 10, 3)
-        Monitor.write("Prerequisites: ", 10, ((endY-2)/2)+3)
-        local index = 1
-        local costTable = {}
-        local PreRecTable = {}
-        if type(displayItem.requires) ~= "table" then
-            displayItem.requires = {displayItem.requires}
-        end
-
-        if displayTable and displayItem.requires then
-            for i,v in ipairs(displayItem.requires) do --
-                --print(v)
-                local currentUp = false
-                for x,y in pairs(displayTable) do
-                    if x == v then
-                        if y.toggle then
-                            currentUp = true
-                        end
+                for i,v in pairs(resTable) do
+                    if v.count > 0 then
+                        v.string = i
+                        table.insert(displayTable,v)
                     end
                 end
-                if not currentUp then
-                    canUp = false
-                end
-                PreRecTable[v] = PreRecTable[v] or {}
-                PreRecTable[v]["key"] = v
-                PreRecTable[v]["extra"] = ""
-                PreRecTable[v]["toggle"] = currentUp
+                Monitor.drawList(2, endY, displayTable, pageButtons["list"], 1)
             end
-            Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
-        end
-
-        for i,v in pairs(displayItem.cost) do
-            local currentUp = true
-            local c = Utility.convertItem(i)
-            local d = 0
-            if resTable then
-                if resTable[c] ~= nil then
-                    d = resTable[c].count or 0
-                end
-                if d ~= nil then
-                    if d < v then
-                        canUp = false
-                        currentUp = false
-                    end
-                else
-                    canUp = false
-                    currentUp = false
-                end
-            else
-                currentUp = false
-                canUp = false
-            end
-            --Monitor.write(i.." = "..v.."        ", 1, 4 + index)
-            --Monitor.write((d or "0"), 20, 4 + index)
-            index = index + 1
-            costTable[i] = costTable[i] or {}
-            costTable[i]["key"] = i
-            costTable[i]["extra"] = " = "..v.." : "..d
-            costTable[i]["toggle"] = currentUp
-            costTable[i]["string"] = c
-        end
-        Monitor.drawKeyList(4, ((endY-2)/2)+2, costTable, pageButtons["list"], 1, 0)
-
-        for i,v in ipairs(pageButtons["button"]) do
-            if v.id == "Up" then
-                v.enabled = canUp
-                v.item = displayItem
-            end
-            Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
-        end
-    else
-        -- Add back to Main button if no buttons assigned to page
-        Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage.." T:("..Settings.population.touristCurrent..")", 1, 1, colors.white)
-        if pageButtons == {} or pageButtons["push"] == nil then
-            Monitor.drawButton(Monitor.OffsetCheck(-1, endX),Monitor.OffsetCheck(0, endY),{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "all"})
-        else
-            Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
-        end
-        if pageButtons["button"] then
             for i,v in ipairs(pageButtons["button"]) do
                 Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+
+        elseif currentPage == "upgrades" then
+            displayItem = nil
+            Monitor.write("Upgrades!", 1, 1)
+            local displayTable = Utility.readJsonFile(upgradesFile)
+            for i,v in ipairs(pageButtons["button"]) do
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+            Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
+
+        elseif currentPage == "production" then
+            displayItem = nil
+            Monitor.write("Production!", 1, 1)
+            local displayTable = Utility.readJsonFile(productionFile)
+            for i,v in ipairs(pageButtons["button"]) do
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+            Monitor.drawKeyList(2, endY, displayTable, pageButtons["list"], 1)
+            
+        elseif currentPage == "settings_InputChest" then
+            local INx,INy,INz = Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z
+            Monitor.write("Settings - Input Chest!", 1, 1, colors.white)
+            Monitor.write("X: "..INx.." Y: "..INy.." Z: "..INz,1, 5, colors.white)
+            Utility.ParticleMarker(INx, INy, INz)
+            for i,v in ipairs(pageButtons["button"]) do
+
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+
+        elseif currentPage == "settings_OutputChest" then
+            local OUTx,OUTy,OUTz = Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z
+            Monitor.write("Settings - Output Chest!", 1, 1, colors.white)
+            Monitor.write("X: "..OUTx.." Y: "..OUTy.." Z: "..OUTz,1, 5, colors.white)
+            Utility.ParticleMarker(OUTx, OUTy, OUTz)
+            for i,v in ipairs(pageButtons["button"]) do
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+
+        elseif currentPage == "settings_InputPop" then
+            local PINx,PINy,PINz = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z
+            Monitor.write("Settings - Input Pop!", 1, 1, colors.white)
+            Monitor.write("X: "..PINx.." Y: "..PINy.." Z: "..PINz.." Radius: "..Settings.population.input.radius,1, 5, colors.white)
+            Utility.ParticleMarker(PINx, PINy, PINz)
+            for i,v in ipairs(pageButtons["button"]) do
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+
+        elseif currentPage == "settings_OutputPop" then
+            local POUTx,POUTy,POUTz = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
+            local POUTx2,POUTy2,POUTz2 = Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2
+
+            Monitor.write("Settings - Output Pop!", 1, 1, colors.white)
+            Monitor.write("X: "..POUTx.." Y: "..POUTy.." Z: "..POUTz,1, 5, colors.white)
+            Utility.ParticleMarker(POUTx, POUTy, POUTz)
+
+            if Settings.population.output.method == "Line" then
+                Monitor.write("X: "..POUTx2.." Y: "..POUTy2.." Z: "..POUTz2,1, 13, colors.white)
+                Utility.ParticleMarker(POUTx2, POUTy2, POUTz2)
+                for i,v in ipairs(pageButtons["button2"]) do
+                    Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+                end
+            end
+
+            for i,v in ipairs(pageButtons["button"]) do
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+
+        elseif currentPage == "Map" then
+            Monitor.write(Settings.town.name.." - Map (Zoom:"..currentZoom..")", 1, 1, colors.white)
+            local currentTown = {x = x, z = z}
+            local topLeftX, topLeftY = 1, 2  -- x,y
+            local mapWidth, mapHeight = width - topLeftX, height - topLeftY
+            local zoom = 1
+            for i,v in ipairs(pageButtons["button"]) do
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+            Monitor.displayMap(Utility.FindOtherTowns(townFolder), currentTown, topLeftX, topLeftY, mapWidth, mapHeight, currentZoom)
+            Monitor.write("o",LastX,LastY)
+
+        elseif currentPage == "display_upgrade" then
+            local canUp = true
+            local resTable = Utility.readJsonFile(resFile)
+            local displayTable = Utility.readJsonFile(upgradesFile)
+            Monitor.write("Upgrade: "..(displayItem.key or ""), 1, 1)
+            Monitor.write("duration: "..(displayItem.duration or ""), 10, 2)
+            Monitor.write("Cost: ", 10, 3)
+            Monitor.write("Prerequisites: ", 10, ((endY-2)/2)+3)
+            local index = 1
+            local costTable = {}
+            local PreRecTable = {}
+            if type(displayItem.requires) ~= "table" then
+                displayItem.requires ={displayItem.requires}
+            end
+
+            if displayItem and displayTable and displayItem.requires then
+                for i,v in ipairs(displayItem.requires) do --
+                    --print(v)
+                    local currentUp = false
+                    for x,y in pairs(displayTable) do
+                        if x == v then
+                            if y.toggle then
+                                currentUp = true
+                            end
+                        end
+                    end
+                    if not currentUp then
+                        canUp = false
+                    end
+                    PreRecTable[v] = PreRecTable[v] or {}
+                    PreRecTable[v]["key"] = v
+                    PreRecTable[v]["extra"] = ""
+                    PreRecTable[v]["toggle"] = currentUp
+                end
+                Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
+            end
+            for i,v in pairs(displayItem.cost) do
+                local currentUp = true
+                local c = Utility.convertItem(i)
+                local d = 0
+                if resTable then
+                    if resTable[c] ~= nil then
+                        d = resTable[c].count or 0
+                    end
+                    if d ~= nil then
+                        if d < v then
+                            canUp = false
+                            currentUp = false
+                        end
+                    else
+                        canUp = false
+                        currentUp = false
+                    end
+                else
+                    currentUp = false
+                    canUp = false
+                end
+                --Monitor.write(i.." = "..v.."        ", 1, 4 + index)
+                --Monitor.write((d or "0"), 20, 4 + index)
+                index = index + 1
+                costTable[i] = costTable[i] or {}
+                costTable[i]["key"] = i
+                costTable[i]["extra"] = " = "..v.." : "..d
+                costTable[i]["toggle"] = currentUp
+                costTable[i]["string"] = c
+            end
+            Monitor.drawKeyList(4, ((endY-2)/2)+2, costTable, pageButtons["list"], 1, 0)
+
+            for i,v in ipairs(pageButtons["button"]) do
+                if v.id == "Up" then
+                    v.enabled = canUp
+                    v.item = displayItem
+                end
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+
+        elseif currentPage == "Trade_Trading" then
+            Monitor.write("Trading", 1, 1)
+            Monitor.write("Buying: ", 10, 3)
+            Monitor.write("Selling: ", 10, ((endY-2)/2)+3)
+            local tradeTable = Utility.readJsonFile(tradeFile)
+            if tradeTable then
+                local PreRecTable = {}
+                if tradeTable.proposal then
+                    for i,v in pairs(tradeTable.proposal) do --
+                        PreRecTable[v.item] = PreRecTable[v.item] or {}
+                        PreRecTable[v.item]["key"] = v.item
+                        PreRecTable[v.item]["extra"] = " x"..v.needed
+                        PreRecTable[v.item]["toggle"] = false
+                        PreRecTable[v.item]["string"] = v.item
+                    end
+                    Monitor.drawKeyList(4, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 0) 
+                end 
+                PreRecTable = {}
+                if tradeTable.selling then
+                    for i,v in pairs(tradeTable.selling) do --
+                        PreRecTable[v.item] = PreRecTable[v.item] or {}
+                        PreRecTable[v.item]["key"] = v.item
+                        PreRecTable[v.item]["extra"] = " x"..v.maxQuantity
+                        PreRecTable[v.item]["toggle"] = false
+                        PreRecTable[v.item]["string"] = v.item
+                    end
+                    Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
+                end 
+            end
+            for i,v in ipairs(pageButtons["button"]) do
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+
+        elseif currentPage == "Trade_History" then
+            Monitor.write("History", 1, 1)
+            Monitor.write("Bought: ", 10, 3)
+            Monitor.write("Sold: ", 10, ((endY-2)/2)+3)
+            local tradeTable = Utility.readJsonFile(tradeFile)
+            if tradeTable then
+                local PreRecTable = {}
+                if tradeTable.bought then
+                    for i,v in pairs(tradeTable.bought) do --
+                        -- key gets overwritten with [i] so fix or 
+                        local id = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                        PreRecTable[id] = PreRecTable[i] or {}
+                        PreRecTable[id]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                        PreRecTable[id]["extra"] = " x"..v.needed
+                        PreRecTable[id]["toggle"] = false
+                        PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    end
+                    Monitor.drawKeyList(4, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 0)
+                end 
+                PreRecTable = {}
+                if tradeTable.sold then
+                    for i,v in pairs(tradeTable.sold) do --
+                        local id = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                        PreRecTable[id] = PreRecTable[i] or {}
+                        PreRecTable[id]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                        PreRecTable[id]["extra"] = " x"..v.needed
+                        PreRecTable[id]["toggle"] = false
+                        PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                    end
+                    Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1)
+                end
+            end
+            for i,v in ipairs(pageButtons["button"]) do
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+
+        elseif Settings and currentPage == "Pop_Settings" then
+            Monitor.write("Population Settings", 1, 1)
+            Monitor.write("Tourist Output", 5, 3)
+            Monitor.write("Population Input", 5, 4)
+            local output = false
+            local input = false
+            if Settings.population.touristOutput then
+                output = true
+            end
+            if Settings.population.autoInput then
+                input = true
+            end
+
+            for i,v in ipairs(pageButtons["button"]) do
+                if v.id == "touristOutput" then
+                    v.enabled = output
+                elseif v.id == "autoInput" then
+                    v.enabled = input
+                end
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+
+        elseif displayItem and currentPage == "display_production" then
+            local canUp = true
+            local resTable = Utility.readJsonFile(resFile)
+            local displayTable = Utility.readJsonFile(upgradesFile)
+            local productionTable = Utility.readJsonFile(productionFile)
+            Monitor.write("Produce: "..((displayItem.key.." x"..displayItem.output) or ""), 1, 1)
+            Monitor.write("duration: "..(displayItem.duration or "").."("..displayItem.timer..")", 10, 2)
+            Monitor.write("Cost: ", 10, 3)
+            Monitor.write("Prerequisites: ", 10, ((endY-2)/2)+3)
+            local index = 1
+            local costTable = {}
+            local PreRecTable = {}
+            if type(displayItem.requires) ~= "table" then
+                displayItem.requires = {displayItem.requires}
+            end
+
+            if displayTable and displayItem.requires then
+                for i,v in ipairs(displayItem.requires) do --
+                    --print(v)
+                    local currentUp = false
+                    for x,y in pairs(displayTable) do
+                        if x == v then
+                            if y.toggle then
+                                currentUp = true
+                            end
+                        end
+                    end
+                    if not currentUp then
+                        canUp = false
+                    end
+                    PreRecTable[v] = PreRecTable[v] or {}
+                    PreRecTable[v]["key"] = v
+                    PreRecTable[v]["extra"] = ""
+                    PreRecTable[v]["toggle"] = currentUp
+                end
+                Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
+            end
+
+            for i,v in pairs(displayItem.cost) do
+                local currentUp = true
+                local c = Utility.convertItem(i)
+                local d = 0
+                if resTable then
+                    if resTable[c] ~= nil then
+                        d = resTable[c].count or 0
+                    end
+                    if d ~= nil then
+                        if d < v then
+                            canUp = false
+                            currentUp = false
+                        end
+                    else
+                        canUp = false
+                        currentUp = false
+                    end
+                else
+                    currentUp = false
+                    canUp = false
+                end
+                --Monitor.write(i.." = "..v.."        ", 1, 4 + index)
+                --Monitor.write((d or "0"), 20, 4 + index)
+                index = index + 1
+                costTable[i] = costTable[i] or {}
+                costTable[i]["key"] = i
+                costTable[i]["extra"] = " = "..v.." : "..d
+                costTable[i]["toggle"] = currentUp
+                costTable[i]["string"] = c
+            end
+            Monitor.drawKeyList(4, ((endY-2)/2)+2, costTable, pageButtons["list"], 1, 0)
+
+            for i,v in ipairs(pageButtons["button"]) do
+                if v.id == "Up" then
+                    v.enabled = canUp
+                    v.item = displayItem
+                end
+                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+            end
+        else
+            -- Add back to Main button if no buttons assigned to page
+            Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage.." T:("..Settings.population.touristCurrent..")", 1, 1, colors.white)
+            if pageButtons == {} or pageButtons["push"] == nil then
+                Monitor.drawButton(Monitor.OffsetCheck(-1, endX),Monitor.OffsetCheck(0, endY),{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "all"})
+            else
+                Monitor.drawFlexibleGrid(startX, startY, endX, endY, minWidth, minHeight, pageButtons["push"])
+            end
+            if pageButtons["button"] then
+                for i,v in ipairs(pageButtons["button"]) do
+                    Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+                end
             end
         end
     end
@@ -623,94 +598,28 @@ end
 
 -- Initialize the monitor and set the default page
 Monitor.init()
-drawButtonsForCurrentPage()
+DrawButtonsForCurrentPage()
 
 function goToPage(x)
     currentPage = x
     Monitor.OffsetButton(0)
-    drawButtonsForCurrentPage()
+    DrawButtonsForCurrentPage()
 end
 
 function goToDisplayPage(x, todisplay)
     displayItem = x.item
     currentPage = todisplay
-    drawButtonsForCurrentPage()
+    DrawButtonsForCurrentPage()
 end
 
 function OffsetButton(x,y)
     Monitor.OffsetButton(x,y)
-    drawButtonsForCurrentPage()
+    DrawButtonsForCurrentPage()
 end
 
 function OffsetZoom(x)
     currentZoom = math.max((currentZoom + x),1)
-    drawButtonsForCurrentPage()
-end
-
-function ChangeInputChest(ax,ay,az)
-    Settings = Utility.readJsonFile(SettingsFile)
-    INx = math.max(x - ChestRange, math.min(INx + ax, x + ChestRange))
-    INy = math.max(y - ChestRange, math.min(INy + ay, y + ChestRange))
-    INz = math.max(z - ChestRange, math.min(INz + az, z + ChestRange))
-    Settings.input.x,Settings.input.y,Settings.input.z = INx,INy,INz
-    Utility.writeJsonFile(SettingsFile,Settings)
-    drawButtonsForCurrentPage()
-end
-
-function ChangeOutputChest(ax,ay,az)
-    Settings = Utility.readJsonFile(SettingsFile)
-    OUTx = math.max(x - ChestRange, math.min(OUTx + ax, x + ChestRange))
-    OUTy = math.max(y - ChestRange, math.min(OUTy + ay, y + ChestRange))
-    OUTz = math.max(z - ChestRange, math.min(OUTz + az, z + ChestRange))
-    Settings.output.x,Settings.output.y,Settings.output.z = OUTx,OUTy,OUTz
-    Utility.writeJsonFile(SettingsFile,Settings)
-    drawButtonsForCurrentPage()
-end
-
-function ChangeInputPop(ax,ay,az)
-    Settings = Utility.readJsonFile(SettingsFile)
-    PINx = math.max(x - PopRange, math.min(PINx + ax, x + PopRange))
-    PINy = math.max(y - PopRange, math.min(PINy + ay, y + PopRange))
-    PINz = math.max(z - PopRange, math.min(PINz + az, z + PopRange))
-    Settings.population.input.x,Settings.population.input.y,Settings.population.input.z = PINx,PINy,PINz
-    Utility.writeJsonFile(SettingsFile,Settings)
-    drawButtonsForCurrentPage()
-end
-
-function ChangeInputPopR(a)
-    Settings = Utility.readJsonFile(SettingsFile)
-    if Settings and AdminSettings then
-        local radius = Settings.population.input.radius
-        local tempa = math.max(1, math.min(radius + a, AdminSettings.town.maxSpawnRange))
-        Settings.population.input.radius = tempa
-        Utility.writeJsonFile(SettingsFile,Settings)
-        drawButtonsForCurrentPage()
-    end
-end
-
-function ChangeOutputPop(ax,ay,az,select)
-    Settings = Utility.readJsonFile(SettingsFile)
-    if select == 1 then
-        local tempx = math.max(x - PopRange, math.min(POUTx + ax, x + PopRange))
-        POUTy = math.max(y - PopRange, math.min(POUTy + ay, y + PopRange))
-        local tempz = math.max(z - PopRange, math.min(POUTz + az, z + PopRange))
-        if Utility.IsInRange2DAngular(tempx,tempz,POUTx2,POUTz2,maxLineLength) then
-            POUTx = tempx
-            POUTz = tempz
-            Settings.population.output.x,Settings.population.output.y,Settings.population.output.z = POUTx,POUTy,POUTz
-        end
-    else
-        local tempx = math.max(x - PopRange, math.min(POUTx2 + ax, x + PopRange))
-        POUTy2 = math.max(y - PopRange, math.min(POUTy2 + ay, y + PopRange))
-        local tempz = math.max(z - PopRange, math.min(POUTz2 + az, z + PopRange))
-        if Utility.IsInRange2DAngular(tempx,tempz,POUTx,POUTz,maxLineLength) then
-            POUTx2 = tempx
-            POUTz2 = tempz
-            Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2 = POUTx2,POUTy2,POUTz2
-        end
-    end
-    Utility.writeJsonFile(SettingsFile,Settings)
-    drawButtonsForCurrentPage()
+    DrawButtonsForCurrentPage()
 end
 
 function OutputPOP()
@@ -725,18 +634,24 @@ function OutputTourist()
     Utility.OutputTourist(1, townName)
 end
 
+function Refresh()
+    DrawButtonsForCurrentPage()
+end
+
 function RefreshButton()
-    if AdminSettings then
+    Settings = Utility.readJsonFile(SettingsFile)
+    if Settings and AdminSettings then
+        local INx,INy,INz = Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z
+        local OUTx,OUTy,OUTz = Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z
         if AdminSettings.main.version == 1 then
             Utility.inputItems(INx,INy,INz,-64)
         else
             Utility.inputItems(INx,INy,INz,0)
         end
-    end
-    
-    Utility.checkItems(OUTx,OUTy,OUTz)
-    if currentPage == "Map" or currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
-        drawButtonsForCurrentPage()     
+        Utility.checkItems(OUTx,OUTy,OUTz)
+        if currentPage == "Map" or currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
+            DrawButtonsForCurrentPage()     
+        end
     end
 end
 
@@ -757,7 +672,7 @@ function adjustItems(button)
         end
     end
     Utility.writeJsonFile(resFile, resTable)
-    drawButtonsForCurrentPage()
+    DrawButtonsForCurrentPage()
 end
 
 function handleItem(button)
@@ -772,7 +687,7 @@ function handleItem(button)
     end
     Utility.ModifyMcItemInTable(itemstring, resTable, selectedToggle)
     Utility.writeJsonFile(resFile,resTable)
-    drawButtonsForCurrentPage()
+    DrawButtonsForCurrentPage()
 end
 
 function handlePop(x)
@@ -785,7 +700,7 @@ function handlePop(x)
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end
-    drawButtonsForCurrentPage()
+    DrawButtonsForCurrentPage()
 end
 
 function handlePopMethod()
@@ -798,7 +713,7 @@ function handlePopMethod()
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end
-    drawButtonsForCurrentPage()
+    DrawButtonsForCurrentPage()
 end
 
 function handleCSVItem(button)
@@ -815,7 +730,7 @@ function handleCSVItem(button)
             displayTable[button.item.key]["toggle"] = selectedToggle
             Utility.writeJsonFile(upgradesFile,displayTable)
         end
-        drawButtonsForCurrentPage()
+        DrawButtonsForCurrentPage()
     end
 end
 
@@ -833,7 +748,7 @@ function handleProduction(button)
             displayTable[button.item.key]["toggle"] = selectedToggle
             Utility.writeJsonFile(productionFile,displayTable)
         end
-        drawButtonsForCurrentPage()
+        DrawButtonsForCurrentPage()
     end
 end
 -- Function to schedule an action
@@ -997,7 +912,7 @@ function MainLoop()
                 end
                 Utility.TouristTransfer(1, townName,townNames,x,y)
             end
-            drawButtonsForCurrentPage()
+            DrawButtonsForCurrentPage()
         end
         os.sleep(mainWait)
     end
