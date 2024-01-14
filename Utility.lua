@@ -695,14 +695,14 @@ function Utility.InputPop(notName,townNames,townX,townZ)
                             --distance has to be greater than minDistance
                             if distance >= Admin.tourists.payMinDist and Admin.tourists.payEnabled then
                                 local pay = Utility.round(distance / Admin.tourists.payDistPerItem)
-                                McAPI.SayNear(townString.." Tourist travelled (m): "..distance..", for: "..pay.."x "..Admin.tourists.payItem,x,y,z,100)
+                                McAPI.SayNear(townString.." Tourist travelled: "..distance.."m, for: "..pay.."x "..Admin.tourists.payItem,x,y,z,100)
                                 if Admin.tourists.dropReward then
                                     McAPI.SummonItem(x,y,z,Admin.tourists.payItem,pay)
                                 else
                                     Utility.ModifyRes(Admin.tourists.payItem,pay)
                                 end
                             else
-                                McAPI.SayNear(townString.." Tourist travelled (m): "..distance.." (Min:"..Admin.tourists.payMinDist..")",x,y,z,100)
+                                McAPI.SayNear(townString.." Tourist travelled: "..distance.."m (Min:"..Admin.tourists.payMinDist..")",x,y,z,100)
                             end
                             local mileArray = {}
                             local mileCurrent = 0
