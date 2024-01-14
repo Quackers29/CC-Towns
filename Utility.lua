@@ -1147,7 +1147,7 @@ function Utility.ChangeOutputChest(ax,ay,az)
         OUTx = math.max(x - ChestRange, math.min(OUTx + ax, x + ChestRange))
         OUTy = math.max(y - ChestRange, math.min(OUTy + ay, y + ChestRange))
         OUTz = math.max(z - ChestRange, math.min(OUTz + az, z + ChestRange))
-        Settings.output.x,Settings.output.y,Settings.output.z = OUTx,OUTy,OUTz
+        Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z = OUTx,OUTy,OUTz
         Utility.writeJsonFile(SettingsFile,Settings)
     end
 end
