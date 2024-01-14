@@ -1072,6 +1072,16 @@ function Utility.removeMonitor(x,y,z)
     end
 end
 
+function Utility.BuildInOut(facing)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    if Settings then
+        McAPI.SetBlockSafe(Settings.reesources.input.x,Settings.reesources.input.y,Settings.reesources.input.z, "minecraft:chest", facing)
+        McAPI.SetBlockSafe(Settings.reesources.output.x,Settings.reesources.output.y,Settings.reesources.output.z, "minecraft:chest", facing)
+        McAPI.SetBlockSafe(Settings.population.output.x,Settings.population.output.y,Settings.population.output.z, "minecraft:torch")
+        McAPI.SetBlockSafe(Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2, "minecraft:torch")
+    end
+end
+
 function Utility.InitInOut(x,y,z)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
