@@ -1,3 +1,4 @@
+local Utility   = require("Utility")
 local ButtonConfig = {
     {label = "Upgrades",id = "upgradesButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("upgrades") end},
     {label = "Resources",id = "resourcesButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("resources") end},

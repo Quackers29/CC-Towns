@@ -1091,13 +1091,13 @@ function Utility.InitInOut(x,y,z)
 
         local inChest,outChest,inPop,outPop,outPop2 = {0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}
         if facing == "north" then
-            inChest,outChest,inPop,outPop,outPop2 = {1,1,-3},{-1,1,-3},{3,1,-3},{3,1,-2},{3,1,-6}
+            inChest,outChest,inPop,outPop,outPop2 = {1,1,-3},{-1,1,-3},{3,1,-4},{3,1,-2},{3,1,-6}
         elseif facing == "east" then
-            inChest,outChest,inPop,outPop,outPop2 = {3,1,1},{3,1,-1},{3,1,3},{2,1,3},{6,1,3}
+            inChest,outChest,inPop,outPop,outPop2 = {3,1,1},{3,1,-1},{4,1,3},{2,1,3},{6,1,3}
         elseif facing == "south" then
-            inChest,outChest,inPop,outPop,outPop2 = {-1,1,3},{1,1,3},{-3,1,3},{-3,1,2},{-3,1,6}
+            inChest,outChest,inPop,outPop,outPop2 = {-1,1,3},{1,1,3},{-3,1,4},{-3,1,2},{-3,1,6}
         elseif facing == "west" then
-            inChest,outChest,inPop,outPop,outPop2 = {-3,1,-1},{-3,1,1},{-3,1,-3},{-2,1,-3},{-6,1,-3}
+            inChest,outChest,inPop,outPop,outPop2 = {-3,1,-1},{-3,1,1},{-4,1,-3},{-2,1,-3},{-6,1,-3}
         end
 
         if Settings.resources.input and math.abs(Settings.resources.input.x - x) <= ChestRange and math.abs(Settings.resources.input.y - y) <= ChestRange then
@@ -1125,6 +1125,7 @@ end
 function Utility.ChangeInputChest(ax,ay,az)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
+    local x,y,z = gps.locate()
     if Settings and Admin then
         local ChestRange = Admin.town.maxChestRange
         local INx,INy,INz = Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z
@@ -1139,6 +1140,7 @@ end
 function Utility.ChangeOutputChest(ax,ay,az)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
+    local x,y,z = gps.locate()
     if Settings and Admin then
         local ChestRange = Admin.town.maxChestRange
         local OUTx,OUTy,OUTz = Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z
@@ -1153,6 +1155,7 @@ end
 function Utility.ChangeInputPop(ax,ay,az)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
+    local x,y,z = gps.locate()
     if Settings and Admin then
         local PopRange = Admin.town.maxSpawnRange 
         local PINx,PINy,PINz = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z
@@ -1178,6 +1181,7 @@ end
 function Utility.ChangeOutputPop(ax,ay,az,select)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
+    local x,y,z = gps.locate()
     if Settings and Admin then
         local POUTx,POUTy,POUTz = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
         local POUTx2,POUTy2,POUTz2 = Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2
