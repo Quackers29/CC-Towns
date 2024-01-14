@@ -298,3 +298,8 @@ campfire_cosy_smoke -- long
 poof
 
 
+
+commands.exec("/execute as @a[x=0,y=0,z=0,distance=..1000] run tellraw @s {\"text\":\"Hello, players in the specified radius!\",\"color\":\"green\"}")
+
+
+/execute as @a[x=0,y=0,z=0,distance=..1000] run say Hello, players in the specified radius!

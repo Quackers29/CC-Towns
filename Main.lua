@@ -172,7 +172,7 @@ if Settings and AdminSettings then
             Utility.writeJsonFile(townNames,townNamesList)
         end
         if not foundName then
-            McAPI.Say("No town name available, deleting town: "..townFolder)
+            McAPI.SayNear("No town name available, deleting town: "..townFolder,x,y,z,500)
             Utility.SelfDestruct()
         end
 

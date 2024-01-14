@@ -118,6 +118,10 @@ function McAPI.Say(text)
     commands.say(text)
 end
 
+function McAPI.SayNear(text,x,y,z,radius)
+    commands.exec("/execute as @a[x="..x..",y="..y..",z="..z..",distance=.."..radius.."] run tellraw @s {\"text\":\""..text.."\",\"color\":\"green\"}")
+end
+
 -- Summons a custom Villager, profession can be set to random
 function McAPI.SummonCustomVill(x,y,z,name, profession)
     if profession and profession == "random" then

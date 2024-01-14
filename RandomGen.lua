@@ -12,8 +12,6 @@ while true do
         if Admin and score == 2 then
             local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(RandomTown.folderName), Admin.generation.minDistance,Admin.generation.maxDistance, {x = RandomTown.x, z = RandomTown.z}, Admin.generation.spread)
             if OpLocation then
-                --commands.say("New Town at x, y, z: "..OpLocation.x..", "..OpLocation.y..", "..OpLocation.z)
-                --commands.clone(RandomTown.x,RandomTown.y,RandomTown.z,RandomTown.x,RandomTown.y,RandomTown.z,OpLocation.x,OpLocation.y,OpLocation.z)
                 Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,McAPI.GetComputerId(x, y, z))
                 os.sleep(60)
             end
