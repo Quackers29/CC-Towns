@@ -880,7 +880,7 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
                     --a milestone was reached
                     mileArray = mileArray[math.random(1, #mileArray)]
                     for item,quantity in pairs(mileArray) do
-                        table.insert(milestones, {mile = mile, item = item, quantity = quantity})
+                        table.insert(milestones, {mile = mileCurrent, item = item, quantity = quantity})
                     end
                 end
 
@@ -961,11 +961,13 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
                     if tCount > 0 then
                         McAPI.SayNear(townString.." Milestone reward for getting "..tCount.." Tourists >"..mile.."m :",x,y,z,100,"yellow")
                         for item, quantity in pairs(data) do
-                            McAPI.SayNear(" - "..quantity.."x "..item,x,y,z,100,"yellow")
-                            if Admin.tourists.dropReward then
-                                McAPI.SummonItem(x,y,z,item,quantity)
-                            else
-                                Utility.ModifyRes(item,quantity)
+                            if not item == "-1" then
+                                McAPI.SayNear(" - "..quantity.."x "..item,x,y,z,100,"yellow")
+                                if Admin.tourists.dropReward then
+                                    McAPI.SummonItem(x,y,z,item,quantity)
+                                else
+                                    Utility.ModifyRes(item,quantity)
+                                end
                             end
                         end
                         
