@@ -917,8 +917,6 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
                 Utility.ModifyRes(Admin.tourists.payItem,pay)
             end
           
-            -- Sample data
-            -- {dist = 50, from = "TownC", pay = 120, milestones = {{mile = 40, item = "carrot", quantity = 8}, {mile = 50, item = "beef", quantity = 12}}},
             -- Function to aggregate milestones
             local function aggregateMilestones(data)
                 local aggregatedMilestones = {}
@@ -926,43 +924,45 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
                 for _, entry in ipairs(data) do
                     local milestones = entry.milestones
                     local currentMile = ""
-                    for _, milestone in ipairs(milestones) do
-                        local mile = milestone.mile
-                        currentMile = mile
-                        local item = milestone.item
-                        local quantity = milestone.quantity
+                    if milestones == {} then
+                        for _, milestone in ipairs(milestones) do
+                            local mile = milestone.mile
+                            currentMile = mile
+                            local item = milestone.item
+                            local quantity = milestone.quantity
 
-                        if not aggregatedMilestones[mile] then
-                            aggregatedMilestones[mile] = {}
+                            if not aggregatedMilestones[mile] then
+                                aggregatedMilestones[mile] = {}
+                            end
+
+                            if not aggregatedMilestones[mile][item] then
+                                aggregatedMilestones[mile][item] = quantity
+                            else
+                                aggregatedMilestones[mile][item] = aggregatedMilestones[mile][item] + quantity
+                            end
                         end
 
-                        if not aggregatedMilestones[mile][item] then
-                            aggregatedMilestones[mile][item] = quantity
+                        if not aggregatedMilestones[currentMile]["-1"] then
+                            aggregatedMilestones[currentMile]["-1"] = 1
                         else
-                            aggregatedMilestones[mile][item] = aggregatedMilestones[mile][item] + quantity
+                            aggregatedMilestones[currentMile]["-1"] = aggregatedMilestones[currentMile]["-1"] + 1
                         end
-                    end
-                    
-                    if not aggregatedMilestones[currentMile]["-1"] then
-                        aggregatedMilestones[currentMile]["-1"] = 1
-                    else
-                        aggregatedMilestones[currentMile]["-1"] = aggregatedMilestones[currentMile]["-1"] + 1
                     end
                 end
 
                 return aggregatedMilestones
             end
-
+            --
             -- Call the function with your perVillager table
             local result = aggregateMilestones(killed)
 
-            if result then
+            if result and result ~= {} then
                 for mile,data in pairs(result) do
                     local tCount = data["-1"]
                     if tCount > 0 then
                         McAPI.SayNear(townString.." Milestone reward for getting "..tCount.." Tourists >"..mile.."m :",x,y,z,100,"yellow")
                         for item, quantity in pairs(data) do
-                            if not item == "-1" then
+                            if item ~= "-1" then
                                 McAPI.SayNear(" - "..quantity.."x "..item,x,y,z,100,"yellow")
                                 if Admin.tourists.dropReward then
                                     McAPI.SummonItem(x,y,z,item,quantity)
