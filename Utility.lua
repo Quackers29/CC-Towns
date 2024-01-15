@@ -826,34 +826,24 @@ function Utility.OutputTourist(count, townName)
 end
 
 -- Input/Output of tourist check
-function Utility.OldTouristTransfer(count, townName,townNames,townX,townZ)
-    local Settings = Utility.readJsonFile(SettingsFile)
-    local Admin = Utility.readJsonFile(AdminFile)
-    if Settings and Settings.population.touristOutput == true then
-        Utility.OutputTourist(count, townName)
-    end
-    if Settings and Admin then -- and Settings.population.autoInput == true
-        local boolean, distance, fromTown = true,0,""
-        local killed = {}
-        while boolean do
-            boolean, distance, fromTown = Utility.InputTourists("(T)"..townName,townNames,townX,townZ)
-            if boolean then
-                os.sleep(0.2)
-            end
-        end
-    end
-end
-
--- Input/Output of tourist check
 function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
     if Settings and Settings.population.touristOutput == true then
         Utility.OutputTourist(count, townName)
     end
-    if Settings and Admin then -- and Settings.population.autoInput == true
-        local boolean, distance, fromTown = true,0,""
-        local killed = {}
+    if Settings and Admin and Settings.population.autoInput == true then
+        Utility.MultiTouristInput(townName,townNames,townX,townZ)
+    end
+end
+
+-- Input/Output of tourist check
+function Utility.MultiTouristInput(townName,townNames,townX,townZ)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    local boolean, distance, fromTown = true,0,""
+    local killed = {}
+    if Admin and Settings then
         while boolean do
             boolean, distance, fromTown = Utility.InputTourists("(T)"..townName,townNames,townX,townZ)
             if boolean then
@@ -916,7 +906,7 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
             else
                 Utility.ModifyRes(Admin.tourists.payItem,pay)
             end
-          
+        
             -- Function to aggregate milestones
             local function aggregateMilestones(data)
                 local aggregatedMilestones = {}
@@ -979,7 +969,6 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
         end
     end
 end
-
 
 function Utility.ParseTownCords(name)
     local x, y, z = string.match(name, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
