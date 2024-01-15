@@ -1379,4 +1379,26 @@ function Utility.ChangeOutputPop(ax,ay,az,select)
     end
 end
 
+function Utility.ChangeName(newName)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    local townNames = "Defaults\\townNames.json"
+    local townNamesList = Utility.readJsonFile(townNames)
+    if Settings and Admin and townNamesList then
+        local oldName = Settings.town.name
+        Settings.town.name = newName
+        Utility.writeJsonFile(SettingsFile,Settings)
+        for i,v in pairs(townNamesList.used) do
+            if i == oldName then
+                local oldLocation = townNamesList.used[i]
+                townNamesList.used[i] = nil
+                townNamesList.used[newName] = oldLocation
+            end
+        end
+        Utility.writeJsonFile(townNames,townNamesList)
+    else
+        print("Could not open files...")
+    end
+end
+
 return Utility

@@ -135,6 +135,18 @@ function Update()
     shell.run("gitget Quackers29 CC-Towns main")
 end
 
+function ChangeName(newName)
+    local Utility = require("Utility")
+    local x,y,z = gps.locate()
+    local townFolder = "Town_X"..x.."Y"..y.."Z"..z
+    local town = "Towns\\"..townFolder.."\\"
+    local SettingsFile = town.."SET_X"..x.."Y"..y.."Z"..z..".json"
+    local adminFile = "AdminSettings.json"
+    Utility.LoadFiles(SettingsFile,adminFile,"")
+    Utility.ChangeName(newName)
+    os.reboot()
+end
+
 function EditSettings()
     local x,y,z = gps.locate()
     local townFolder = "Town_X"..x.."Y"..y.."Z"..z
@@ -144,37 +156,42 @@ function EditSettings()
 end
 
 -- Main function to handle command-line argument
-function main(arg)
-    if arg == "Start" then
+function main(arg1, arg2)
+    if arg1 == "start" then
         startComputer()
-    elseif arg == "Stop" then
+    elseif arg1 == "stop" then
         stopComputer()
-    elseif arg == "Reboot" then
+    elseif arg1 == "reboot" then
         rebootComputer()
-    elseif arg == "Stats" then
+    elseif arg1 == "stats" then
         statsComputer()
-    elseif arg == "Remove" then
+    elseif arg1 == "remove" then
         SelfDestruct()
-    elseif arg == "Generation" then
+    elseif arg1 == "generation" then
         RandomGen()
-    elseif arg == "Install" then
+    elseif arg1 == "install" then
         Install()
-    elseif arg == "Update" then
+    elseif arg1 == "update" then
         Update()
-    elseif arg == "Edit" then
+    elseif arg1 == "edit" then
         EditSettings()
+    elseif arg1 == "name" then
+        if arg2 ~= "" or arg2 ~= nil then
+            ChangeName(arg2)
+        end
     else
-        print("Invalid argument. Please use '<Start|Stop|Reboot|Stats|Remove|Generation|Install|Update|Edit>'.")
+        print("Invalid argument. Please use '<start|stop|reboot|stats|remove|generation|install|update|edit>'.")
     end
 end
 
 -- Get command-line argument
 local args = { ... }
-local command = args[1]
+local arg1 = args[1]
+local arg2 = args[2]
 
 -- Check if a command is provided
-if command then
-    main(command)
+if arg1 then
+    main(arg1, arg2)
 else
-    print("Usage: lua program <Start|Stop|Reboot|Stats|Remove|Generation|Install|Update|Edit>")
+    print("Usage: lua program <start|stop|reboot|stats|remove|generation|install|update|edit>")
 end
