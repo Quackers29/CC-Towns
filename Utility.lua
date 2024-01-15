@@ -957,8 +957,8 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                     if tCount > 0 then
                         McAPI.SayNear(townString.." Milestone reward for getting "..tCount.." Tourists >"..mile.."m :",x,y,z,100,"yellow")
                         for item, quantity in pairs(data) do
-                            local mod, itemName, attributes = Utility.ParseMcItemString(item)
                             if item ~= "-1" then
+                                local mod, itemName, attributes = Utility.ParseMcItemString(item)
                                 McAPI.SayNear(" - "..quantity.."x "..itemName,x,y,z,100,"yellow")
                                 if Admin.tourists.dropReward then
                                     McAPI.SummonItem(x,y,z,item,quantity)
