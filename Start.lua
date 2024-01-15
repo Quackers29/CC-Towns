@@ -1,1 +1,0 @@
-commands.scoreboard.players.set("StartUp", "AllTowns", 1)
