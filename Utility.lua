@@ -640,7 +640,7 @@ function Utility.OutputPop(count, townName, name)
                     if Settings.population.popList[name] then
                         if Settings.population.popList[name] > 1 then
                             Settings.population.popList[name] = Settings.population.popList[name] - 1
-                            McAPI.SummonCustomVill(x,y,z,name)
+                            McAPI.SummonCustomVill(x,y,z,name,"","green","Pop")
                             Settings.population.popCurrent = Settings.population.popCurrent - 1
                         end
                     end
@@ -656,7 +656,7 @@ function Utility.OutputPop(count, townName, name)
                                     outName = i
                                 end
                                 Settings.population.popList[i] = Settings.population.popList[i] - 1
-                                McAPI.SummonCustomVill(x,y,z,outName)
+                                McAPI.SummonCustomVill(x,y,z,outName,"","green","Pop")
                                 Settings.population.popCurrent = Settings.population.popCurrent - 1
                                 foundPop = true
                             end
@@ -676,7 +676,7 @@ function Utility.InputOwnTourists()
     if Settings and Admin then
         local townString = "["..Settings.town.name.."]"
         local x,y,z,radius = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.radius
-        local killed = McAPI.KillCustomVill(x,y,z,radius,"","(T)"..Settings.town.name)
+        local killed = McAPI.KillExactVill(x,y,z,radius,"(T)"..Settings.town.name,"Tourist")
         if killed then
             if string.match(killed,"(T)") then
                 -- Tourist handle
@@ -699,7 +699,7 @@ function Utility.InputPop(notName,townNames,townX,townZ)
     if Settings and Admin then
         local townString = "["..Settings.town.name.."]"
         local x,y,z,radius = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.radius
-        local killed = McAPI.KillCustomVill(x,y,z,radius,notName)
+        local killed = McAPI.KillOtherVill(x,y,z,radius,notName)
         if killed then
             if string.match(killed,"(T)") then
                 -- Tourist handle
@@ -780,7 +780,7 @@ function Utility.InputTourists(notName,townNames,townX,townZ)
     if Settings and Admin then
         local townString = "["..Settings.town.name.."]"
         local x,y,z,radius = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.radius
-        local killed = McAPI.KillCustomVill(x,y,z,radius,notName,"(T)*")
+        local killed = McAPI.KillOtherVill(x,y,z,radius,notName,"Tourist")
         if killed then
             if string.match(killed,"(T)") then
                 -- Tourist handle
@@ -836,7 +836,7 @@ function Utility.OutputTourist(count, townName)
                         xo,zo = Utility.PointBetweenPoints(x,z,x2,z2, -1)
                     end
                     if McAPI.GetVillagerCount(xo,y,zo,1) == 0 then
-                        McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random")
+                        McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random","blue","Tourist")
                         Settings.population.touristCurrent = Settings.population.touristCurrent - 1
                         spawned = true
                         break

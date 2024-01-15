@@ -138,28 +138,43 @@ function McAPI.SayNear(text,x,y,z,radius,color)
 end
 
 -- Summons a custom Villager, profession can be set to random
-function McAPI.SummonCustomVill(x,y,z,name, profession)
+function McAPI.SummonCustomVill(x,y,z,name, profession, color, tag)
+    local color = color or "blue"
+    local tag = tag or ""
     if profession and profession == "random" then
         local VilList = {
             "armourer","butcher","cartographer","cleric","farmer",
             "fisherman","fletcher","leatherworker","librarian",
             "masons","shepherd","toolsmith","weaponsmith"
             }
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..VilList[math.random(1,#VilList)]..",level:6}}")
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..VilList[math.random(1,#VilList)]..",level:6},Tags:[\""..tag.."\"]}")
     elseif profession and profession ~= "" then
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..profession..",level:6}}")
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..profession..",level:6},Tags:[\""..tag.."\"]}")
     else
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}]}")
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],Tags:[\""..tag.."\"]}")
     end
 end
 
 -- Kills a custom villager with an optional notname and optional Name (Use the wildcard '*' i.e "(T)*" )
-function McAPI.KillCustomVill(x,y,z,range,notName, Name)
+function McAPI.KillOtherVill(x,y,z,range,notName, tag)
     local killString = ""
-    if Name == nil or Name == "" then
+    if tag == nil or tag == "" then
         killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',limit=1]"
     else
-        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',name='"..Name.."',limit=1]"
+        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',tag='"..tag.."',limit=1]"
+    end
+    local boolean,table,count = commands.kill(killString)
+    local result = string.match(table[1], "Killed (.+)")
+    return result
+end
+
+-- Kills a custom villager with an optional notname and optional Name (Use the wildcard '*' i.e "(T)*" )
+function McAPI.KillExactVill(x,y,z,range,Name, tag)
+    local killString = ""
+    if tag == nil or tag == "" then
+        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name='"..Name.."',limit=1]"
+    else
+        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name='"..Name.."',tag='"..tag.."',limit=1]"
     end
     local boolean,table,count = commands.kill(killString)
     local result = string.match(table[1], "Killed (.+)")
