@@ -862,15 +862,12 @@ end
 
 -- Input/Output of tourist check
 function Utility.InputAllOwnTourists()
-    local Settings = Utility.readJsonFile(SettingsFile)
-    local Admin = Utility.readJsonFile(AdminFile)
     local boolean = true
-    if Admin and Settings then
-        while boolean do
-            boolean = Utility.InputOwnTourists()
-            os.sleep(0.1)
-        end
+    while boolean do
+        boolean = Utility.InputOwnTourists()
+        os.sleep(0.1)
     end
+
 end
 
 -- Input/Output of tourist check
