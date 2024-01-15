@@ -748,6 +748,41 @@ function Utility.InputPop(notName,townNames,townX,townZ)
     return hasKilled
 end
 
+function Utility.InputTourists(notName,townNames,townX,townZ)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    local hasKilled = false
+    local distance = 0
+    local fromTown = ""
+    if Settings and Admin then
+        local townString = "["..Settings.town.name.."]"
+        local x,y,z,radius = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.radius
+        local killed = McAPI.KillCustomVill(x,y,z,radius,notName,"(T)*")
+        if killed then
+            if string.match(killed,"(T)") then
+                -- Tourist handle
+                fromTown = string.match(killed,"%)(.*)")
+                if fromTown == Settings.town.name then
+                    --Own tourist, add
+                    Settings.population.touristCurrent = Settings.population.touristCurrent + 1
+                else
+                    --from elsewhere, handle
+                    local townNamesList = Utility.readJsonFile(townNames)
+                    if townNamesList and townNamesList.used[fromTown] then
+                        local ax,ay,az = Utility.ParseTownCords(townNamesList.used[fromTown])
+                        if ax and az then
+                            distance = Utility.round(Utility.CalcDist({x = ax,z = az}, {x = townX,z = townZ}))
+                            hasKilled = true
+                        end
+                    end
+                end
+            end
+        end
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+    return hasKilled, distance, fromTown
+end
+
 function Utility.ParticleMarker(x,y,z)
     McAPI.Particle("block_marker", x, y, z, 0.5, 10, "chest")
     McAPI.Particle("end_rod", x, y, z, 0.03, 100)
@@ -791,21 +826,157 @@ function Utility.OutputTourist(count, townName)
 end
 
 -- Input/Output of tourist check
-function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
+function Utility.OldTouristTransfer(count, townName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
     if Settings and Settings.population.touristOutput == true then
         Utility.OutputTourist(count, townName)
     end
-    if Settings and Settings.population.autoInput == true then
-        local boolean = true
+    if Settings and Admin then -- and Settings.population.autoInput == true
+        local boolean, distance, fromTown = true,0,""
+        local killed = {}
         while boolean do
-            boolean = Utility.InputPop("(T)"..townName,townNames,townX,townZ)
+            boolean, distance, fromTown = Utility.InputTourists("(T)"..townName,townNames,townX,townZ)
             if boolean then
                 os.sleep(0.2)
             end
         end
     end
 end
+
+-- Input/Output of tourist check
+function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    if Settings and Settings.population.touristOutput == true then
+        Utility.OutputTourist(count, townName)
+    end
+    if Settings and Admin then -- and Settings.population.autoInput == true
+        local boolean, distance, fromTown = true,0,""
+        local killed = {}
+        while boolean do
+            boolean, distance, fromTown = Utility.InputTourists("(T)"..townName,townNames,townX,townZ)
+            if boolean then
+                --distance has to be greater than minDistance
+                local pay = 0
+                if distance >= Admin.tourists.payMinDist and Admin.tourists.payEnabled then
+                    pay = Utility.round(distance / Admin.tourists.payDistPerItem)
+                end
+
+                local mileArray = {}
+                local mileCurrent = 0
+                local milestones = {}
+                local mile = 0
+                if Admin.tourists.milestonesEnabled then
+                    for mile,array in pairs(Admin.tourists.milestones) do
+                        local mile = tonumber(mile)
+                        if distance > mile and distance > mileCurrent then
+                            mileCurrent = mile
+                            mileArray = array
+                        end
+                    end
+                end
+                if mileArray ~= {} and #mileArray > 0 then
+                    --a milestone was reached
+                    mileArray = mileArray[math.random(1, #mileArray)]
+                    for item,quantity in pairs(mileArray) do
+                        table.insert(milestones, {mile = mile, item = item, quantity = quantity})
+                    end
+                end
+
+                table.insert(killed,{dist = distance, from = fromTown, pay = pay, milestones = milestones})
+                os.sleep(0.2)
+            end
+        end
+
+        if #killed > 0 then
+            local townString = "["..Settings.town.name.."]"
+            local x,y,z = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z
+            local tourists = #killed
+            local pay = 0
+            local totalDistance = 0
+            local maxDistance = -math.huge
+            local minDistance = math.huge
+            for _, data in ipairs(killed) do
+                pay = pay + data.pay
+                totalDistance = totalDistance + data.dist
+                if data.dist > maxDistance then
+                    maxDistance = data.dist
+                end
+        
+                if data.dist < minDistance then
+                    minDistance = data.dist
+                end
+            end
+            local avgDist = totalDistance / tourists
+
+            McAPI.SayNear(townString.." Tourist travelled (Min/Avg/Max): "..minDistance.."/"..avgDist.."/"..maxDistance.." m, for a total of: "..pay.."x "..Admin.tourists.payItem,x,y,z,100)
+            if Admin.tourists.dropReward then
+                McAPI.SummonItem(x,y,z,Admin.tourists.payItem,pay)
+            else
+                Utility.ModifyRes(Admin.tourists.payItem,pay)
+            end
+          
+            -- Sample data
+            -- {dist = 50, from = "TownC", pay = 120, milestones = {{mile = 40, item = "carrot", quantity = 8}, {mile = 50, item = "beef", quantity = 12}}},
+            -- Function to aggregate milestones
+            local function aggregateMilestones(data)
+                local aggregatedMilestones = {}
+
+                for _, entry in ipairs(data) do
+                    local milestones = entry.milestones
+
+                    for _, milestone in ipairs(milestones) do
+                        local mile = milestone.mile
+                        local item = milestone.item
+                        local quantity = milestone.quantity
+
+                        if not aggregatedMilestones[mile] then
+                            aggregatedMilestones[mile] = {}
+                        end
+
+                        if not aggregatedMilestones[mile][item] then
+                            aggregatedMilestones[mile][item] = quantity
+                        else
+                            aggregatedMilestones[mile][item] = aggregatedMilestones[mile][item] + quantity
+                        end
+
+                        if not aggregatedMilestones[mile]["-1"] then
+                            aggregatedMilestones[mile]["-1"] = 1
+                        else
+                            aggregatedMilestones[mile]["-1"] = aggregatedMilestones[mile]["-1"] + 1
+                        end
+                    end
+                end
+
+                return aggregatedMilestones
+            end
+
+            -- Call the function with your perVillager table
+            local result = aggregateMilestones(killed)
+
+            if result then
+                for mile,data in pairs(result) do
+                    local tCount = data["-1"]
+                    if tCount > 0 then
+                        McAPI.SayNear(townString.." Milestone reward for getting "..tCount.." Tourists >"..mile.."m :",x,y,z,100,"yellow")
+                        for item, quantity in pairs(data) do
+                            McAPI.SayNear(" - "..quantity.."x "..item,x,y,z,100,"yellow")
+                            if Admin.tourists.dropReward then
+                                McAPI.SummonItem(x,y,z,item,quantity)
+                            else
+                                Utility.ModifyRes(item,quantity)
+                            end
+                        end
+                        
+                    end
+                end
+                McAPI.SayNear(" ---------- ",x,y,z,100,"yellow")
+            end
+        end
+    end
+end
+
 
 function Utility.ParseTownCords(name)
     local x, y, z = string.match(name, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
