@@ -674,20 +674,13 @@ function Utility.InputOwnTourists()
     local Admin = Utility.readJsonFile(AdminFile)
     local hasKilled = false
     if Settings and Admin then
-        local townString = "["..Settings.town.name.."]"
         local x,y,z,radius = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.radius
         local killed = McAPI.KillExactVill(x,y,z,radius,"(T)"..Settings.town.name,"Tourist")
         if killed then
-            if string.match(killed,"(T)") then
-                -- Tourist handle
-                local fromTown = string.match(killed,"%)(.*)")
-                if fromTown == Settings.town.name then
-                    --Own tourist, add
-                    Settings.population.touristCurrent = Settings.population.touristCurrent + 1
-                end
-            end
+            Settings.population.touristCurrent = Settings.population.touristCurrent + 1
+            Utility.writeJsonFile(SettingsFile,Settings)
+            hasKilled = true
         end
-        Utility.writeJsonFile(SettingsFile,Settings)
     end
     return hasKilled
 end
@@ -867,7 +860,6 @@ function Utility.InputAllOwnTourists()
         boolean = Utility.InputOwnTourists()
         os.sleep(0.1)
     end
-
 end
 
 -- Input/Output of tourist check
