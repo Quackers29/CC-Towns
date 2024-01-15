@@ -481,10 +481,10 @@ function DrawButtonsForCurrentPage()
 
         elseif Settings and currentPage == "Tourists_Settings" then
             Monitor.write("Tourists Settings", 1, 1)
-            Monitor.write("Tourist Auto Output", 5, 3)
-            Monitor.write("Tourist Auto Input", 5, 4)
-            Monitor.write("Set Input", 5, 5)
-            Monitor.write("Set Output", 5, 6)
+            Monitor.write("Tourist Auto Input", 5, 3)
+            Monitor.write("Tourist Auto Output", 5, 6)
+            Monitor.write("Set Input", 5, 4)
+            Monitor.write("Set Output", 5, 7)
             local output = false
             local input = false
             if Settings.population.touristOutput then

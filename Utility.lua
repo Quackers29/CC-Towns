@@ -931,7 +931,10 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                                 aggregatedMilestones[mile][item] = aggregatedMilestones[mile][item] + quantity
                             end
                         end
-
+                        --Add the counter per mile (Tourists achieved per milestone)
+                        if not aggregatedMilestones[currentMile] then
+                            aggregatedMilestones[currentMile] = {}
+                        end
                         if not aggregatedMilestones[currentMile]["-1"] then
                             aggregatedMilestones[currentMile]["-1"] = 1
                         else
