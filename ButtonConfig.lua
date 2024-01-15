@@ -101,6 +101,7 @@ local ButtonConfig = {
 
 {label = "Settings",id = "Settings",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Tourists",action = function()    goToPage("Tourists_Settings") end},
 {label = "Input Now",id = "Input",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Tourists",action = function()    InputMultiTourists() end},
+{label = "Input Own",id = "Input",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Tourists",action = function()    InputAllOwnTourists() Refresh() end},
 --{label = "InputPop",id = "settings_inputPopButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Tourists",action = function()    goToPage("settings_InputPop") end},
 --{label = "OutputPop",id = "settings_outputPopButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Tourists",action = function()    goToPage("settings_OutputPop") end},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Tourists") end,enabled = true, type = "button",page = "settings_InputPop"},

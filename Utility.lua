@@ -669,6 +669,29 @@ function Utility.OutputPop(count, townName, name)
     end
 end
 
+function Utility.InputOwnTourist()
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    local hasKilled = false
+    if Settings and Admin then
+        local townString = "["..Settings.town.name.."]"
+        local x,y,z,radius = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.radius
+        local killed = McAPI.KillCustomVill(x,y,z,radius,"","(T)"..Settings.town.name)
+        if killed then
+            if string.match(killed,"(T)") then
+                -- Tourist handle
+                local fromTown = string.match(killed,"%)(.*)")
+                if fromTown == Settings.town.name then
+                    --Own tourist, add
+                    Settings.population.touristCurrent = Settings.population.touristCurrent + 1
+                end
+            end
+        end
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+    return hasKilled
+end
+
 function Utility.InputPop(notName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
@@ -838,6 +861,19 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
 end
 
 -- Input/Output of tourist check
+function Utility.InputAllOwnTourists()
+    local Settings = Utility.readJsonFile(SettingsFile)
+    local Admin = Utility.readJsonFile(AdminFile)
+    local boolean = true
+    if Admin and Settings then
+        while boolean do
+            boolean = Utility.InputOwnTourists()
+            os.sleep(0.1)
+        end
+    end
+end
+
+-- Input/Output of tourist check
 function Utility.MultiTouristInput(townName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
@@ -893,7 +929,6 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                 if data.dist > maxDistance then
                     maxDistance = data.dist
                 end
-        
                 if data.dist < minDistance then
                     minDistance = data.dist
                 end
@@ -906,7 +941,6 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
             else
                 Utility.ModifyRes(Admin.tourists.payItem,pay)
             end
-        
             -- Function to aggregate milestones
             local function aggregateMilestones(data)
                 local aggregatedMilestones = {}

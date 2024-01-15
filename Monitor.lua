@@ -11,7 +11,6 @@ local maxButtonsPerPage
 
 function Monitor.init()
     monitor = nil
-    ListOffset = {}
     monitor = peripheral.find("monitor")
     while not monitor do
         print("Connect Monitor...")
@@ -308,7 +307,6 @@ function Monitor.drawList(startY, endY, items, buttonsConfig, rowHeight, ListInd
                 Monitor.drawButton(xRightOffset - btn.width + 1, currentY, output)
                 xRightOffset = xRightOffset - btn.width - 1
             end
-        end
         end
         
         -- Draw the item text based on the new offsets

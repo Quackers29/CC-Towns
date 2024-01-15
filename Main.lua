@@ -642,6 +642,10 @@ function OutputTourist()
     Utility.OutputTourist(1, townName)
 end
 
+function InputAllOwnTourists()
+    Utility.InputAllOwnTourists()
+end
+
 function Refresh()
     DrawButtonsForCurrentPage()
 end
