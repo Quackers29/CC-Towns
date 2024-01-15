@@ -924,7 +924,7 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
                 for _, entry in ipairs(data) do
                     local milestones = entry.milestones
                     local currentMile = ""
-                    if milestones == {} then
+                    if milestones ~= {} then
                         for _, milestone in ipairs(milestones) do
                             local mile = milestone.mile
                             currentMile = mile
