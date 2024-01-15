@@ -172,9 +172,9 @@ end
 function McAPI.KillExactVill(x,y,z,range,Name,tag)
     local killString = ""
     if tag == nil or tag == "" then
-        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name='"..Name.."',limit=1]"
+        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name='"..Name.."',limit=1]"
     else
-        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name='"..Name.."',tag="..tag..",limit=1]"
+        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name='"..Name.."',tag="..tag..",limit=1]"
     end
     local boolean,table,count = commands.kill(killString)
     local result = string.match(table[1], "Killed (.+)")
