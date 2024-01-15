@@ -898,7 +898,7 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                     minDistance = data.dist
                 end
             end
-            local avgDist = totalDistance / tourists
+            local avgDist = Utility.round(totalDistance / tourists)
 
             McAPI.SayNear(townString.." Tourist travelled (Min/Avg/Max): "..minDistance.."/"..avgDist.."/"..maxDistance.." m, for a total of: "..pay.."x "..Admin.tourists.payItem,x,y,z,100)
             if Admin.tourists.dropReward then
