@@ -38,16 +38,12 @@ local ButtonConfig = {
 --Settings
 {label = "InputChest",id = "settings_inputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_InputChest") end},
 {label = "OutputChest",id = "settings_outputchestButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_OutputChest") end},
-{label = "InputPop",id = "settings_inputPopButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_InputPop") end},
-{label = "OutputPop",id = "settings_outputPopButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("settings_OutputPop") end},
-{label = "InPOP",id = "settings_inputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    InputPOP() end},
-{label = "OutPOP",id = "settings_outputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputPOP() end},
-{label = "OutTourist",id = "settings_outputTORButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputTourist() end},
+--{label = "InPOP",id = "settings_inputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    InputPOP() end},
+--{label = "OutPOP",id = "settings_outputPOPButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputPOP() end},
+--{label = "OutTourist",id = "settings_outputTORButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    OutputTourist() end},
 
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_InputChest"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_OutputChest"},
-{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_InputPop"},
-{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("settings") end,enabled = true, type = "button",page = "settings_OutputPop"},
 --InputChest
 {id = "Add",width = 3,x = 2,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() Utility.ChangeInputChest(1,0,0) Refresh() end,enabled = true, type = "button",page = "settings_InputChest"},
 {id = "Subtract",width = 3,x = 2,y = 6,colorOn = colors.yellow,colorOff = colors.gray,charOn = "-",action = function() Utility.ChangeInputChest(-1,0,0) Refresh() end,enabled = true, type = "button",page = "settings_InputChest"},
@@ -95,13 +91,20 @@ local ButtonConfig = {
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Trade") end,enabled = true, type = "button",page = "Trade_Trading"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Trade") end,enabled = true, type = "button",page = "Trade_History"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "Trade"},
---population
+--tourists
 {id = "touristOutput",width = 3,x = 1,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("touristOutput") end,enabled = false, type = "button",page = "Tourists_Settings"},
 {id = "autoInput",width = 3,x = 1,y = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("autoInput") end,enabled = false, type = "button",page = "Tourists_Settings"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "Tourists"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Tourists") end,enabled = true, type = "button",page = "Tourists_Settings"},
+{id = "SetInput",width = 3,x = 1,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() goToPage("settings_InputPop") end,enabled = true, type = "button",page = "Tourists_Settings"},
+{id = "SetOutput",width = 3,x = 1,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function() goToPage("settings_OutputPop") end,enabled = true, type = "button",page = "Tourists_Settings"},
 
 {label = "Settings",id = "Settings",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Tourists",action = function()    goToPage("Tourists_Settings") end},
+{label = "Input",id = "Input",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Tourists",action = function()    InputMultiTourists() end},
+{label = "InputPop",id = "settings_inputPopButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Tourists",action = function()    goToPage("settings_InputPop") end},
+{label = "OutputPop",id = "settings_outputPopButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Tourists",action = function()    goToPage("settings_OutputPop") end},
+{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Tourists") end,enabled = true, type = "button",page = "settings_InputPop"},
+{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Tourists") end,enabled = true, type = "button",page = "settings_OutputPop"},
 } 
 
 return ButtonConfig
