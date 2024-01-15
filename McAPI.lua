@@ -161,7 +161,7 @@ function McAPI.KillOtherVill(x,y,z,range,notName, tag)
     if tag == nil or tag == "" then
         killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',limit=1]"
     else
-        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',tag='"..tag.."',limit=1]"
+        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',tag="..tag..",limit=1]"
     end
     local boolean,table,count = commands.kill(killString)
     local result = string.match(table[1], "Killed (.+)")
@@ -169,12 +169,12 @@ function McAPI.KillOtherVill(x,y,z,range,notName, tag)
 end
 
 -- Kills a custom villager with an optional notname and optional Name (Use the wildcard '*' i.e "(T)*" )
-function McAPI.KillExactVill(x,y,z,range,Name, tag)
+function McAPI.KillExactVill(x,y,z,range,Name,tag)
     local killString = ""
     if tag == nil or tag == "" then
         killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name='"..Name.."',limit=1]"
     else
-        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name='"..Name.."',tag='"..tag.."',limit=1]"
+        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name='"..Name.."',tag="..tag..",limit=1]"
     end
     local boolean,table,count = commands.kill(killString)
     local result = string.match(table[1], "Killed (.+)")
