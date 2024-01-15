@@ -925,9 +925,10 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
 
                 for _, entry in ipairs(data) do
                     local milestones = entry.milestones
-
+                    local currentMile = ""
                     for _, milestone in ipairs(milestones) do
                         local mile = milestone.mile
+                        currentMile = mile
                         local item = milestone.item
                         local quantity = milestone.quantity
 
@@ -940,12 +941,12 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
                         else
                             aggregatedMilestones[mile][item] = aggregatedMilestones[mile][item] + quantity
                         end
-
-                        if not aggregatedMilestones[mile]["-1"] then
-                            aggregatedMilestones[mile]["-1"] = 1
-                        else
-                            aggregatedMilestones[mile]["-1"] = aggregatedMilestones[mile]["-1"] + 1
-                        end
+                    end
+                    
+                    if not aggregatedMilestones[currentMile]["-1"] then
+                        aggregatedMilestones[currentMile]["-1"] = 1
+                    else
+                        aggregatedMilestones[currentMile]["-1"] = aggregatedMilestones[currentMile]["-1"] + 1
                     end
                 end
 
