@@ -5,7 +5,7 @@ local ButtonConfig = {
     {label = "Production",id = "productionButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("production") end},
     {label = "Trade",id = "tradeButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("Trade") end},
     {label = "Contracts",id = "contractsButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("Contracts") end},
-    {label = "Pop",id = "popButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("Pop") end},
+    {label = "Tourists",id = "popButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("Tourists") end},
     {label = "Settings",id = "settignsButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("settings") end},
     {label = "Map",id = "mapButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Main",action = function()    goToPage("Map") end},
     {label = "Back",id = "backButton",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "settings",action = function()    goToPage("Main") end},
@@ -96,12 +96,12 @@ local ButtonConfig = {
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Trade") end,enabled = true, type = "button",page = "Trade_History"},
 {id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "Trade"},
 --population
-{id = "touristOutput",width = 3,x = 1,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("touristOutput") end,enabled = false, type = "button",page = "Pop_Settings"},
-{id = "autoInput",width = 3,x = 1,y = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("autoInput") end,enabled = false, type = "button",page = "Pop_Settings"},
-{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "Pop"},
-{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Pop") end,enabled = true, type = "button",page = "Pop_Settings"},
+{id = "touristOutput",width = 3,x = 1,y = 2,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("touristOutput") end,enabled = false, type = "button",page = "Tourists_Settings"},
+{id = "autoInput",width = 3,x = 1,y = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "+",action = function(x) handlePop("autoInput") end,enabled = false, type = "button",page = "Tourists_Settings"},
+{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "Tourists"},
+{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Tourists") end,enabled = true, type = "button",page = "Tourists_Settings"},
 
-{label = "Settings",id = "Settings",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Pop",action = function()    goToPage("Pop_Settings") end},
+{label = "Settings",id = "Settings",x = 5,y = 5,width = 10,height = 3,type = "push",enabled = true,page = "Tourists",action = function()    goToPage("Tourists_Settings") end},
 } 
 
 return ButtonConfig

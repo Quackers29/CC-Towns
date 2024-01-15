@@ -214,6 +214,7 @@ if not fs.exists(productionFile) then
     Utility.writeJsonFile(productionFile,productionTable)
 end
 
+-- Main Display function, changes display based on the 'currentPage' variable
 function DrawButtonsForCurrentPage()
     Monitor.init()
     Settings = Utility.readJsonFile(SettingsFile)
@@ -478,10 +479,10 @@ function DrawButtonsForCurrentPage()
                 Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
             end
 
-        elseif Settings and currentPage == "Pop_Settings" then
-            Monitor.write("Population Settings", 1, 1)
+        elseif Settings and currentPage == "Tourists_Settings" then
+            Monitor.write("Tourists Settings", 1, 1)
             Monitor.write("Tourist Output", 5, 3)
-            Monitor.write("Population Input", 5, 4)
+            Monitor.write("Tourist Input", 5, 4)
             local output = false
             local input = false
             if Settings.population.touristOutput then
