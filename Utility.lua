@@ -669,7 +669,7 @@ function Utility.OutputPop(count, townName, name)
     end
 end
 
-function Utility.InputOwnTourist()
+function Utility.InputOwnTourists()
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
     local hasKilled = false

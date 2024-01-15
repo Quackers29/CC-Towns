@@ -159,7 +159,7 @@ function McAPI.KillCustomVill(x,y,z,range,notName, Name)
     if Name == nil or Name == "" then
         killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',limit=1]"
     else
-        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',name=!'"..Name.."',limit=1]"
+        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',name='"..Name.."',limit=1]"
     end
     local boolean,table,count = commands.kill(killString)
     local result = string.match(table[1], "Killed (.+)")
