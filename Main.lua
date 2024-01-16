@@ -779,46 +779,36 @@ function UpgradeSchedule(x)
     scheduleAction(x.item.duration, function() handleCSVItem(y) end)
 end
 
-function ChestRefresh()
-    Settings = Utility.readJsonFile(SettingsFile)
-    if Settings and Admin then
-        local INx,INy,INz = Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z
-        local OUTx,OUTy,OUTz = Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z
-        if Admin.main.version == 1 then
-            Utility.inputItems(INx,INy,INz,-64)
-        else
-            Utility.inputItems(INx,INy,INz,0)
-        end
-        Utility.checkItems(OUTx,OUTy,OUTz)
-        os.sleep(Admin.town.chestRefresh)
-    else
-        os.sleep(mainWait)
-    end
-end
-
 --Specific monitor pages will refresh on a faster loop
-function MonitorRefresh()
-    if currentPage == "Map" or currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
-        DrawButtonsForCurrentPage()
-        if Admin then
-            os.sleep(Admin.town.monitorRefresh)
+function MonitorLoop()
+    while mainflag do
+        if currentPage == "Map" or currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
+            DrawButtonsForCurrentPage()
+            if Admin then
+                os.sleep(Admin.town.monitorRefresh)
+            end
+        else
+            os.sleep(mainWait)
         end
-    else
-        os.sleep(mainWait)
     end
 end
 
 function ChestLoop()
     while mainflag do
-        if refreshflag then
-            ChestRefresh()
+        Settings = Utility.readJsonFile(SettingsFile)
+        if Settings and Admin and refreshflag then
+            local INx,INy,INz = Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z
+            local OUTx,OUTy,OUTz = Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z
+            if Admin.main.version == 1 then
+                Utility.inputItems(INx,INy,INz,-64)
+            else
+                Utility.inputItems(INx,INy,INz,0)
+            end
+            Utility.checkItems(OUTx,OUTy,OUTz)
+            os.sleep(Admin.town.chestRefresh)
+        else
+            os.sleep(mainWait)
         end
-    end
-end
-
-function MonitorLoop()
-    while mainflag do
-        MonitorRefresh()
     end
 end
 
