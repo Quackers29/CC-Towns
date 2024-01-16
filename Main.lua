@@ -580,11 +580,10 @@ function DrawButtonsForCurrentPage()
                 Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
             end
 
-        elseif currentPage == "Tourist_History" then
+        elseif currentPage == "Tourists_History" then
             Monitor.write("History", 1, 1)
             --Monitor.write("Bought: ", 10, 3)
-            local tradeTable = Utility.readJsonFile(tradeFile)
-            if tradeTable then
+            if Settings then
                 local PreRecTable = {}
                 if Settings.tourist.History then
                     for i,v in pairs(Settings.tourist.History) do --

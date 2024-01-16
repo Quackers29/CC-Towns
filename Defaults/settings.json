@@ -79,8 +79,6 @@
     "touristOutput":false,
     "autoInput":false,
     "gen":1,
-    "History":{
-      "townName":10
-    }
+    "History":{}
   }
 }
