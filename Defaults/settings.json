@@ -71,7 +71,7 @@
   },
   "tourist":{
     "input": { "x": null, "y": 0, "z": 0, "radius":5 },
-    "output": { "x": null, "y": 0, "z": 0, "x2": 0, "y2": 0, "z2": 0, "method": "Line", "radius":5, "max":5},
+    "output": { "x": null, "y": 0, "z": 0, "x2": 0, "y2": 0, "z2": 0, "method": "Line", "radius":5, "max":-1},
     "lastTourist":null,
     "touristTime":-1,
     "touristCap":-1,

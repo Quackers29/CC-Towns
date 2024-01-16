@@ -837,8 +837,13 @@ end
 
 function Utility.OutputTourist(count, townName)
     local Settings = Utility.readJsonFile(SettingsFile)
-    if Settings then
+    local Admin = Utility.readJsonFile(AdminFile)
+    if Settings and Admin then
         local x,y,z,radius, max = Settings.tourist.output.x,Settings.tourist.output.y,Settings.tourist.output.z,Settings.tourist.output.radius, Settings.tourist.output.max
+        if max < 0 then
+            --Use Admin max out
+            max = Admin.tourist.maxOut
+        end
         local x2,y2,z2 = Settings.tourist.output.x2,Settings.tourist.output.y2,Settings.tourist.output.z2
         for i = 1,count do
             local VillagerCount = 0

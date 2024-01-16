@@ -46,7 +46,8 @@
       "minecraft:bread": 50
     },
     "genTime": 60,
-    "genCap": 60,
+    "genCap": 10,
+    "maxOut": 5,
     "dropReward": false,
     "payEnabled": true,
     "payMinDist": 50,
