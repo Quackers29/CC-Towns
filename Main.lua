@@ -596,10 +596,10 @@ function DrawButtonsForCurrentPage()
                     end
                 end
                 Monitor.drawList(3, endY-1, HistoryTable, pageButtons["list"], 1)
-            for i,v in ipairs(pageButtons["button"]) do
-                Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+                for i,v in ipairs(pageButtons["button"]) do
+                    Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
+                end
             end
-
         else
             -- Add back to Main button if no buttons assigned to page
             Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage.." T:("..Settings.tourist.touristCurrent..")", 1, 1, colors.white)
