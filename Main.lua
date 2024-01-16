@@ -596,21 +596,6 @@ function DrawButtonsForCurrentPage()
                     end
                 end
                 Monitor.drawList(3, endY-1, HistoryTable, pageButtons["list"], 1)
-
-                local PreRecTable = {}
-                if Settings.tourist.History then
-                    for i,v in pairs(Settings.tourist.History) do --
-                        -- key gets overwritten with [i] so fix or 
-                        PreRecTable[i] = PreRecTable[i] or {}
-                        PreRecTable[i]["key"] = i
-                        PreRecTable[i]["extra"] = " x"..v
-                        PreRecTable[i]["toggle"] = false
-                        PreRecTable[i]["string"] = "test?"
-                    end
-                    Monitor.drawKeyList(3, endY-1, PreRecTable, pageButtons["list"], 1, 0)
-                end
-            end
-
             for i,v in ipairs(pageButtons["button"]) do
                 Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
             end
