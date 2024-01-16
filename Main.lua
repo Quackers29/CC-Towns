@@ -400,7 +400,7 @@ function DrawButtonsForCurrentPage()
                 costTable[i]["toggle"] = currentUp
                 costTable[i]["string"] = c
             end
-            Monitor.drawKeyList(4,Utility.round(((endY-2)/2)+3), costTable, pageButtons["list"], 1, 0)
+            Monitor.drawKeyList(4,Utility.round(((endY-2)/2)+2), costTable, pageButtons["list"], 1, 0)
 
             for i,v in ipairs(pageButtons["button"]) do
                 if v.id == "Up" then
@@ -413,7 +413,7 @@ function DrawButtonsForCurrentPage()
         elseif currentPage == "Trade_Trading" then
             Monitor.write("Trading", 1, 1)
             Monitor.write("Buying: ", 10, 3)
-            Monitor.write("Selling: ", 10, ((endY-2)/2)+3)
+            Monitor.write("Selling: ", 10, ((endY-2)/2)+4)
             local tradeTable = Utility.readJsonFile(tradeFile)
             if tradeTable then
                 local PreRecTable = {}
@@ -436,7 +436,7 @@ function DrawButtonsForCurrentPage()
                         PreRecTable[v.item]["toggle"] = false
                         PreRecTable[v.item]["string"] = v.item
                     end
-                    Monitor.drawKeyList(Utility.round(((endY-2)/2)+5), endY, PreRecTable, pageButtons["list"], 1, 1)
+                    Monitor.drawKeyList(Utility.round(((endY-2)/2)+4), endY, PreRecTable, pageButtons["list"], 1, 1)
                 end 
             end
             for i,v in ipairs(pageButtons["button"]) do
@@ -446,7 +446,7 @@ function DrawButtonsForCurrentPage()
         elseif currentPage == "Trade_History" then
             Monitor.write("History", 1, 1)
             Monitor.write("Bought: ", 10, 3)
-            Monitor.write("Sold: ", 10, ((endY-2)/2)+3)
+            Monitor.write("Sold: ", 10, ((endY-2)/2)+4)
             local tradeTable = Utility.readJsonFile(tradeFile)
             if tradeTable then
                 local PreRecTable = {}
@@ -472,7 +472,7 @@ function DrawButtonsForCurrentPage()
                         PreRecTable[id]["toggle"] = false
                         PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
                     end
-                    Monitor.drawKeyList(Utility.round(((endY-2)/2)+5), endY, PreRecTable, pageButtons["list"], 1, 1)
+                    Monitor.drawKeyList(Utility.round(((endY-2)/2)+4), endY, PreRecTable, pageButtons["list"], 1, 1)
                 end
             end
             for i,v in ipairs(pageButtons["button"]) do
@@ -511,7 +511,7 @@ function DrawButtonsForCurrentPage()
             Monitor.write("Produce: "..((displayItem.key.." x"..displayItem.output) or ""), 1, 1)
             Monitor.write("duration: "..(displayItem.duration or "").."("..displayItem.timer..")", 10, 2)
             Monitor.write("Cost: ", 10, 3)
-            Monitor.write("Prerequisites: ", 10, ((endY-2)/2)+3)
+            Monitor.write("Prerequisites: ", 10, ((endY-2)/2)+4)
             local index = 1
             local costTable = {}
             local PreRecTable = {}
