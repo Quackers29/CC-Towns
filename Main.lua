@@ -581,17 +581,34 @@ function DrawButtonsForCurrentPage()
             end
 
         elseif currentPage == "Tourists_History" then
-            Monitor.write("History of Tourists to "..Settings.town.name!, 1, 1)
+            Monitor.write("History of Tourists to "..Settings.town.name.."!", 1, 1)
             --Monitor.write("Bought: ", 10, 3)
             if Settings then
                 local HistoryTable = {}
                 for i,v in pairs(Settings.tourist.History) do
-                    if v.count > 0 then
-                        v.string = i
-                        table.insert(HistoryTable,v)
+                    if v > 0 then
+                        local g = {
+                            count = v,
+                            toggle = false,
+                            key = i
+                        }
+                        table.insert(HistoryTable,g)
                     end
                 end
                 Monitor.drawList(3, endY-1, HistoryTable, pageButtons["list"], 1)
+
+                local PreRecTable = {}
+                if Settings.tourist.History then
+                    for i,v in pairs(Settings.tourist.History) do --
+                        -- key gets overwritten with [i] so fix or 
+                        PreRecTable[i] = PreRecTable[i] or {}
+                        PreRecTable[i]["key"] = i
+                        PreRecTable[i]["extra"] = " x"..v
+                        PreRecTable[i]["toggle"] = false
+                        PreRecTable[i]["string"] = "test?"
+                    end
+                    Monitor.drawKeyList(3, endY-1, PreRecTable, pageButtons["list"], 1, 0)
+                end
             end
 
             for i,v in ipairs(pageButtons["button"]) do
