@@ -72,31 +72,15 @@
   "tourist":{
     "input": { "x": null, "y": 0, "z": 0, "radius":5 },
     "output": { "x": null, "y": 0, "z": 0, "x2": 0, "y2": 0, "z2": 0, "method": "Line", "radius":5, "max":5},
-    "lastGen":null,
     "lastTourist":null,
-    "wait":60,
-    "touristTime":120,
-    "touristCap":10,
+    "touristTime":-1,
+    "touristCap":-1,
     "touristCurrent":5,
     "touristOutput":false,
     "autoInput":false,
-    "capFactors":{
-      "base":12
-    },
     "gen":1,
-    "genFactors":{
-      "base":1
-    },
-    "genTime":120,
-    "genTimeFactors":{
-      "base":60
-    },
-    "thresholdRatio":0.2,
-    "genCosts": {
-      "minecraft:bread": 50
-    },
-    "popList":{
-      "time":{"town":10}
+    "History":{
+      "townName":10
     }
   }
 }

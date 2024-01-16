@@ -1,7 +1,7 @@
 {
   "main": {
     "packages": {
-      "tourists": true,
+      "tourist": true,
       "population": false,
       "production": true,
       "resources": true,
@@ -21,11 +21,14 @@
     "startup": false,
     "minDistance": 8,
     "restart": 0,
-    "adminWait": 20,
+    "adminWait": 10,
     "maxSpawnRange": 50,
     "maxVillagerOut": 20,
     "maxLineLength": 20,
-    "maxChestRange": 20
+    "maxChestRange": 20,
+    "mainWait": 10,
+    "chestRefresh": 5,
+    "monitorRefresh": 1
   },
   "generation": {
     "State": true,
@@ -37,8 +40,13 @@
     "monitorOut": 2,
     "monitorHigh": 3
   },
-  "tourists": {
-    "generationCost": false,
+  "tourist": {
+    "genCostEnabled": false,
+    "genCosts": {
+      "minecraft:bread": 50
+    },
+    "genTime": 60,
+    "genCap": 60,
     "dropReward": false,
     "payEnabled": true,
     "payMinDist": 50,

@@ -22,7 +22,6 @@ local biomes = "Defaults\\biomes.txt"
 local townNames = "Defaults\\townNames.json"
 local townNamesSource = "Defaults\\townNamesSource.json"
 local mainflag = true
-local secondflag = true
 local refreshWait = 5 --IN/OUT wait timer
 local productionWait = 10
 local mainWait = 10 -- MainLoop
@@ -45,14 +44,14 @@ Utility.LoadFiles(SettingsFile,adminFile,resFile)
 
 local TownFlag = Utility.IsATown(townFolder)
 
-local AdminSettings = Utility.readJsonFile(adminFile)
-if AdminSettings and AdminSettings.town.minDistance then
+local Admin = Utility.readJsonFile(adminFile)
+if Admin and Admin.town.minDistance then
     local deleteTown = false
     if not TownFlag then
         print("Town does not already exist")
         for i,v in ipairs(fs.list("Towns")) do
             local ax, ay, az = string.match(v, "X(%-?%d+)Y(%-?%d+)Z(%-?%d+)")
-            if Utility.IsInRange2DAngular(ax, az, x, z, AdminSettings.town.minDistance) then
+            if Utility.IsInRange2DAngular(ax, az, x, z, Admin.town.minDistance) then
                 print("NewTown is within another Town, deleting Computer")
                 os.sleep(10)
                 McAPI.setBlock(x,y,z,"cobblestone")
@@ -64,8 +63,8 @@ if AdminSettings and AdminSettings.town.minDistance then
 end
 
 -- Initialise McAPI with version number
-if AdminSettings and AdminSettings.main.version then
-    McAPI.Init(AdminSettings.main.version)
+if Admin and Admin.main.version then
+    McAPI.Init(Admin.main.version)
 end
 
 -- Initialize checks / file system
@@ -77,7 +76,7 @@ Utility.InitInOut(x,y,z)
 
 local Settings = Utility.readJsonFile(SettingsFile)
 
-if Settings and AdminSettings then
+if Settings and Admin then
     -- Biome search
     if Settings.general.biome == nil then
         local currentBiome = nil
@@ -115,7 +114,7 @@ if Settings and AdminSettings then
     if Settings.town.name == nil then
 
         -- Builds the Monitor
-        if AdminSettings.generation.monitorBuild == true then
+        if Admin.generation.monitorBuild == true then
             Utility.buildMonitor(x,y,z)
             Utility.BuildInOut(facing)
         end
@@ -652,23 +651,6 @@ function Refresh()
     DrawButtonsForCurrentPage()
 end
 
-function RefreshButton()
-    Settings = Utility.readJsonFile(SettingsFile)
-    if Settings and AdminSettings then
-        local INx,INy,INz = Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z
-        local OUTx,OUTy,OUTz = Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z
-        if AdminSettings.main.version == 1 then
-            Utility.inputItems(INx,INy,INz,-64)
-        else
-            Utility.inputItems(INx,INy,INz,0)
-        end
-        Utility.checkItems(OUTx,OUTy,OUTz)
-        if currentPage == "Map" or currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
-            DrawButtonsForCurrentPage()     
-        end
-    end
-end
-
 function RefreshFlag()
     if refreshflag then
         refreshflag = false
@@ -776,31 +758,52 @@ function UpgradeSchedule(x)
     scheduleAction(x.item.duration, function() handleCSVItem(y) end)
 end
 
--- Event loop reMains the same
-function MonitorEvents()
+function ChestRefresh()
+    Settings = Utility.readJsonFile(SettingsFile)
+    if Settings and Admin then
+        local INx,INy,INz = Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z
+        local OUTx,OUTy,OUTz = Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z
+        if Admin.main.version == 1 then
+            Utility.inputItems(INx,INy,INz,-64)
+        else
+            Utility.inputItems(INx,INy,INz,0)
+        end
+        Utility.checkItems(OUTx,OUTy,OUTz)
+        os.sleep(Admin.town.chestRefresh)
+    else
+        os.sleep(mainWait)
+    end
+end
+
+--Specific monitor pages will refresh on a faster loop
+function MonitorRefresh()
+    if currentPage == "Map" or currentPage == "resources" or currentPage == "display_upgrade" or currentPage == "display_production" or string.match(currentPage, "^Trade") ~= nil then
+        DrawButtonsForCurrentPage()
+        if Admin then
+            os.sleep(Admin.town.monitorRefresh)
+        end
+    else
+        os.sleep(mainWait)
+    end
+end
+
+function ChestLoop()
     while mainflag do
-        local event, side, x, y = os.pullEvent("monitor_touch")
-        LastX, LastY = x,y
-        local clicked, button = Monitor.isInsideButton(x, y)
-        if clicked and (button.page == currentPage or "all") then --and button.enabled
-            if button.action then
-                button.action(button)
-            end
+        if refreshflag then
+            ChestRefresh()
         end
     end
 end
 
-function second()
-    while secondflag do
-        if refreshflag then
-            RefreshButton()
-        end
-        os.sleep(refreshWait)
+function MonitorLoop()
+    while mainflag do
+        MonitorRefresh()
     end
 end
 
 -- decreases a timer, need to change to timestamps
-function productionCheck()
+-- rewrite needed
+function ProductionCheck()
     local productionTable = Utility.readJsonFile(productionFile)
     local resTable = Utility.readJsonFile(resFile)
     local upgradesTable = Utility.readJsonFile(upgradesFile)
@@ -874,8 +877,24 @@ function productionCheck()
     Utility.writeJsonFile(productionFile,productionTable)
 end
 
+-- ScoreLoop checks the scoreboard to see if a player sets a score for All [Restart] to 1 
+-- could instead use timestamps but score can only go up to 999999999, 9 digits. 
+-- example timestamp is "timestamp": 1700144675566, 13 digits
+-- So admin could set the start of server time to in settings and the score only be the difference giving 9 digits of time...
+function CheckRestart()
+    if Settings and Admin then
+        if Settings.lastRestarted < Admin.town.restart then
+            --Reboot the Town
+            Monitor.clear()
+            Monitor.write("Offline",1,1)
+            Shutdown()
+        end
+    end
+end
+
 -- Function to handle scheduled actions
-function handleScheduledActions()
+-- Replace with TIMESTAMPS in future maybe
+function HandleScheduledActionsLoop()
     while mainflag do
         local event, timerID = os.pullEvent("timer")
         if scheduledActions[timerID] then
@@ -885,41 +904,40 @@ function handleScheduledActions()
     end
 end
 
--- ScoreLoop checks the scoreboard to see if a player sets a score for All [Restart] to 1 
--- could instead use timestamps but score can only go up to 999999999, 9 digits. 
--- example timestamp is "timestamp": 1700144675566, 13 digits
--- So admin could set the start of server time to in settings and the score only be the difference giving 9 digits of time...
-function CheckRestart()
-    local Settings = Utility.readJsonFile(SettingsFile)
-    local Admin = Utility.readJsonFile(adminFile)
-    if Settings and Admin then
-        if Settings.lastRestarted < Admin.town.restart then
-            --Reboot the Town
-            Monitor.clear()
-            Monitor.write("Offline",1,1)
-            os.reboot()
+-- Event loop reMains the same
+function MonitorEventsLoop()
+    while mainflag do
+        local event, side, x, y = os.pullEvent("monitor_touch")
+        LastX, LastY = x,y
+        local clicked, button = Monitor.isInsideButton(x, y)
+        if clicked and (button.page == currentPage or "all") then --and button.enabled
+            if button.action then
+                button.action(button)
+            end
         end
     end
 end
 
 function MainLoop()
     while mainflag do
-        if AdminSettings then
-            if AdminSettings.main.packages.production then
-                productionCheck()
+        Admin = Utility.readJsonFile(adminFile)
+        if Admin then
+            mainWait = Admin.town.mainWait
+            if Admin.main.packages.production then
+                ProductionCheck()
             end
-            if AdminSettings.main.packages.trade then
+            if Admin.main.packages.trade then
                 TradeAPI.SellerUpdateOffers(tradeFile,SettingsFile,resFile)
                 TradeAPI.BuyerSearchOffers(Utility.FindOtherTowns(townFolder),townFolder,tradeFile,SettingsFile,resFile)
                 TradeAPI.SellerCheckResponses(tradeFile,townFolder,resFile)
                 TradeAPI.BuyerMonitorAuction(tradeFile,resFile)
                 TradeAPI.BuyerMonitorAccepted(tradeFile,resFile)
             end
-            if AdminSettings.main.packages.population then
-                Utility.PopGen(AdminSettings.population.upkeep,AdminSettings.population.generationCost)
+            if Admin.main.packages.population then
+                Utility.PopGen(Admin.population.upkeep,Admin.population.generationCost)
             end
-            if AdminSettings.main.packages.tourists then
-                if AdminSettings.tourists.generationCost then
+            if Admin.main.packages.tourist then
+                if Admin.tourist.genCostEnabled then
                     Utility.TouristGenCost()
                 else
                     Utility.TouristGen()
@@ -935,8 +953,8 @@ end
 -- commands.scoreboard.objectives.add("AllTowns","dummy") Added to Startup Control PC
 function AdminLoop()
     while mainflag do
+        Admin = Utility.readJsonFile(adminFile)
         CheckRestart()
-        local Admin = Utility.readJsonFile(adminFile)
         local wait =  60
         if Admin then
             wait = Admin.town.adminWait
@@ -954,16 +972,14 @@ function AdminLoop()
                 
                 if McAPI.ScoreGet("Restart", "AllTowns") == 1 then
                     McAPI.ScoreSet("Restart", "AllTowns", 0)
-                    if Admin then
-                        Admin.town.restart = os.epoch("utc")
-                        Utility.writeJsonFile(adminFile,Admin)
-                    end
+                    Admin.town.restart = os.epoch("utc")
+                    Utility.writeJsonFile(adminFile,Admin)
                     Monitor.clear()
                     Monitor.write("Offline",1,1)
-                    os.reboot()
+                    Shutdown()
                 end
     
-                if Admin and Admin.main.packages.generation and McAPI.ScoreGet("GenState", "AllTowns") == 1 then
+                if Admin.main.packages.generation and McAPI.ScoreGet("GenState", "AllTowns") == 1 then
                     local OpLocation = Utility.findNewTownLocation(Utility.FindOtherTowns(townFolder), Admin.generation.minDistance,Admin.generation.maxDistance, {x = x, z = z}, Admin.generation.spread)
                     if OpLocation then
                         Utility.SpawnTown(OpLocation.x,OpLocation.y,OpLocation.z,McAPI.GetComputerId(x, y, z))
@@ -976,8 +992,14 @@ function AdminLoop()
     end
 end
 
+-- Complete shutdown of all loops
+function Shutdown()
+    mainflag = false
+end
+
 -- Start the loops
-parallel.waitForAll(MonitorEvents, second, handleScheduledActions, MainLoop, AdminLoop)
+parallel.waitForAll(MonitorEventsLoop, ChestLoop, MonitorLoop, HandleScheduledActionsLoop, MainLoop, AdminLoop)
 
 -- Code here continues after loops have exited
 print("Loops have exited.")
+os.reboot()
