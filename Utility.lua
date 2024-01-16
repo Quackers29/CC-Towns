@@ -693,7 +693,7 @@ function Utility.OutputPop(count, townName, name)
     end
 end
 
-function Utility.InputOwnTourists()
+function Utility.InputOwnTourist()
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
     local hasKilled = false
@@ -701,8 +701,6 @@ function Utility.InputOwnTourists()
         local x,y,z,radius = Settings.tourist.input.x,Settings.tourist.input.y,Settings.tourist.input.z,Settings.tourist.input.radius
         local killed = McAPI.KillExactVill(x,y,z,radius,"(T)"..Settings.town.name,"Tourist")
         if killed then
-            Settings.tourist.touristCurrent = Settings.tourist.touristCurrent + 1
-            Utility.writeJsonFile(SettingsFile,Settings)
             hasKilled = true
         end
     end
@@ -854,11 +852,11 @@ function Utility.OutputTourist(count, townName)
             else
                 VillagerCount = McAPI.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 50% check
             end
-            print(Settings.tourist.touristCurrent,VillagerCount,max)
+            --print(Settings.tourist.touristCurrent,VillagerCount,max)
             if Settings.tourist.touristCurrent > 0 and VillagerCount < max then
                 local spawned = false
                 local xo,zo = x,z
-                --2 attempts at finding a free spot
+                --3 attempts at finding a free spot
                 for i=1, 3 do
                     if Settings.tourist.output.method == "Line" then
                         xo,zo = Utility.RoundHPointBetweenPoints(x,z,x2,z2, -1)
@@ -891,9 +889,18 @@ end
 -- Input/Output of tourist check
 function Utility.InputAllOwnTourists()
     local boolean = true
+    local i = 0
     while boolean do
-        boolean = Utility.InputOwnTourists()
+        boolean = Utility.InputOwnTourist()
         os.sleep(0.1)
+        if boolean then
+            i = i + 1
+        end
+    end
+    if i > 0 then
+        local Settings = Utility.readJsonFile(SettingsFile)
+        Settings.tourist.touristCurrent = Settings.tourist.touristCurrent + i
+        Utility.writeJsonFile(SettingsFile,Settings)
     end
 end
 
