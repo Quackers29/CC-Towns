@@ -862,7 +862,7 @@ function Utility.OutputTourist(count, townName)
                         xo,zo = Utility.RoundHPointBetweenPoints(x,z,x2,z2, -1)
                     end
                     if McAPI.GetVillagerCount(xo,y,zo,1) == 0 then
-                        McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random","blue","Tourist")
+                        McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random",Admin.tourist.textColor,"Tourist")
                         Settings.tourist.touristCurrent = Settings.tourist.touristCurrent - 1
                         spawned = true
                         break

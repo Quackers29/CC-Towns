@@ -303,3 +303,14 @@ commands.exec("/execute as @a[x=0,y=0,z=0,distance=..1000] run tellraw @s {\"tex
 
 
 /execute as @a[x=0,y=0,z=0,distance=..1000] run say Hello, players in the specified radius!
+
+
+objectives
+
+
+broken
+crafted
+dropped
+mined 
+picked_up
+used    carrot on a stick
