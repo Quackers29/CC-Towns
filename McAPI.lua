@@ -138,6 +138,7 @@ function McAPI.SayNear(text,x,y,z,radius,color)
 end
 
 -- Summons a custom Villager, profession can be set to random
+-- Speed set to 0.001 (was 0.01)
 function McAPI.SummonCustomVill(x,y,z,name, profession, color, tag)
     local color = color or "blue"
     local tag = tag or ""
@@ -147,11 +148,11 @@ function McAPI.SummonCustomVill(x,y,z,name, profession, color, tag)
             "fisherman","fletcher","leatherworker","librarian",
             "masons","shepherd","toolsmith","weaponsmith"
             }
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..VilList[math.random(1,#VilList)]..",level:6},Tags:[\""..tag.."\"]}")
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.001}],VillagerData:{profession:"..VilList[math.random(1,#VilList)]..",level:6},Tags:[\""..tag.."\"]}")
     elseif profession and profession ~= "" then
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],VillagerData:{profession:"..profession..",level:6},Tags:[\""..tag.."\"]}")
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.001}],VillagerData:{profession:"..profession..",level:6},Tags:[\""..tag.."\"]}")
     else
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.01}],Tags:[\""..tag.."\"]}")
+        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.001}],Tags:[\""..tag.."\"]}")
     end
 end
 
