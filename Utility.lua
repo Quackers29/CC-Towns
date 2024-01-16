@@ -854,13 +854,14 @@ function Utility.OutputTourist(count, townName)
             else
                 VillagerCount = McAPI.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 50% check
             end
+            print(Settings.tourist.touristCurrent,VillagerCount,max)
             if Settings.tourist.touristCurrent > 0 and VillagerCount < max then
                 local spawned = false
                 local xo,zo = x,z
                 --2 attempts at finding a free spot
                 for i=1, 3 do
                     if Settings.tourist.output.method == "Line" then
-                        xo,zo = Utility.RoundPointBetweenPoints(x,z,x2,z2, -1)
+                        xo,zo = Utility.RoundHPointBetweenPoints(x,z,x2,z2, -1)
                     end
                     if McAPI.GetVillagerCount(xo,y,zo,0.9) == 0 then -- was radius 1
                         McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random","blue","Tourist")
@@ -1052,14 +1053,19 @@ function Utility.PointBetweenPoints(x,z,x2,z2, factor)
     return x,z
 end
 
---Rounded point
-function Utility.RoundPointBetweenPoints(x, z, x2, z2, factor)
+-- Function to round to the nearest 0.5
+function Utility.RoundHalf(value)
+    return math.floor(value * 2 + 0.5) / 2
+end
+
+-- Function to find a point between two points
+function Utility.RoundHPointBetweenPoints(x, z, x2, z2, factor)
     local t = factor
     if factor == -1 then
         t = math.random()  -- Random value between 0 and 1
     end
-    local x = math.floor((1 - t) * x + t * x2 + 0.5)  -- Round to the nearest whole number
-    local z = math.floor((1 - t) * z + t * z2 + 0.5)  -- Round to the nearest whole number
+    local x = Utility.RoundHalf((1 - t) * x + t * x2)  -- Round to the nearest 0.5
+    local z = Utility.RoundHalf((1 - t) * z + t * z2)  -- Round to the nearest 0.5
     return x, z
 end
 
