@@ -294,23 +294,23 @@ function DrawButtonsForCurrentPage()
             end
 
         elseif currentPage == "settings_InputPop" then
-            local PINx,PINy,PINz = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z
+            local PINx,PINy,PINz = Settings.tourist.input.x,Settings.tourist.input.y,Settings.tourist.input.z
             Monitor.write("Settings - Input Pop!", 1, 1, colors.white)
-            Monitor.write("X: "..PINx.." Y: "..PINy.." Z: "..PINz.." Radius: "..Settings.population.input.radius,1, 5, colors.white)
+            Monitor.write("X: "..PINx.." Y: "..PINy.." Z: "..PINz.." Radius: "..Settings.tourist.input.radius,1, 5, colors.white)
             Utility.ParticleMarker(PINx, PINy, PINz)
             for i,v in ipairs(pageButtons["button"]) do
                 Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
             end
 
         elseif currentPage == "settings_OutputPop" then
-            local POUTx,POUTy,POUTz = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
-            local POUTx2,POUTy2,POUTz2 = Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2
+            local POUTx,POUTy,POUTz = Settings.tourist.output.x,Settings.tourist.output.y,Settings.tourist.output.z
+            local POUTx2,POUTy2,POUTz2 = Settings.tourist.output.x2,Settings.tourist.output.y2,Settings.tourist.output.z2
 
             Monitor.write("Settings - Output Pop!", 1, 1, colors.white)
             Monitor.write("X: "..POUTx.." Y: "..POUTy.." Z: "..POUTz,1, 5, colors.white)
             Utility.ParticleMarker(POUTx, POUTy, POUTz)
 
-            if Settings.population.output.method == "Line" then
+            if Settings.Settings.tourist.output.method == "Line" then
                 Monitor.write("X: "..POUTx2.." Y: "..POUTy2.." Z: "..POUTz2,1, 13, colors.white)
                 Utility.ParticleMarker(POUTx2, POUTy2, POUTz2)
                 for i,v in ipairs(pageButtons["button2"]) do
@@ -487,10 +487,10 @@ function DrawButtonsForCurrentPage()
             Monitor.write("Set Output", 5, 7)
             local output = false
             local input = false
-            if Settings.population.touristOutput then
+            if Settings.tourist.touristOutput then
                 output = true
             end
-            if Settings.population.autoInput then
+            if Settings.tourist.autoInput then
                 input = true
             end
 
@@ -582,7 +582,7 @@ function DrawButtonsForCurrentPage()
             end
         else
             -- Add back to Main button if no buttons assigned to page
-            Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage.." T:("..Settings.population.touristCurrent..")", 1, 1, colors.white)
+            Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage.." T:("..Settings.tourist.touristCurrent..")", 1, 1, colors.white)
             if pageButtons == {} or pageButtons["push"] == nil then
                 Monitor.drawButton(Monitor.OffsetCheck(-1, endX),Monitor.OffsetCheck(0, endY),{id = "Back",width = 3,x = -1,y = 0,colorOn = colors.yellow,colorOff = colors.gray,charOn = "B",action = function() goToPage("Main") end,enabled = true, type = "button",page = "all"})
             else
@@ -705,10 +705,10 @@ end
 function handlePop(x)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
-        if Settings.population[x] == false then
-            Settings.population[x] = true
+        if Settings.tourist[x] == false then
+            Settings.tourist[x] = true
         else
-            Settings.population[x] = false
+            Settings.tourist[x] = false
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end
@@ -718,10 +718,10 @@ end
 function handlePopMethod()
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
-        if Settings.population.output.method == "Point" then
-            Settings.population.output.method = "Line"
+        if Settings.tourist.output.method == "Point" then
+            Settings.tourist.output.method = "Line"
         else
-            Settings.population.output.method = "Point"
+            Settings.tourist.output.method = "Point"
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end

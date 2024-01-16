@@ -576,7 +576,7 @@ function Utility.TouristGen()
     local currentTimeSec = Utility.GetTimestamp()/1000
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
-        local pop = Settings.population
+        local pop = Settings.tourist
 
         if pop.lastTourist == nil or currentTimeSec > (pop.lastTourist + (pop.touristTime)) then
             pop.lastTourist = currentTimeSec
@@ -586,7 +586,7 @@ function Utility.TouristGen()
                 pop.touristCurrent = pop.touristCurrent + 1
             end
         end
-        Settings.population = pop
+        Settings.tourist = pop
         Utility.writeJsonFile(SettingsFile,Settings)
     end
 end
@@ -597,7 +597,7 @@ function Utility.TouristGenCost()
     local Settings = Utility.readJsonFile(SettingsFile)
     local resTable = Utility.readJsonFile(ResFile)
     if Settings and resTable then
-        local pop = Settings.population
+        local pop = Settings.tourist
 
         if pop.lastTourist == nil or currentTimeSec > (pop.lastTourist + (pop.touristTime)) then
             pop.lastTourist = currentTimeSec
@@ -624,7 +624,7 @@ function Utility.TouristGenCost()
                 end
             end
         end
-        Settings.population = pop
+        Settings.tourist = pop
         Utility.writeJsonFile(SettingsFile,Settings)
         Utility.writeJsonFile(ResFile,resTable)
     end
@@ -674,10 +674,10 @@ function Utility.InputOwnTourists()
     local Admin = Utility.readJsonFile(AdminFile)
     local hasKilled = false
     if Settings and Admin then
-        local x,y,z,radius = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.radius
+        local x,y,z,radius = Settings.tourist.input.x,Settings.tourist.input.y,Settings.tourist.input.z,Settings.tourist.input.radius
         local killed = McAPI.KillExactVill(x,y,z,radius,"(T)"..Settings.town.name,"Tourist")
         if killed then
-            Settings.population.touristCurrent = Settings.population.touristCurrent + 1
+            Settings.tourist.touristCurrent = Settings.tourist.touristCurrent + 1
             Utility.writeJsonFile(SettingsFile,Settings)
             hasKilled = true
         end
@@ -685,13 +685,14 @@ function Utility.InputOwnTourists()
     return hasKilled
 end
 
+-- depreciated
 function Utility.InputPop(notName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
     local hasKilled = false
     if Settings and Admin then
         local townString = "["..Settings.town.name.."]"
-        local x,y,z,radius = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.radius
+        local x,y,z,radius = Settings.tourist.input.x,Settings.tourist.input.y,Settings.tourist.input.z,Settings.tourist.input.radius
         local killed = McAPI.KillOtherVill(x,y,z,radius,notName)
         if killed then
             if string.match(killed,"(T)") then
@@ -699,7 +700,7 @@ function Utility.InputPop(notName,townNames,townX,townZ)
                 local fromTown = string.match(killed,"%)(.*)")
                 if fromTown == Settings.town.name then
                     --Own tourist, add
-                    Settings.population.touristCurrent = Settings.population.touristCurrent + 1
+                    Settings.tourist.touristCurrent = Settings.tourist.touristCurrent + 1
                 else
                     --from elsewhere, handle
                     local townNamesList = Utility.readJsonFile(townNames)
@@ -772,7 +773,7 @@ function Utility.InputTourists(notName,townNames,townX,townZ)
     local fromTown = ""
     if Settings and Admin then
         local townString = "["..Settings.town.name.."]"
-        local x,y,z,radius = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z,Settings.population.input.radius
+        local x,y,z,radius = Settings.tourist.input.x,Settings.tourist.input.y,Settings.tourist.input.z,Settings.tourist.input.radius
         local killed = McAPI.KillOtherVill(x,y,z,radius,notName,"Tourist")
         if killed then
             if string.match(killed,"(T)") then
@@ -780,7 +781,7 @@ function Utility.InputTourists(notName,townNames,townX,townZ)
                 fromTown = string.match(killed,"%)(.*)")
                 if fromTown == Settings.town.name then
                     --Own tourist, add
-                    Settings.population.touristCurrent = Settings.population.touristCurrent + 1
+                    Settings.tourist.touristCurrent = Settings.tourist.touristCurrent + 1
                 else
                     --from elsewhere, handle
                     local townNamesList = Utility.readJsonFile(townNames)
@@ -808,11 +809,11 @@ end
 function Utility.OutputTourist(count, townName)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
-        local x,y,z,radius, max = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z,Settings.population.output.radius, Settings.population.output.max
-        local x2,y2,z2 = Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2
+        local x,y,z,radius, max = Settings.tourist.output.x,Settings.tourist.output.y,Settings.tourist.output.z,Settings.tourist.output.radius, Settings.tourist.output.max
+        local x2,y2,z2 = Settings.tourist.output.x2,Settings.tourist.output.y2,Settings.tourist.output.z2
         for i = 1,count do
             local VillagerCount = 0
-            if Settings.population.output.method == "Line" then
+            if Settings.tourist.output.method == "Line" then
                 local dist = Utility.CalcDist({x=x,z=z},{x=x2,z=z2})
                 local xh,zh = Utility.PointBetweenPoints(x,z,x2,z2, 0.5)
                 VillagerCount = McAPI.GetVillagerCount(xh,y,zh, dist+Utility.round(dist*0.2)) -- add 20% check
@@ -820,18 +821,18 @@ function Utility.OutputTourist(count, townName)
                 VillagerCount = McAPI.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 50% check
             end
             --print(VillagerCount)
-            if Settings.population.touristCurrent > 0 and VillagerCount < max then
+            if Settings.tourist.touristCurrent > 0 and VillagerCount < max then
                 local spawned = false
                 local xo,zo = x,z
                 --2 attempts at finding a free spot
                 for i=1, 2 do
-                    if Settings.population.output.method == "Line" then
+                    if Settings.tourist.output.method == "Line" then
                         xo,zo = Utility.PointBetweenPoints(x,z,x2,z2, -1)
                         xo,zo = Utility.round(xo),Utility.round(zo)
                     end
                     if McAPI.GetVillagerCount(xo,y,zo,1) == 0 then
                         McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random","blue","Tourist")
-                        Settings.population.touristCurrent = Settings.population.touristCurrent - 1
+                        Settings.tourist.touristCurrent = Settings.tourist.touristCurrent - 1
                         spawned = true
                         break
                     end
@@ -846,10 +847,10 @@ end
 function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
-    if Settings and Settings.population.touristOutput == true then
+    if Settings and Settings.tourist.touristOutput == true then
         Utility.OutputTourist(count, townName)
     end
-    if Settings and Admin and Settings.population.autoInput == true then
+    if Settings and Admin and Settings.tourist.autoInput == true then
         Utility.MultiTouristInput(townName,townNames,townX,townZ)
     end
 end
@@ -907,7 +908,7 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
 
         if #killed > 0 then
             local townString = "["..Settings.town.name.."]"
-            local x,y,z = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z
+            local x,y,z = Settings.tourist.input.x,Settings.tourist.input.y,Settings.tourist.input.z
             local tourists = #killed
             local pay = 0
             local totalDistance = 0
@@ -1303,13 +1304,13 @@ function Utility.InitInOut(x,y,z)
             Settings.resources.output.x, Settings.resources.output.y, Settings.resources.output.z = x+outChest[1],y+outChest[2],z+outChest[3]
         end
 
-        if Settings.population.input.x == nil then
-            Settings.population.input.x, Settings.population.input.y, Settings.population.input.z, Settings.population.input.range = x+inPop[1],y+inPop[2],z+inPop[3],10
+        if Settings.tourist.input.x == nil then
+            Settings.tourist.input.x, Settings.tourist.input.y, Settings.tourist.input.z, Settings.tourist.input.range = x+inPop[1],y+inPop[2],z+inPop[3],10
         end
 
-        if Settings.population.output.x == nil then
-            Settings.population.output.x, Settings.population.output.y, Settings.population.output.z = x+outPop[1],y+outPop[2],z+outPop[3]
-            Settings.population.output.x2, Settings.population.output.y2, Settings.population.output.z2 = x+outPop2[1],y+outPop2[2],z+outPop2[3]
+        if Settings.tourist.output.x == nil then
+            Settings.tourist.output.x, Settings.tourist.output.y, Settings.tourist.output.z = x+outPop[1],y+outPop[2],z+outPop[3]
+            Settings.tourist.output.x2, Settings.tourist.output.y2, Settings.tourist.output.z2 = x+outPop2[1],y+outPop2[2],z+outPop2[3]
         end
         Utility.writeJsonFile(SettingsFile,Settings)
     end
@@ -1351,11 +1352,11 @@ function Utility.ChangeInputPop(ax,ay,az)
     local x,y,z = gps.locate()
     if Settings and Admin then
         local PopRange = Admin.town.maxSpawnRange 
-        local PINx,PINy,PINz = Settings.population.input.x,Settings.population.input.y,Settings.population.input.z
+        local PINx,PINy,PINz = Settings.tourist.input.x,Settings.tourist.input.y,Settings.tourist.input.z
         PINx = math.max(x - PopRange, math.min(PINx + ax, x + PopRange))
         PINy = math.max(y - PopRange, math.min(PINy + ay, y + PopRange))
         PINz = math.max(z - PopRange, math.min(PINz + az, z + PopRange))
-        Settings.population.input.x,Settings.population.input.y,Settings.population.input.z = PINx,PINy,PINz
+        Settings.tourist.input.x,Settings.tourist.input.y,Settings.tourist.input.z = PINx,PINy,PINz
         Utility.writeJsonFile(SettingsFile,Settings)
     end
 end
@@ -1364,9 +1365,9 @@ function Utility.ChangeInputPopR(a)
     local Settings = Utility.readJsonFile(SettingsFile)
     local Admin = Utility.readJsonFile(AdminFile)
     if Settings and Admin then
-        local radius = Settings.population.input.radius
+        local radius = Settings.tourist.input.radius
         local tempa = math.max(1, math.min(radius + a, Admin.town.maxSpawnRange))
-        Settings.population.input.radius = tempa
+        Settings.tourist.input.radius = tempa
         Utility.writeJsonFile(SettingsFile,Settings)
     end
 end
@@ -1376,8 +1377,8 @@ function Utility.ChangeOutputPop(ax,ay,az,select)
     local Admin = Utility.readJsonFile(AdminFile)
     local x,y,z = gps.locate()
     if Settings and Admin then
-        local POUTx,POUTy,POUTz = Settings.population.output.x,Settings.population.output.y,Settings.population.output.z
-        local POUTx2,POUTy2,POUTz2 = Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2
+        local POUTx,POUTy,POUTz = Settings.tourist.output.x,Settings.tourist.output.y,Settings.tourist.output.z
+        local POUTx2,POUTy2,POUTz2 = Settings.tourist.output.x2,Settings.tourist.output.y2,Settings.tourist.output.z2
         local PopRange = Admin.town.maxSpawnRange
         local maxLineLength = Admin.town.maxLineLength
         if select == 1 then
@@ -1387,7 +1388,7 @@ function Utility.ChangeOutputPop(ax,ay,az,select)
             if Utility.IsInRange2DAngular(tempx,tempz,POUTx2,POUTz2,maxLineLength) then
                 POUTx = tempx
                 POUTz = tempz
-                Settings.population.output.x,Settings.population.output.y,Settings.population.output.z = POUTx,POUTy,POUTz
+                Settings.tourist.output.x,Settings.tourist.output.y,Settings.tourist.output.z = POUTx,POUTy,POUTz
             end
         else
             local tempx = math.max(x - PopRange, math.min(POUTx2 + ax, x + PopRange))
@@ -1396,7 +1397,7 @@ function Utility.ChangeOutputPop(ax,ay,az,select)
             if Utility.IsInRange2DAngular(tempx,tempz,POUTx,POUTz,maxLineLength) then
                 POUTx2 = tempx
                 POUTz2 = tempz
-                Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2 = POUTx2,POUTy2,POUTz2
+                Settings.tourist.output.x2,Settings.tourist.output.y2,Settings.tourist.output.z2 = POUTx2,POUTy2,POUTz2
             end
         end
         Utility.writeJsonFile(SettingsFile,Settings)
