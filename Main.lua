@@ -106,8 +106,12 @@ if Settings and Admin then
             Utility.writeJsonFile(biomeFile,newList)
             print("Out: ",currentBiome, dist)
         end
-        currentBiome = currentBiome:match("_(.*)$") or currentBiome
-        Settings.general.biome = currentBiome or nil
+        if currentBiome == nil then
+            currentBiome = "none"
+        else
+            currentBiome = currentBiome:match("_(.*)$") or currentBiome
+        end
+        Settings.general.biome = currentBiome or "none"
         Settings.general.biomeDist = dist or nil
     end
 
