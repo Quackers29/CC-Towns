@@ -368,7 +368,7 @@ function DrawButtonsForCurrentPage()
                     PreRecTable[v]["extra"] = ""
                     PreRecTable[v]["toggle"] = currentUp
                 end
-                Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
+                Monitor.drawKeyList(Utility.round(((endY-2)/2)+4), endY, PreRecTable, pageButtons["list"], 1, 1) 
             end
             for i,v in pairs(displayItem.cost) do
                 local currentUp = true
@@ -400,7 +400,7 @@ function DrawButtonsForCurrentPage()
                 costTable[i]["toggle"] = currentUp
                 costTable[i]["string"] = c
             end
-            Monitor.drawKeyList(4, ((endY-2)/2)+2, costTable, pageButtons["list"], 1, 0)
+            Monitor.drawKeyList(4,Utility.round(((endY-2)/2)+2), costTable, pageButtons["list"], 1, 0)
 
             for i,v in ipairs(pageButtons["button"]) do
                 if v.id == "Up" then
@@ -425,7 +425,7 @@ function DrawButtonsForCurrentPage()
                         PreRecTable[v.item]["toggle"] = false
                         PreRecTable[v.item]["string"] = v.item
                     end
-                    Monitor.drawKeyList(4, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 0) 
+                    Monitor.drawKeyList(4, Utility.round(((endY-2)/2)+2), PreRecTable, pageButtons["list"], 1, 0)
                 end 
                 PreRecTable = {}
                 if tradeTable.selling then
@@ -436,7 +436,7 @@ function DrawButtonsForCurrentPage()
                         PreRecTable[v.item]["toggle"] = false
                         PreRecTable[v.item]["string"] = v.item
                     end
-                    Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
+                    Monitor.drawKeyList(Utility.round(((endY-2)/2)+4), endY, PreRecTable, pageButtons["list"], 1, 1)
                 end 
             end
             for i,v in ipairs(pageButtons["button"]) do
@@ -460,7 +460,7 @@ function DrawButtonsForCurrentPage()
                         PreRecTable[id]["toggle"] = false
                         PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
                     end
-                    Monitor.drawKeyList(4, ((endY-2)/2)+2, PreRecTable, pageButtons["list"], 1, 0)
+                    Monitor.drawKeyList(4, Utility.round(((endY-2)/2)+2), PreRecTable, pageButtons["list"], 1, 0)
                 end 
                 PreRecTable = {}
                 if tradeTable.sold then
@@ -472,7 +472,7 @@ function DrawButtonsForCurrentPage()
                         PreRecTable[id]["toggle"] = false
                         PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
                     end
-                    Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1)
+                    Monitor.drawKeyList(Utility.round(((endY-2)/2)+4), endY, PreRecTable, pageButtons["list"], 1, 1)
                 end
             end
             for i,v in ipairs(pageButtons["button"]) do
@@ -538,7 +538,7 @@ function DrawButtonsForCurrentPage()
                     PreRecTable[v]["extra"] = ""
                     PreRecTable[v]["toggle"] = currentUp
                 end
-                Monitor.drawKeyList(((endY-2)/2)+4, endY, PreRecTable, pageButtons["list"], 1, 1) 
+                Monitor.drawKeyList(Utility.round(((endY-2)/2)+4), endY, PreRecTable, pageButtons["list"], 1, 1) 
             end
 
             for i,v in pairs(displayItem.cost) do
@@ -571,7 +571,7 @@ function DrawButtonsForCurrentPage()
                 costTable[i]["toggle"] = currentUp
                 costTable[i]["string"] = c
             end
-            Monitor.drawKeyList(4, ((endY-2)/2)+2, costTable, pageButtons["list"], 1, 0)
+            Monitor.drawKeyList(4, Utility.round(((endY-2)/2)+2), costTable, pageButtons["list"], 1, 0)
 
             for i,v in ipairs(pageButtons["button"]) do
                 if v.id == "Up" then

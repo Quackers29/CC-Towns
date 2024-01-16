@@ -336,7 +336,7 @@ function Monitor.drawKeyList(startY, endY, items, buttonsConfig, rowHeight, List
     end
 
     -- Draw Scroll Up button
-    local sButton = {id = "ScrollUp",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "^",action = function() OffsetButton(-1,ListIndex) end,enabled = true, type = list}
+    local sButton = {id = "ScrollUp",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "^",action = function() OffsetButton(-1,ListIndex) end,enabled = true, type = "list"}
     Monitor.drawButton(1, startY, sButton)
     Monitor.write("+"..tostring(currentOffset), 1 + sButton.width + 1, startY)
 
@@ -385,7 +385,7 @@ function Monitor.drawKeyList(startY, endY, items, buttonsConfig, rowHeight, List
     end
 
     -- Draw Scroll Down button
-    local sButton = {id = "ScrollDown",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "v",action = function() OffsetButton(1, ListIndex) end,enabled = true, type = list}
+    local sButton = {id = "ScrollDown",width = 3,colorOn = colors.yellow,colorOff = colors.gray,charOn = "v",action = function() OffsetButton(1, ListIndex) end,enabled = true, type = "list"}
     Monitor.drawButton(1, endY - rowHeight + 1, sButton)
     Monitor.write("+"..tostring(math.max(#items-visibleItems-currentOffset+1,0)), 1 + sButton.width + 1, endY - rowHeight + 1)
 end

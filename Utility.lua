@@ -800,7 +800,7 @@ function Utility.InputTourists(notName,townNames,townX,townZ)
 end
 
 function Utility.ParticleMarker(x,y,z)
-    McAPI.Particle("block_marker", x, y, z, 0.5, 10, "chest")
+    McAPI.Particle("block_marker", x, y, z, 0.5, 10, "target") -- or chest
     McAPI.Particle("end_rod", x, y, z, 0.03, 100)
     McAPI.Particle("sonic_boom", x, y, z, 0.01, 1)
 end
