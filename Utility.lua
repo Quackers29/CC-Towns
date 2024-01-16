@@ -910,6 +910,27 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
     local Admin = Utility.readJsonFile(AdminFile)
     local boolean, distance, fromTown = true,0,""
     local killed = {}
+    local function SelectRandomReward(milestone)
+        local totalWeight = 0
+    
+        -- Calculate total weight
+        for _, reward in ipairs(milestone) do
+            totalWeight = totalWeight + (reward.weight or 1)
+        end
+    
+        -- Randomly select a reward based on weights
+        local randomValue = math.random() * totalWeight
+        local currentWeight = 0
+    
+        for _, reward in ipairs(milestone) do
+            currentWeight = currentWeight + (reward.weight or 1)
+    
+            if randomValue <= currentWeight then
+                return reward
+            end
+        end
+    end
+
     if Admin and Settings then
         while boolean do
             boolean, distance, fromTown = Utility.InputTourists("(T)"..townName,townNames,townX,townZ)
@@ -933,12 +954,12 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                         end
                     end
                 end
+
                 if mileArray ~= {} and #mileArray > 0 then
                     --a milestone was reached
-                    mileArray = mileArray[math.random(1, #mileArray)]
-                    for item,quantity in pairs(mileArray) do
-                        table.insert(milestones, {mile = mileCurrent, item = item, quantity = quantity})
-                    end
+                    --mileArray = mileArray[math.random(1, #mileArray)]-- weighted
+                    mileArray = SelectRandomReward(mileArray)
+                    table.insert(milestones, {mile = mileCurrent, item = mileArray.item, quantity = mileArray.quantity})
                 end
 
                 table.insert(killed,{dist = distance, from = fromTown, pay = pay, milestones = milestones})
