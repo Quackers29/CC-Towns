@@ -605,12 +605,14 @@ Monitor.init()
 DrawButtonsForCurrentPage()
 
 function goToPage(x)
+    Monitor.initList()
     currentPage = x
     Monitor.OffsetButton(0)
     DrawButtonsForCurrentPage()
 end
 
 function goToDisplayPage(x, todisplay)
+    Monitor.initList()
     displayItem = x.item
     currentPage = todisplay
     DrawButtonsForCurrentPage()

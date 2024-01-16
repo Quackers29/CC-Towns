@@ -26,6 +26,10 @@ function Monitor.init()
     end
 end
 
+function Monitor.initList()
+    ListOffset = {}
+end
+
 -- Function to clear the monitor and set the cursor position
 function Monitor.clear()
     monitor.clear()
