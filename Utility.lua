@@ -861,9 +861,11 @@ function Utility.OutputTourist(count, townName)
                     if Settings.tourist.output.method == "Line" then
                         if Admin.town.gridSpacing then
                             xo,zo = Utility.RoundHPointBetweenPoints(x,z,x2,z2, -1)
+                        else
+                            xo,zo = Utility.PointBetweenPoints(x,z,x2,z2, -1)
                         end
                     end
-                    if McAPI.GetVillagerCount(xo,y,zo,(Admin.town.villagerSpacing or 1)) == 0 then
+                    if McAPI.GetVillagerCount(xo,y,zo,(Admin.town.villagerSpacing or 1)) == 0 then-- spacing, min 0.7, safeish 0.8, 1 = 1 block
                         McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random",Admin.tourist.textColor,"Tourist")
                         Settings.tourist.touristCurrent = Settings.tourist.touristCurrent - 1
                         spawned = true
@@ -950,7 +952,7 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                 if Admin.tourist.milestonesEnabled then
                     for mile,array in pairs(Admin.tourist.milestones) do
                         local mile = tonumber(mile)
-                        if distance > mile and distance > mileCurrent then
+                        if distance > mile and distance > mileCurrent and mile >= mileCurrent then
                             mileCurrent = mile
                             mileArray = array
                         end
