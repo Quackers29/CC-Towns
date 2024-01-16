@@ -581,26 +581,23 @@ function DrawButtonsForCurrentPage()
             end
 
         elseif currentPage == "Tourists_History" then
-            Monitor.write("History", 1, 1)
+            Monitor.write("History of Tourists to "..Settings.town.name!, 1, 1)
             --Monitor.write("Bought: ", 10, 3)
             if Settings then
-                local PreRecTable = {}
-                if Settings.tourist.History then
-                    for i,v in pairs(Settings.tourist.History) do --
-                        -- key gets overwritten with [i] so fix or 
-                        PreRecTable[i] = PreRecTable[i] or {}
-                        PreRecTable[i]["key"] = i
-                        PreRecTable[i]["extra"] = " x"..v
-                        PreRecTable[i]["toggle"] = false
-                        PreRecTable[i]["string"] = "test?"
+                local HistoryTable = {}
+                for i,v in pairs(Settings.tourist.History) do
+                    if v.count > 0 then
+                        v.string = i
+                        table.insert(HistoryTable,v)
                     end
-                    Monitor.drawKeyList(4, endY-1, PreRecTable, pageButtons["list"], 1, 0)
                 end
+                Monitor.drawList(3, endY-1, HistoryTable, pageButtons["list"], 1)
             end
 
             for i,v in ipairs(pageButtons["button"]) do
                 Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
             end
+
         else
             -- Add back to Main button if no buttons assigned to page
             Monitor.write("Welcome to "..Settings.town.name.."! - "..currentPage.." T:("..Settings.tourist.touristCurrent..")", 1, 1, colors.white)
