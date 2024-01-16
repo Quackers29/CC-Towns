@@ -854,15 +854,13 @@ function Utility.OutputTourist(count, townName)
             else
                 VillagerCount = McAPI.GetVillagerCount(x,y,z, radius+Utility.round(radius*0.5)) -- add 50% check
             end
-            --print(VillagerCount)
             if Settings.tourist.touristCurrent > 0 and VillagerCount < max then
                 local spawned = false
                 local xo,zo = x,z
                 --2 attempts at finding a free spot
-                for i=1, 2 do
+                for i=1, 3 do
                     if Settings.tourist.output.method == "Line" then
-                        xo,zo = Utility.PointBetweenPoints(x,z,x2,z2, -1)
-                        xo,zo = Utility.round(xo),Utility.round(zo)
+                        xo,zo = Utility.RoundPointBetweenPoints(x,z,x2,z2, -1)
                     end
                     if McAPI.GetVillagerCount(xo,y,zo,0.9) == 0 then -- was radius 1
                         McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random","blue","Tourist")
@@ -1054,6 +1052,16 @@ function Utility.PointBetweenPoints(x,z,x2,z2, factor)
     return x,z
 end
 
+--Rounded point
+function Utility.RoundPointBetweenPoints(x, z, x2, z2, factor)
+    local t = factor
+    if factor == -1 then
+        t = math.random()  -- Random value between 0 and 1
+    end
+    local x = math.floor((1 - t) * x + t * x2 + 0.5)  -- Round to the nearest whole number
+    local z = math.floor((1 - t) * z + t * z2 + 0.5)  -- Round to the nearest whole number
+    return x, z
+end
 
 -- Function to read data from a CSV file into a 2D array with a tab delimiter and handle Excel's escaped double quotes
 function Utility.readCSV(filename)
