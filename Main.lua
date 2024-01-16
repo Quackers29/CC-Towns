@@ -310,7 +310,7 @@ function DrawButtonsForCurrentPage()
             Monitor.write("X: "..POUTx.." Y: "..POUTy.." Z: "..POUTz,1, 5, colors.white)
             Utility.ParticleMarker(POUTx, POUTy, POUTz)
 
-            if Settings.Settings.tourist.output.method == "Line" then
+            if Settings.tourist.output.method == "Line" then
                 Monitor.write("X: "..POUTx2.." Y: "..POUTy2.." Z: "..POUTz2,1, 13, colors.white)
                 Utility.ParticleMarker(POUTx2, POUTy2, POUTz2)
                 for i,v in ipairs(pageButtons["button2"]) do
