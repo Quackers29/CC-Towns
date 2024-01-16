@@ -630,7 +630,7 @@ function Utility.TouristGenCost()
             for x = 1, pop.gen do
                 if pop.touristCurrent < touristCap and continueGen then
 
-                    for item,quantity in pairs(Admin.tourist.genCost) do
+                    for item,quantity in pairs(Admin.tourist.genCosts) do
                         local GenQuantity = quantity
                         local currentQuantity = Utility.GetMcItemCount(item, resTable)
                         if GenQuantity > currentQuantity then
@@ -640,7 +640,7 @@ function Utility.TouristGenCost()
                     
                     -- remove res, add gen to the pop
                     if continueGen then
-                        for item,quantity in pairs(Admin.tourist.genCost) do
+                        for item,quantity in pairs(Admin.tourist.genCosts) do
                             Utility.AddMcItemToTable(item, resTable, quantity*-1)
                         end
                         pop.touristCurrent = pop.touristCurrent + 1
@@ -859,9 +859,11 @@ function Utility.OutputTourist(count, townName)
                 --3 attempts at finding a free spot
                 for i=1, 3 do
                     if Settings.tourist.output.method == "Line" then
-                        xo,zo = Utility.RoundHPointBetweenPoints(x,z,x2,z2, -1)
+                        if Admin.town.gridSpacing then
+                            xo,zo = Utility.RoundHPointBetweenPoints(x,z,x2,z2, -1)
+                        end
                     end
-                    if McAPI.GetVillagerCount(xo,y,zo,1) == 0 then
+                    if McAPI.GetVillagerCount(xo,y,zo,(Admin.town.villagerSpacing or 1)) == 0 then
                         McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random",Admin.tourist.textColor,"Tourist")
                         Settings.tourist.touristCurrent = Settings.tourist.touristCurrent - 1
                         spawned = true

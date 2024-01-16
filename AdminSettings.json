@@ -26,6 +26,8 @@
     "maxVillagerOut": 20,
     "maxLineLength": 20,
     "maxChestRange": 20,
+    "villagerSpacing": 1,
+    "gridSpacing": true,
     "mainWait": 10,
     "chestRefresh": 5,
     "monitorRefresh": 1
@@ -45,7 +47,7 @@
     "genCosts": {
       "minecraft:bread": 50
     },
-    "genTime": 60,
+    "genTime": 30,
     "genCap": 10,
     "maxOut": 5,
     "textColor": "yellow",
@@ -56,7 +58,7 @@
     "payItem": "minecraft:emerald",
     "milestonesEnabled": true,
     "milestones": {
-      "40": [{ "item": "minecraft:cooked_beef", "quantity": 1 }],
+      "50": [{ "item": "minecraft:cooked_beef", "quantity": 1 }],
       "100": [
         { "item": "minecraft:nether_star", "quantity": 1, "weight": 1 },
         { "item": "minecraft:torch", "quantity": 1, "weight": 1 },
