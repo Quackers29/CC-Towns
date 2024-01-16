@@ -1271,8 +1271,8 @@ function Utility.BuildInOut(facing)
     if Settings then
         McAPI.SetBlockSafe(Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z, "minecraft:chest", facing)
         McAPI.SetBlockSafe(Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z, "minecraft:chest", facing)
-        McAPI.SetBlockSafe(Settings.population.output.x,Settings.population.output.y,Settings.population.output.z, "minecraft:torch",nil)
-        McAPI.SetBlockSafe(Settings.population.output.x2,Settings.population.output.y2,Settings.population.output.z2, "minecraft:torch",nil)
+        McAPI.SetBlockSafe(Settings.tourist.output.x,Settings.tourist.output.y,Settings.tourist.output.z, "minecraft:torch",nil)
+        McAPI.SetBlockSafe(Settings.tourist.output.x2,Settings.tourist.output.y2,Settings.tourist.output.z2, "minecraft:torch",nil)
     end
 end
 
