@@ -496,8 +496,26 @@ function Utility.SpawnStructure(x,y,z,name)
     McAPI.setBlock(x,y-1,z,"minecraft:redstone_block")
 end
 
+--UTC timestamp since epoch in milliseconds
 function Utility.GetTimestamp()
+    local Admin = Utility.readJsonFile(AdminFile)
+    if Admin then
+        
+    end
     return os.epoch("utc")
+end
+
+--Time in seconds since, converted to timezone, default format "%Y-%m-%d %H:%M:%S", optional timestamp
+function Utility.GetTime(format, timestamp)
+    local Admin = Utility.readJsonFile(AdminFile)
+    local timestamp = timestamp or Utility.GetTimestamp()
+    if Admin then
+        if format ~= nil and format ~= "" then
+            os.date(format, ((timestamp + Admin.main.timeZone * 3600 * 1000) / 1000))
+        else
+            os.date("%Y-%m-%d %H:%M:%S", ((timestamp + Admin.main.timeZone * 3600 * 1000) / 1000))
+        end
+    end
 end
 
 function Utility.PopGen(upkeepBoolean,genCostBoolean)
@@ -794,6 +812,7 @@ function Utility.InputTourists(notName,townNames,townX,townZ)
     local distance = 0
     local fromTown = ""
     local killed = false
+    local currentTimestamp = Utility.GetTimestamp()
     if Settings and Admin then
         local townString = "["..Settings.town.name.."]"
         local x,y,z,radius = Settings.tourist.input.x,Settings.tourist.input.y,Settings.tourist.input.z,Settings.tourist.input.radius
@@ -812,10 +831,10 @@ function Utility.InputTourists(notName,townNames,townX,townZ)
                         local ax,ay,az = Utility.ParseTownCords(townNamesList.used[fromTown])
                         if ax and az then
                             distance = Utility.round(Utility.CalcDist({x = ax,z = az}, {x = townX,z = townZ}))
-                            if Settings.tourist.History[fromTown]== nil then
-                                Settings.tourist.History[fromTown] = 1
+                            if Settings.tourist.History[currentTimestamp] == nil then
+                                Settings.tourist.History[currentTimestamp] = 1
                             else
-                                Settings.tourist.History[fromTown] = Settings.tourist.History[fromTown] + 1
+                                Settings.tourist.History[currentTimestamp] = Settings.tourist.History[currentTimestamp] + 1
                             end
                         end
                     end
@@ -1061,6 +1080,21 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                     end
                 end
                 McAPI.SayNear(" ---------- ",x,y,z,100,"yellow")
+            end
+
+            Settings = Utility.readJsonFile(SettingsFile)
+            local currentTimestamp = Utility.GetTimestamp()
+            if Settings then
+                local killTable = {}
+                for i,v in pairs(killed) do
+                    killTable[v.fromTown] = killTable[v.fromTown] + 1 or 1
+                end
+                local killString = ""
+                for i,v in pairs(killTable) do
+                    killString = killString..v.."x "..i.." "
+                end
+                Settings.tourist.History[currentTimestamp] = killString
+                Utility.writeJsonFile(SettingsFile,Settings)
             end
         end
     end

@@ -22,7 +22,6 @@ local biomes = "Defaults\\biomes.txt"
 local townNames = "Defaults\\townNames.json"
 local townNamesSource = "Defaults\\townNamesSource.json"
 local mainflag = true
-local refreshWait = 5 --IN/OUT wait timer
 local productionWait = 10
 local mainWait = 10 -- MainLoop
 local refreshflag = true
@@ -78,7 +77,7 @@ local Settings = Utility.readJsonFile(SettingsFile)
 
 if Settings and Admin then
     -- Biome search
-    if Settings.general.biome == nil then
+    if Settings.general.biome == nil and Admin.generation.biomeCheck then
         local currentBiome = nil
         local dist = 9999
         if not fs.exists(biomeFile) then
@@ -175,11 +174,11 @@ if Settings and Admin then
         end
 
         Settings.town.name = townName
-        Settings.town.born = os.date("%Y-%m-%d %H:%M:%S", os.epoch("utc")/1000)
+        Settings.town.born = Utility.GetTime("%Y-%m-%d %H:%M:%S", os.epoch("utc"))
         Settings.town.timestamp = os.epoch("utc") -- milliseconds
         print(townName)
-        print("Created (utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
-        McAPI.Say("New Town: "..townName.." ("..x..","..y..","..z.."). Founded(utc): "..os.date("%Y-%m-%d %H:%M:%S", Settings.town.timestamp/1000))
+        print("Created (utc): "..Utility.GetTime("", Settings.town.timestamp))
+        McAPI.Say("New Town: "..townName.." ("..x..","..y..","..z.."). Founded(utc): "..Utility.GetTime("", Settings.town.timestamp))
         Utility.Fireworks()
     else
         townName = Settings.town.name
@@ -456,24 +455,24 @@ function DrawButtonsForCurrentPage()
                 if tradeTable.bought then
                     for i,v in pairs(tradeTable.bought) do --
                         -- key gets overwritten with [i] so fix or 
-                        local id = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                        local id = Utility.GetTime("%m-%d %H:%M ", v.timeAccepted)..v.item
                         PreRecTable[id] = PreRecTable[i] or {}
-                        PreRecTable[id]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                        PreRecTable[id]["key"] = Utility.GetTime("%m-%d %H:%M ", v.timeAccepted)..v.item
                         PreRecTable[id]["extra"] = " x"..v.needed
                         PreRecTable[id]["toggle"] = false
-                        PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                        PreRecTable[id]["string"] = Utility.GetTime("%m-%d %H:%M ", v.timeAccepted)..v.item
                     end
                     Monitor.drawKeyList(4, Utility.round(((endY-2)/2)+2), PreRecTable, pageButtons["list"], 1, 0)
                 end 
                 PreRecTable = {}
                 if tradeTable.sold then
                     for i,v in pairs(tradeTable.sold) do --
-                        local id = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                        local id = Utility.GetTime("%m-%d %H:%M ", v.timeAccepted)..v.item
                         PreRecTable[id] = PreRecTable[i] or {}
-                        PreRecTable[id]["key"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                        PreRecTable[id]["key"] = Utility.GetTime("%m-%d %H:%M ", v.timeAccepted)..v.item
                         PreRecTable[id]["extra"] = " x"..v.needed
                         PreRecTable[id]["toggle"] = false
-                        PreRecTable[id]["string"] = os.date("%m-%d %H:%M ", v.timeAccepted/1000)..v.item
+                        PreRecTable[id]["string"] = Utility.GetTime("%m-%d %H:%M ", v.timeAccepted)..v.item
                     end
                     Monitor.drawKeyList(Utility.round(((endY-2)/2)+4), endY, PreRecTable, pageButtons["list"], 1, 1)
                 end
@@ -585,21 +584,34 @@ function DrawButtonsForCurrentPage()
             end
 
         elseif currentPage == "Tourists_History" then
+            -- timestamp keys are already in order, oldest first so reverse it
+            -- Collect keys into a table
+            local keys = {}
+            for key in pairs(Settings.tourist.History) do
+                table.insert(keys, key)
+            end
+            -- Iterate over the keys in reverse order
+            for i = #keys, 1, -1 do
+                local key = keys[i]
+                local value = Settings.tourist.History[key]
+                print(key, value)
+            end
             Monitor.write("History of Tourists to "..Settings.town.name.."!", 1, 1)
-            --Monitor.write("Bought: ", 10, 3)
-            if Settings then
-                local HistoryTable = {}
-                for i,v in pairs(Settings.tourist.History) do
-                    if v > 0 then
-                        local g = {
-                            count = v,
-                            toggle = false,
-                            key = i
-                        }
-                        table.insert(HistoryTable,g)
-                    end
+            local PreRecTable = {}
+            if Settings then    
+                for i = #keys, 1, -1 do
+                    local key = keys[i]
+                    local value = Settings.tourist.History[key]
+
+                    -- key gets overwritten with [i] so fix or 
+                    local id = Utility.GetTime("%m-%d %H:%M ", key)
+                    PreRecTable[id] = PreRecTable[i] or {}
+                    PreRecTable[id]["key"] = Utility.GetTime("%m-%d %H:%M ", key)
+                    PreRecTable[id]["extra"] = value
+                    PreRecTable[id]["toggle"] = false
+                    PreRecTable[id]["string"] = Utility.GetTime("%m-%d %H:%M ", key)..value
                 end
-                Monitor.drawList(3, endY-1, HistoryTable, pageButtons["list"], 1)
+                Monitor.drawKeyList(3, endY-1, PreRecTable, pageButtons["list"], 1, 0)
                 for i,v in ipairs(pageButtons["button"]) do
                     Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
                 end
@@ -620,8 +632,6 @@ function DrawButtonsForCurrentPage()
         end
     end
 end
-
-
 
 
 -- Initialize the monitor and set the default page

@@ -10,6 +10,7 @@
       "generation": false
     },
     "version": 1,
+    "timeZone": 0,
     "controlMethod": "all",
     "controlPC": {
       "x": 0,
@@ -40,7 +41,8 @@
     "spread": 45,
     "monitorBuild": true,
     "monitorOut": 2,
-    "monitorHigh": 3
+    "monitorHigh": 3,
+    "biomeCheck": false
   },
   "tourist": {
     "genCostEnabled": false,
