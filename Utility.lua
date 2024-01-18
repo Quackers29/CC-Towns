@@ -1078,12 +1078,12 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                 McAPI.SayNear(" ---------- ",x,y,z,100,"yellow")
             end
 
-            Settings = Utility.readJsonFile(SettingsFile)
+            local Settings = Utility.readJsonFile(SettingsFile)
             local currentTimestamp = Utility.GetTimestamp()
             if Settings then
                 local killTable = {}
-                for i,v in pairs(killed) do
-                    if killTable[v.from] = nil then
+                for i,v in ipairs(killed) do
+                    if killTable[v.from] == nil then
                         killTable[v.from] = 1
                     else
                         killTable[v.from] = killTable[v.from] + 1
@@ -1092,6 +1092,7 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                 local killString = ""
                 for i,v in pairs(killTable) do
                     killString = killString..v.."x "..i.." "
+                    print(killString)
                 end
                 Settings.tourist.History[currentTimestamp] = killString
                 Utility.writeJsonFile(SettingsFile,Settings)
