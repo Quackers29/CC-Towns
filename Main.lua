@@ -177,8 +177,8 @@ if Settings and Admin then
         Settings.town.born = Utility.GetTime("%Y-%m-%d %H:%M:%S", os.epoch("utc"))
         Settings.town.timestamp = os.epoch("utc") -- milliseconds
         print(townName)
-        print("Created (utc): "..Utility.GetTime("", Settings.town.timestamp))
-        McAPI.Say("New Town: "..townName.." ("..x..","..y..","..z.."). Founded(utc): "..Utility.GetTime("", Settings.town.timestamp))
+        print("Created: "..Utility.GetTime("", Settings.town.timestamp))
+        McAPI.Say("New Town: "..townName.." ("..x..","..y..","..z.."). Founded: "..Utility.GetTime("", Settings.town.timestamp))
         Utility.Fireworks()
     else
         townName = Settings.town.name

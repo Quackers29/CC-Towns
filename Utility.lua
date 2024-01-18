@@ -498,10 +498,6 @@ end
 
 --UTC timestamp since epoch in milliseconds
 function Utility.GetTimestamp()
-    local Admin = Utility.readJsonFile(AdminFile)
-    if Admin then
-        
-    end
     return os.epoch("utc")
 end
 
@@ -511,9 +507,9 @@ function Utility.GetTime(format, timestamp)
     local timestamp = timestamp or Utility.GetTimestamp()
     if Admin then
         if format ~= nil and format ~= "" then
-            os.date(format, ((timestamp + Admin.main.timeZone * 3600 * 1000) / 1000))
+            return os.date(format, ((timestamp + Admin.main.timeZone * 3600 * 1000) / 1000))
         else
-            os.date("%Y-%m-%d %H:%M:%S", ((timestamp + Admin.main.timeZone * 3600 * 1000) / 1000))
+            return os.date("%Y-%m-%d %H:%M:%S", ((timestamp + Admin.main.timeZone * 3600 * 1000) / 1000))
         end
     end
 end
@@ -1087,7 +1083,11 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
             if Settings then
                 local killTable = {}
                 for i,v in pairs(killed) do
-                    killTable[v.fromTown] = killTable[v.fromTown] + 1 or 1
+                    if killTable[v.from] = nil then
+                        killTable[v.from] = 1
+                    else
+                        killTable[v.from] = killTable[v.from] + 1
+                    end
                 end
                 local killString = ""
                 for i,v in pairs(killTable) do
