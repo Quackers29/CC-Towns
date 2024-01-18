@@ -827,11 +827,6 @@ function Utility.InputTourists(notName,townNames,townX,townZ)
                         local ax,ay,az = Utility.ParseTownCords(townNamesList.used[fromTown])
                         if ax and az then
                             distance = Utility.round(Utility.CalcDist({x = ax,z = az}, {x = townX,z = townZ}))
-                            if Settings.tourist.History[currentTimestamp] == nil then
-                                Settings.tourist.History[currentTimestamp] = 1
-                            else
-                                Settings.tourist.History[currentTimestamp] = Settings.tourist.History[currentTimestamp] + 1
-                            end
                         end
                     end
                 end
@@ -1095,8 +1090,8 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                     print(killString)
                 end
                 Settings.tourist.History[currentTimestamp] = killString
-                Utility.writeJsonFile(SettingsFile,Settings)
             end
+            Utility.writeJsonFile(SettingsFile,Settings)
         end
     end
 end
