@@ -588,20 +588,15 @@ function DrawButtonsForCurrentPage()
             -- Collect keys into a table
             local keys = {}
             for key in pairs(Settings.tourist.History) do
-                table.insert(keys, key)
+                table.insert(keys, tonumber(key))
             end
-            -- Iterate over the keys in reverse order
-            for i = #keys, 1, -1 do
-                local key = keys[i]
-                local value = Settings.tourist.History[key]
-                print(key, value)
-            end
+
             Monitor.write("History of Tourists to "..Settings.town.name.."!", 1, 1)
             local PreRecTable = {}
             if Settings then    
                 for i = #keys, 1, -1 do
                     local key = keys[i]
-                    local value = Settings.tourist.History[key]
+                    local value = Settings.tourist.History[tostring(key)]
 
                     -- key gets overwritten with [i] so fix or 
                     local id = Utility.GetTime("%m-%d %H:%M:%S ", key)
