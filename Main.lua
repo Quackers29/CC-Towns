@@ -588,7 +588,7 @@ function DrawButtonsForCurrentPage()
             -- Collect keys into a table
             local keys = {}
             for key in pairs(Settings.tourist.History) do
-                table.insert(keys, tonumber(key))
+                table.insert(keys, tonumber(key)) 
             end
 
             Monitor.write("History of Tourists to "..Settings.town.name.."!", 1, 1)
