@@ -604,12 +604,12 @@ function DrawButtonsForCurrentPage()
                     local value = Settings.tourist.History[key]
 
                     -- key gets overwritten with [i] so fix or 
-                    local id = Utility.GetTime("%m-%d %H:%M ", key)
+                    local id = Utility.GetTime("%m-%d %H:%M:%S ", key)
                     PreRecTable[id] = PreRecTable[i] or {}
-                    PreRecTable[id]["key"] = Utility.GetTime("%m-%d %H:%M ", key)
+                    PreRecTable[id]["key"] = Utility.GetTime("%m-%d %H:%M:%S ", key)
                     PreRecTable[id]["extra"] = value
                     PreRecTable[id]["toggle"] = false
-                    PreRecTable[id]["string"] = Utility.GetTime("%m-%d %H:%M ", key)..value
+                    PreRecTable[id]["string"] = Utility.GetTime("%m-%d %H:%M:%S ", key)..value
                 end
                 Monitor.drawKeyList(3, endY-1, PreRecTable, pageButtons["list"], 1, 0)
                 for i,v in ipairs(pageButtons["button"]) do

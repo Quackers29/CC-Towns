@@ -1087,9 +1087,9 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                 local killString = ""
                 for i,v in pairs(killTable) do
                     killString = killString..v.."x "..i.." "
-                    print(killString)
+                    --print(killString)
                 end
-                Settings.tourist.History[currentTimestamp] = killString
+                Settings.tourist.History[tostring(currentTimestamp)] = killString
             end
             Utility.writeJsonFile(SettingsFile,Settings)
         end
