@@ -597,6 +597,7 @@ function DrawButtonsForCurrentPage()
 
             Monitor.write("History of Tourists to "..Settings.town.name.."!", 1, 1)
             local PreRecTable = {}
+            local OutTable = {}
             if Settings then    
                 for _, key in ipairs(keys) do
                 --for i = #keys, 1, -1 do
@@ -605,13 +606,14 @@ function DrawButtonsForCurrentPage()
 
                     -- key gets overwritten with [i] so fix or 
                     local id = Utility.GetTime("%m-%d %H:%M:%S ", key)
-                    PreRecTable[id] = PreRecTable[id] or {}
-                    PreRecTable[id]["key"] = Utility.GetTime("%m-%d %H:%M:%S ", key)
-                    PreRecTable[id]["extra"] = value
-                    PreRecTable[id]["toggle"] = false
-                    PreRecTable[id]["string"] = Utility.GetTime("%m-%d %H:%M:%S ", key)..value
+                    PreRecTable = PreRecTable[id] or {}
+                    PreRecTable["key"] = Utility.GetTime("%m-%d %H:%M:%S ", key)
+                    PreRecTable["extra"] = value
+                    PreRecTable["toggle"] = false
+                    PreRecTable["string"] = Utility.GetTime("%m-%d %H:%M:%S ", key)..value
+                    table.insert(OutTable,PreRecTable)
                 end
-                Monitor.drawKeyList(3, endY-1, PreRecTable, pageButtons["list"], 1, 0)
+                Monitor.drawKeyList2(3, endY-1, OutTable, pageButtons["list"], 1, 0)
                 for i,v in ipairs(pageButtons["button"]) do
                     Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
                 end
