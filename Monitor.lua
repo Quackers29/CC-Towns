@@ -419,7 +419,6 @@ function Monitor.drawKeyList2(startY, endY, items, buttonsConfig, rowHeight, Lis
         local item = nil
         for key, value in ipairs(items) do
             if i == indexKey then
-                value["key"] = key
                 item = value
             end
             indexKey = indexKey + 1
@@ -428,26 +427,7 @@ function Monitor.drawKeyList2(startY, endY, items, buttonsConfig, rowHeight, Lis
         local currentY = startY + 1 + (i - currentOffset - 1) * rowHeight
         local xLeftOffset = 1
         local xRightOffset = maxX
-        local output = {}
         -- Draw associated buttons for this row and adjust offsets
-        if buttonsConfig then
-            for _, btn in ipairs(buttonsConfig) do
-                output = btn
-                output.item = item
-                if item[btn.id] ~= nil then
-                    local was = btn.enabled
-                    output.enabled = item[btn.id]
-                    --print(btn.id, item[btn.id] ,output.enabled)
-                end
-                if btn.justify == "left" then
-                    Monitor.drawButton(xLeftOffset, currentY, output)
-                    xLeftOffset = xLeftOffset + btn.width + 1
-                elseif btn.justify == "right" then
-                    Monitor.drawButton(xRightOffset - btn.width + 1, currentY, output)
-                    xRightOffset = xRightOffset - btn.width - 1
-                end
-            end
-        end
         
         -- Draw the item text based on the new offsets
         monitor.setTextColor(colors.white)
