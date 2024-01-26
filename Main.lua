@@ -605,7 +605,7 @@ function DrawButtonsForCurrentPage()
 
                     -- key gets overwritten with [i] so fix or 
                     local id = Utility.GetTime("%m-%d %H:%M:%S ", key)
-                    PreRecTable[id] = PreRecTable[i] or {}
+                    PreRecTable[id] = PreRecTable[id] or {}
                     PreRecTable[id]["key"] = Utility.GetTime("%m-%d %H:%M:%S ", key)
                     PreRecTable[id]["extra"] = value
                     PreRecTable[id]["toggle"] = false
