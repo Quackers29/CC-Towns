@@ -58,6 +58,7 @@
     "payMinDist": 50,
     "payDistPerItem": 10,
     "payItem": "minecraft:emerald",
+    "historyMax": 20,
     "milestonesEnabled": true,
     "milestones": {
       "50": [{ "item": "minecraft:cooked_beef", "quantity": 1 }],

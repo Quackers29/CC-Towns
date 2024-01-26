@@ -613,7 +613,7 @@ function DrawButtonsForCurrentPage()
                     PreRecTable["string"] = Utility.GetTime("%m-%d %H:%M:%S ", key)..value
                     table.insert(OutTable,PreRecTable)
                 end
-                Monitor.drawKeyList2(3, endY-1, OutTable, pageButtons["list"], 1, 0)
+                Monitor.drawKeyListNew(3, endY-1, OutTable, pageButtons["list"], 1, 0)
                 for i,v in ipairs(pageButtons["button"]) do
                     Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
                 end

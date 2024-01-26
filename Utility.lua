@@ -1090,6 +1090,21 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                     --print(killString)
                 end
                 Settings.tourist.History[tostring(currentTimestamp)] = killString
+                --Delete any history items over the max items
+                local keys = {}
+                for key in pairs(Settings.tourist.History) do
+                    table.insert(keys, tonumber(key))
+                end
+    
+                table.sort(keys, function(a, b)
+                    return a > b
+                end)
+
+                if #keys > Admin.tourist.historyMax then
+                    for i = (Admin.tourist.historyMax + 1), #keys do
+                        Settings.tourist.History[tostring(keys[i])] = nil
+                    end
+                end   
             end
             Utility.writeJsonFile(SettingsFile,Settings)
         end

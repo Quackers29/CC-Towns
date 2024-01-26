@@ -396,7 +396,7 @@ function Monitor.drawKeyList(startY, endY, items, buttonsConfig, rowHeight, List
     Monitor.write("+"..tostring(math.max(#items-visibleItems-currentOffset+1,0)), 1 + sButton.width + 1, endY - rowHeight + 1)
 end
 
-function Monitor.drawKeyList2(startY, endY, items, buttonsConfig, rowHeight, ListIndex)
+function Monitor.drawKeyListNew(startY, endY, items, buttonsConfig, rowHeight, ListIndex)
     local ListIndex = ListIndex or 0
     ListOffset[ListIndex] = ListOffset[ListIndex] or 0
     local currentOffset = ListOffset[ListIndex]
