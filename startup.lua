@@ -6,6 +6,10 @@ local Utility = require("Utility")
 local adminFile = "AdminSettings.json"
 local waitForControl = 10
 
+if not fs.exists("Towns/") then
+    os.makeDir("Towns")
+end
+
 print("Starting up (Waiting for Server)")
 
 os.sleep(1)
