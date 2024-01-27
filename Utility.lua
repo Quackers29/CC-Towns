@@ -1210,7 +1210,7 @@ function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
 				local count = 0
 				if resTable[itemString] then
                     local item = resTable[itemString]
-                    while flag do
+                    --while flag do
                         local flagTag = string.match(itemString,"(.-.),")
                         if flagTag ~= nil then
                             outputTag = string.match(itemString,',(.*)')
@@ -1238,7 +1238,7 @@ function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
                                 resTable[itemString] = nil  -- removes infinite toggle on for now
                             end
                         end
-                    end
+                    --end
                 end
                 if flag == false then
                     local temp = ""
