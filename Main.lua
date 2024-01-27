@@ -247,7 +247,7 @@ function DrawButtonsForCurrentPage()
             local displayTable = {}
             if resTable then
                 for i,v in pairs(resTable) do
-                    if v.count > 0 then
+                    if v.count >= 0 then
                         v.string = i
                         table.insert(displayTable,v)
                     end
@@ -257,7 +257,9 @@ function DrawButtonsForCurrentPage()
             for i,v in ipairs(pageButtons["button"]) do
                 Monitor.drawButton(Monitor.OffsetCheck(v.x, endX),Monitor.OffsetCheck(v.y, endY),v)
             end
-
+            local button = Settings.resources.continuousOutput or false
+            local togButton = {id = "Refresh",width = 3,x = -5,y = 0,colorOn = colors.blue,colorOff = colors.gray,charOn = "C",action = function() ToggleContinuous() end,enabled = button, type = "button",page = "resources"}
+            Monitor.drawButton(Monitor.OffsetCheck(togButton.x, endX),Monitor.OffsetCheck(togButton.y, endY),togButton)
         elseif currentPage == "upgrades" then
             displayItem = nil
             Monitor.write("Upgrades!", 1, 1)
@@ -749,6 +751,19 @@ function handlePopMethod()
     DrawButtonsForCurrentPage()
 end
 
+function ToggleContinuous()
+    local Settings = Utility.readJsonFile(SettingsFile)
+    if Settings then
+        if Settings.resources.continuousOutput == false then
+            Settings.resources.continuousOutput = true
+        else
+            Settings.resources.continuousOutput = false
+        end
+        Utility.writeJsonFile(SettingsFile,Settings)
+    end
+    DrawButtonsForCurrentPage()
+end
+
 function handleCSVItem(button)
     if button then
         if button.enabled then
@@ -812,7 +827,7 @@ end
 function ChestLoop()
     while mainflag do
         Settings = Utility.readJsonFile(SettingsFile)
-        if Settings and Admin and refreshflag then
+        if Settings and Admin and Admin.main.packages.resources then
             local INx,INy,INz = Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z
             local OUTx,OUTy,OUTz = Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z
             if Admin.main.version == 1 then

@@ -28,7 +28,8 @@
       "minecraft:bread":1000
     },
     "input": { "x": 0, "y": 0, "z": 0 },
-    "output": { "x": 0, "y": 0, "z": 0 }
+    "output": { "x": 0, "y": 0, "z": 0 },
+    "continuousOutput":true
   },
   "lastRestarted": null,
   "population":{

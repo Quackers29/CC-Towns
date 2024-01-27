@@ -1221,15 +1221,25 @@ function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
                         if item.count > 64 then
                             item.count = item.count-64
                             count = 64
+                            flag = false
                         else
+                            if item.count > 0 then
+                                count = item.count
+                                item.count = 0
+                                flag = false                                
+                            end
                             count = item.count
                             item.count = 0
-                            if item.toggle == false or item.toggle == "false" then
-                                resTable[itemString] = nil
+                            local Settings = Utility.readJsonFile(SettingsFile)
+                            if Settings and Settings.resources.continuousOutput then
+                                if item.toggle == false or item.toggle == "false" then
+                                    resTable[itemString] = nil
+                                end
+                            else
+                                resTable[itemString] = nil  -- removes infinite toggle on for now
                             end
-                            resTable[itemString] = nil  -- removes infinite toggle on for now
                         end
-                        flag = false
+
                     end
                 end
                 if flag == false then
