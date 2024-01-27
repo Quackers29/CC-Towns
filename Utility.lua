@@ -1233,14 +1233,11 @@ function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
                             if Settings and Settings.resources.continuousOutput then
                                 if item.toggle == false or item.toggle == "false" then
                                     resTable[itemString] = nil
-                                    save = true
                                 end
                             else
                                 resTable[itemString] = nil  -- removes infinite toggle on for now
-                                save = true
                             end
                         end
-
                     end
                 end
                 if flag == false then
@@ -1252,11 +1249,8 @@ function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
                     end
                     local export = "Items set value ["..temp.."]"
                     commands.data.modify.block(EXPx,EXPy,EXPz, export)
-                    save = true
                 end
-                if save then
-                    Utility.writeJsonFile(ResFile, resTable)
-                end
+                Utility.writeJsonFile(ResFile, resTable)
 			end
 		end
 	end
@@ -1324,7 +1318,7 @@ function Utility.checkItems(OUTx,OUTy,OUTz)
     if resTable then
         for key,item in pairs(resTable) do
             if item.toggle == true or item.toggle == "true" then
-                if item.count > 0 then
+                if item.count >= 0 then
                     Utility.outputItems(key,OUTx,OUTy,OUTz)
                 end
             end
