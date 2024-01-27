@@ -1199,6 +1199,7 @@ end
 function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
 	local r1,r2 = commands.data.get.block(EXPx,EXPy,EXPz)
 	local r3 = string.find(r2[1],"Items: %[%]")
+    local save = false
 	if r1 == true then
 		if r3 ~= nil then
 			local resTable = Utility.readJsonFile(ResFile)
@@ -1226,24 +1227,23 @@ function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
                             if item.count > 0 then
                                 count = item.count
                                 item.count = 0
-                                flag = false                                
+                                flag = false                            
                             end
-                            count = item.count
-                            item.count = 0
                             local Settings = Utility.readJsonFile(SettingsFile)
                             if Settings and Settings.resources.continuousOutput then
                                 if item.toggle == false or item.toggle == "false" then
                                     resTable[itemString] = nil
+                                    save = true
                                 end
                             else
                                 resTable[itemString] = nil  -- removes infinite toggle on for now
+                                save = true
                             end
                         end
 
                     end
                 end
                 if flag == false then
-                    Utility.writeJsonFile(ResFile, resTable)
                     local temp = ""
                     if outputTag ~= "" then
                         temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,tag: {%s}}',0,outputID,count,outputTag))
@@ -1252,6 +1252,10 @@ function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
                     end
                     local export = "Items set value ["..temp.."]"
                     commands.data.modify.block(EXPx,EXPy,EXPz, export)
+                    save = true
+                end
+                if save then
+                    Utility.writeJsonFile(ResFile, resTable)
                 end
 			end
 		end
