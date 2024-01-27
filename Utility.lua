@@ -1317,10 +1317,8 @@ function Utility.checkItems(OUTx,OUTy,OUTz)
     local resTable = Utility.readJsonFile(ResFile)
     if resTable then
         for key,item in pairs(resTable) do
-            if item.toggle == true or item.toggle == "true" then
-                if item.count >= 0 then
-                    Utility.outputItems(key,OUTx,OUTy,OUTz)
-                end
+            if (item.toggle == true and item.count > 0) or (item.toggle == false and item.count == 0)  then
+                Utility.outputItems(key,OUTx,OUTy,OUTz)
             end
         end
     end
