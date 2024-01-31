@@ -96,18 +96,28 @@ function McAPI.ScoreGet(player, objective)
     local result, tableWithString, score = nil,nil,nil
     if McVersion == 1 then
         result, tableWithString, score = commands.scoreboard.players.get(player, objective)
+            --print(result, tableWithString, score)
+        if string.match(tableWithString[1], "Can't get value") then
+            --No score set  
+            return 0
+        elseif string.match(tableWithString[1], "Unknown scoreboard objective") then
+            --No objective set
+            McAPI.ScoreObjSet(objective)
+            return 0
+        else
+            return score
+        end
     else
-        result, tableWithString, score = commands.scoreboard("players","get", player, objective)
-    end
-    if string.match(tableWithString[1], "Can't get value") then
-        --No score set  
-        return 0
-    elseif string.match(tableWithString[1], "Unknown scoreboard objective") then
-        --No objective set
-        McAPI.ScoreObjSet(objective)
-        return 0
-    else
-        return score
+        result, tableWithString, score = commands.scoreboard("players","list", player)
+        local pattern = objective..": (%d+)"
+
+        local result = tableWithString[2]:match(pattern)
+
+        if result then
+            return result
+        else
+            return 0
+        end
     end
 end
 
@@ -119,6 +129,7 @@ function McAPI.ScoreSet(player, objective, score)
     else
         boolean, tableWithString, value = commands.scoreboard("players","set", player, objective, score)
     end
+    --print("set: "..boolean, tableWithString, value)
     if string.match(tableWithString[1], "Unknown scoreboard objective") then
         McAPI.ScoreObjSet(objective)
         commands.scoreboard.players.set(player, objective, score)
