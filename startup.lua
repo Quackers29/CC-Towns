@@ -23,6 +23,7 @@ local x,y,z = gps.locate()
 --Add a Town restart command, sets a time that the event occured and if a town has not restarted based on that time, it does.
 
 if AdminSettings then
+    McAPI.Init(AdminSettings.main.version)
     if AdminSettings.main.controlPC.x == x and AdminSettings.main.controlPC.z == z then
         term.clear()
         term.setCursorPos(1,1)
