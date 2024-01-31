@@ -93,7 +93,12 @@ end
 
 -- Gets the scoreboard of a player on an objective, returns 0 if none found, handles unset objective
 function McAPI.ScoreGet(player, objective)
-    local result, tableWithString, score = commands.scoreboard.players.get(player, objective)
+    local result, tableWithString, score = nil,nil,nil
+    if McVersion == 1 then
+        result, tableWithString, score = commands.scoreboard.players.get(player, objective)
+    else
+        result, tableWithString, score = commands.scoreboard("players","get", player, objective)
+    end
     if string.match(tableWithString[1], "Can't get value") then
         --No score set  
         return 0
@@ -108,7 +113,12 @@ end
 
 -- Sets the scoreboard of a player on an objective, handles unset objective
 function McAPI.ScoreSet(player, objective, score)
-    local boolean, tableWithString, value = commands.scoreboard.players.set(player, objective, score)
+    local boolean, tableWithString, value = nil,nil,nil
+    if McVersion == 1 then
+        boolean, tableWithString, value = commands.scoreboard.players.set(player, objective, score)
+    else
+        boolean, tableWithString, value = commands.scoreboard("players","set", player, objective, score)
+    end
     if string.match(tableWithString[1], "Unknown scoreboard objective") then
         McAPI.ScoreObjSet(objective)
         commands.scoreboard.players.set(player, objective, score)
@@ -116,7 +126,11 @@ function McAPI.ScoreSet(player, objective, score)
 end
 
 function McAPI.ScoreObjSet(objective)
-    commands.scoreboard.objectives.add(objective, "dummy")
+    if McVersion == 1 then
+        commands.scoreboard.objectives.add(objective, "dummy")
+    else
+        commands.scoreboard("objectives","add", objective, "dummy")
+    end
 end
 
 -- Summons items at the coordinates
