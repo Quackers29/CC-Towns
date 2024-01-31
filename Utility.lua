@@ -1301,7 +1301,8 @@ function Utility.inputItems(INx,INy,INz, cloneHeight)
 			local id = string.sub(string.match(k,"id: (.-.),"),2,-2)
 			local count = tonumber(string.match(k,"Count: (%d+)"))
 			local tag = string.match(k,"tag: {(.*).")
-
+            --/blockdata 1971 45 5388 {} -- get all nbt
+            --/blockdata 1971 45 5388 {Items:[]} -- set
 			if tag ~= nil then
 				id = id..","..tag
 			end
