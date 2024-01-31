@@ -1,34 +1,66 @@
 -- Function to start the computer
 function startComputer()
     print("Towns are starting...")
-    commands.scoreboard.players.set("StartUp", "AllTowns", 1)
-    -- Add your start-up logic here
+    local Utility = require("Utility")
+    local McAPI   = require("McAPI")
+    local adminFile = "AdminSettings.json"
+    if Utility and McAPI then
+        local Admin = Utility.readJsonFile(adminFile)
+        if Admin then
+            McAPI.Init(Admin.main.version)
+            McAPI.ScoreSet("StartUp", "AllTowns", 1)
+        end
+    end
 end
 
 -- Function to stop the computer
 function stopComputer()
     print("Towns are stopping...")
-    commands.scoreboard.players.set("StartUp", "AllTowns", 0)
-    commands.scoreboard.players.set("Restart", "AllTowns", 1)
-    -- Add your shutdown logic here
+    local Utility = require("Utility")
+    local McAPI   = require("McAPI")
+    local adminFile = "AdminSettings.json"
+    if Utility and McAPI then
+        local Admin = Utility.readJsonFile(adminFile)
+        if Admin then
+            McAPI.Init(Admin.main.version)
+            McAPI.ScoreSet("StartUp", "AllTowns", 0)
+            McAPI.ScoreSet("Restart", "AllTowns", 1)
+        end
+    end
 end
 
 -- Function to reboot the computer
 function rebootComputer()
     print("Towns are rebooting...")
-    commands.scoreboard.players.set("StartUp", "AllTowns", 1)
-    commands.scoreboard.players.set("Restart", "AllTowns", 1)
-    -- Add your reboot logic here
+    local Utility = require("Utility")
+    local McAPI   = require("McAPI")
+    local adminFile = "AdminSettings.json"
+    if Utility and McAPI then
+        local Admin = Utility.readJsonFile(adminFile)
+        if Admin then
+            McAPI.Init(Admin.main.version)
+            McAPI.ScoreSet("StartUp", "AllTowns", 1)
+            McAPI.ScoreSet("Restart", "AllTowns", 1)
+        end
+    end
 end
 
 -- Function to update Stats
 function statsComputer()
     print("Updating Stats...")
     local Utility = require("Utility")
-    while true do
-        local Alltowns = Utility.FindAllTowns()
-        commands.scoreboard.players.set("Towns", "AllTowns", #Alltowns)
-        os.sleep(10)
+    local McAPI   = require("McAPI")
+    local adminFile = "AdminSettings.json"
+    if Utility and McAPI then
+        local Admin = Utility.readJsonFile(adminFile)
+        if Admin then
+            McAPI.Init(Admin.main.version)
+            while true do
+                local Alltowns = Utility.FindAllTowns()
+                McAPI.ScoreSet("Towns", "AllTowns", #Alltowns)
+                os.sleep(10)
+            end
+        end
     end
 end
 
@@ -42,7 +74,6 @@ function SelfDestruct()
     local SettingsFile = town.."SET_X"..x.."Y"..y.."Z"..z..".json"
     local adminFile = "AdminSettings.json"
     Utility.LoadFiles(SettingsFile,adminFile,"")
-
 
     print("Computer will Self Destruct in 5 seconds")
     os.sleep(5)
