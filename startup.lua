@@ -3,6 +3,7 @@ term.setCursorPos(1,1)
 
 local Monitor = require("Monitor")
 local Utility = require("Utility")
+local McAPI = require("McAPI")
 local adminFile = "AdminSettings.json"
 local waitForControl = 10
 
@@ -26,11 +27,13 @@ if AdminSettings then
         term.clear()
         term.setCursorPos(1,1)
         print("This is the control PC")
-        commands.scoreboard.objectives.add("AllTowns","dummy")
+        McAPI.ScoreObjSet("AllTowns")
+        --commands.scoreboard.objectives.add("AllTowns","dummy")
         if AdminSettings.main.controlPC.autoUpdate then
             print("Setting Towns to wait for command")
             AdminSettings.town.startup = false
-            commands.scoreboard.players.set("StartUp", "AllTowns", 0)
+            McAPI.ScoreSet("StartUp", "AllTowns", 0)
+            --commands.scoreboard.players.set("StartUp", "AllTowns", 0)
             Utility.writeJsonFile(adminFile,AdminSettings)
             print("Updating code from Github Repo") -- IF VERSION CHANGES (FUTURE OPERATION)
             
@@ -38,7 +41,8 @@ if AdminSettings then
 
             os.sleep(20)
             AdminSettings.town.startup = true
-            commands.scoreboard.players.set("StartUp", "AllTowns", 1)
+            McAPI.ScoreSet("StartUp", "AllTowns", 1)
+            --commands.scoreboard.players.set("StartUp", "AllTowns", 1)
             Utility.writeJsonFile(adminFile,AdminSettings)
             print("Towns can now startup ")
         else
@@ -55,7 +59,8 @@ if AdminSettings then
         os.sleep(2)
         local flag = true
         while flag do
-            local result, message, score = commands.scoreboard.players.get("StartUp", "AllTowns")
+            local score = McAPI.ScoreGet("StartUp", "AllTowns")
+            --local result, message, score = commands.scoreboard.players.get("StartUp", "AllTowns")
             local AdminSettings = Utility.readJsonFile(adminFile)
             if AdminSettings then
                 if AdminSettings.town.startup or score == 1 then
