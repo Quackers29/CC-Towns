@@ -97,7 +97,7 @@ function Utility.convertItem(itemShort)
     return itemString
 end
 
-function Utility.AddMcItemToTable(itemString, itemTable, count)
+function Utility.AddMcItemToTable(itemString, itemTable, count, damage)-- optional damage
     -- Parse the item string
     local parsedData = Utility.ParseMcItemString(itemString)
     local itemTable = itemTable or {}
@@ -1199,6 +1199,10 @@ end
 function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
 	local r1,r2 = commands.data.get.block(EXPx,EXPy,EXPz)
 	local r3 = string.find(r2[1],"Items: %[%]")
+
+    --local INq,INw = commands.blockdata(1972, 45, 5388, {})
+    --local output = Utility.removeFirstLevelBrackets(INw[1]:match('Items:%[(.-)%]'))
+
     local save = false
 	if r1 == true then
 		if r3 ~= nil then
@@ -1249,6 +1253,11 @@ function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
                     end
                     local export = "Items set value ["..temp.."]"
                     commands.data.modify.block(EXPx,EXPy,EXPz, export)
+
+                    --commands.blockdata(1972, 45, 5388, "{Items:[]}")
+                    --local Damage = "5s"
+                    --temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,tag: {%s},Damage:%s}',0,outputID,count,outputTag,Damage))
+                    --temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,Damage:%s}',0,outputID,count,Damage))
                 end
                 Utility.writeJsonFile(ResFile, resTable)
 			end
@@ -1287,11 +1296,18 @@ end
 function Utility.inputItems(INx,INy,INz, cloneHeight)
 	local itemTable = Utility.readJsonFile(ResFile)
 	local INq,INw = commands.data.get.block(INx,INy,INz,"Items")
+
+    --local INq,INw = commands.blockdata(1972, 45, 5388, {})
+    --local output = Utility.removeFirstLevelBrackets(INw[1]:match('Items:%[(.-)%]'))
+
 	if INq then
 		-- Move chest using clone to preserve contents when reading it. 
         commands.clone(INx,INy,INz,INx,INy,INz,INx,cloneHeight,INz, "replace", "move")
         local INa,INb = commands.data.get.block(INx,cloneHeight,INz,"Items")
+
 		commands.data.modify.block(INx,cloneHeight,INz, "Items set value []")
+        --commands.blockdata(1972, 45, 5388, "{Items:[]}")
+
         commands.clone(INx,cloneHeight,INz,INx,cloneHeight,INz,INx,INy,INz, "replace", "move")
 
 		local output = Utility.removeFirstLevelBrackets(INb[1])
@@ -1301,7 +1317,8 @@ function Utility.inputItems(INx,INy,INz, cloneHeight)
 			local id = string.sub(string.match(k,"id: (.-.),"),2,-2)
 			local count = tonumber(string.match(k,"Count: (%d+)"))
 			local tag = string.match(k,"tag: {(.*).")
-            --/blockdata 1971 45 5388 {} -- get all nbt
+            --local damage = tonumber(string.match(k,"Damage: (%d+)"))
+            --/blockdata 1972 45 5388 {} -- get all nbt
             --/blockdata 1971 45 5388 {Items:[]} -- set
 			if tag ~= nil then
 				id = id..","..tag
