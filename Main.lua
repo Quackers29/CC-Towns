@@ -62,9 +62,7 @@ if Admin and Admin.town.minDistance then
 end
 
 -- Initialise McAPI with version number
-if Admin and Admin.main.version then
-    McAPI.Init(Admin.main.version)
-end
+-- McAPI.Init()
 
 -- Initialize checks / file system
 

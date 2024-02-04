@@ -3,13 +3,8 @@ function startComputer()
     print("Towns are starting...")
     local Utility = require("Utility")
     local McAPI   = require("McAPI")
-    local adminFile = "AdminSettings.json"
     if Utility and McAPI then
-        local Admin = Utility.readJsonFile(adminFile)
-        if Admin then
-            McAPI.Init(Admin.main.version)
-            McAPI.ScoreSet("StartUp", "AllTowns", 1)
-        end
+        McAPI.ScoreSet("StartUp", "AllTowns", 1)
     end
 end
 
@@ -18,14 +13,9 @@ function stopComputer()
     print("Towns are stopping...")
     local Utility = require("Utility")
     local McAPI   = require("McAPI")
-    local adminFile = "AdminSettings.json"
     if Utility and McAPI then
-        local Admin = Utility.readJsonFile(adminFile)
-        if Admin then
-            McAPI.Init(Admin.main.version)
-            McAPI.ScoreSet("StartUp", "AllTowns", 0)
-            McAPI.ScoreSet("Restart", "AllTowns", 1)
-        end
+        McAPI.ScoreSet("StartUp", "AllTowns", 0)
+        McAPI.ScoreSet("Restart", "AllTowns", 1)
     end
 end
 
@@ -34,14 +24,9 @@ function rebootComputer()
     print("Towns are rebooting...")
     local Utility = require("Utility")
     local McAPI   = require("McAPI")
-    local adminFile = "AdminSettings.json"
     if Utility and McAPI then
-        local Admin = Utility.readJsonFile(adminFile)
-        if Admin then
-            McAPI.Init(Admin.main.version)
-            McAPI.ScoreSet("StartUp", "AllTowns", 1)
-            McAPI.ScoreSet("Restart", "AllTowns", 1)
-        end
+        McAPI.ScoreSet("StartUp", "AllTowns", 1)
+        McAPI.ScoreSet("Restart", "AllTowns", 1)
     end
 end
 
@@ -50,16 +35,11 @@ function statsComputer()
     print("Updating Stats...")
     local Utility = require("Utility")
     local McAPI   = require("McAPI")
-    local adminFile = "AdminSettings.json"
     if Utility and McAPI then
-        local Admin = Utility.readJsonFile(adminFile)
-        if Admin then
-            McAPI.Init(Admin.main.version)
-            while true do
-                local Alltowns = Utility.FindAllTowns()
-                McAPI.ScoreSet("Towns", "AllTowns", #Alltowns)
-                os.sleep(10)
-            end
+        while true do
+            local Alltowns = Utility.FindAllTowns()
+            McAPI.ScoreSet("Towns", "AllTowns", #Alltowns)
+            os.sleep(10)
         end
     end
 end

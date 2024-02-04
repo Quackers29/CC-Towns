@@ -101,11 +101,15 @@ function Utility.AddMcItemToTable(itemString, itemTable, count, damage)-- option
     -- Parse the item string
     local parsedData = Utility.ParseMcItemString(itemString)
     local itemTable = itemTable or {}
+    local damage = damage or ""
     -- Check if the entry exists in the table
     local exists = false
     if count ~= 0 then 
         if itemTable[itemString] ~= nil then
-            exists = true
+            --
+            if itemTable[itemString].damage == damage then
+                exists = true
+            end
         end
         if not exists then
             -- Add to dataTable
@@ -113,7 +117,8 @@ function Utility.AddMcItemToTable(itemString, itemTable, count, damage)-- option
                 attributes = parsedData.attributes,
                 count = count,
                 toggle = false,
-                key = parsedData.item
+                key = parsedData.item,
+                damage = damage
             }
         else
             -- modify itemTable
@@ -1197,23 +1202,20 @@ function Utility.readCSV(filename)
 end
 
 function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
-	local r1,r2 = commands.data.get.block(EXPx,EXPy,EXPz)
-	local r3 = string.find(r2[1],"Items: %[%]")
-
-    --local INq,INw = commands.blockdata(1972, 45, 5388, {})
-    --local output = Utility.removeFirstLevelBrackets(INw[1]:match('Items:%[(.-)%]'))
-
+	local r1,r3 = McAPI.GetBlockItems(EXPx,EXPy,EXPz)
     local save = false
 	if r1 == true then
-		if r3 ~= nil then
+		if r3 == "" then -- no items in chest
 			local resTable = Utility.readJsonFile(ResFile)
 			if resTable ~= {} then
 				local flag = true
 				local outputID = ""
 				local outputTag = ""
 				local count = 0
+                local damage = 0
 				if resTable[itemString] then
                     local item = resTable[itemString]
+                    damage = item.damage
                     --while flag do
                         local flagTag = string.match(itemString,"(.-.),")
                         if flagTag ~= nil then
@@ -1245,19 +1247,7 @@ function Utility.outputItems(itemString,EXPx,EXPy,EXPz)
                     --end
                 end
                 if flag == false then
-                    local temp = ""
-                    if outputTag ~= "" then
-                        temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,tag: {%s}}',0,outputID,count,outputTag))
-                    else
-                        temp = (string.format('{Slot:%sb,id: "%s",Count: %sb}',0,outputID,count))
-                    end
-                    local export = "Items set value ["..temp.."]"
-                    commands.data.modify.block(EXPx,EXPy,EXPz, export)
-
-                    --commands.blockdata(1972, 45, 5388, "{Items:[]}")
-                    --local Damage = "5s"
-                    --temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,tag: {%s},Damage:%s}',0,outputID,count,outputTag,Damage))
-                    --temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,Damage:%s}',0,outputID,count,Damage))
+                    McAPI.SetBlockItems(EXPx,EXPy,EXPz,outputID,count,outputTag,damage)
                 end
                 Utility.writeJsonFile(ResFile, resTable)
 			end
@@ -1295,37 +1285,31 @@ end
 
 function Utility.inputItems(INx,INy,INz, cloneHeight)
 	local itemTable = Utility.readJsonFile(ResFile)
-	local INq,INw = commands.data.get.block(INx,INy,INz,"Items")
-
-    --local INq,INw = commands.blockdata(1972, 45, 5388, {})
-    --local output = Utility.removeFirstLevelBrackets(INw[1]:match('Items:%[(.-)%]'))
-
+	local INq,INw = McAPI.GetBlockItems(INx,INy,INz)
 	if INq then
 		-- Move chest using clone to preserve contents when reading it. 
         commands.clone(INx,INy,INz,INx,INy,INz,INx,cloneHeight,INz, "replace", "move")
-        local INa,INb = commands.data.get.block(INx,cloneHeight,INz,"Items")
+        local INa,INb = McAPI.GetBlockItems(INx,cloneHeight,INz)
 
-		commands.data.modify.block(INx,cloneHeight,INz, "Items set value []")
-        --commands.blockdata(1972, 45, 5388, "{Items:[]}")
+		McAPI.SetBlockItemsEmpty(INx,cloneHeight,INz)
 
         commands.clone(INx,cloneHeight,INz,INx,cloneHeight,INz,INx,INy,INz, "replace", "move")
 
-		local output = Utility.removeFirstLevelBrackets(INb[1])
+		local output = Utility.removeFirstLevelBrackets(INb)
         --print("Output: "..output)
 		for _, k in ipairs(output) do
 			local slot = string.match(k,"Slot: (%d+)")
 			local id = string.sub(string.match(k,"id: (.-.),"),2,-2)
 			local count = tonumber(string.match(k,"Count: (%d+)"))
 			local tag = string.match(k,"tag: {(.*).")
-            --local damage = tonumber(string.match(k,"Damage: (%d+)"))
-            --/blockdata 1972 45 5388 {} -- get all nbt
-            --/blockdata 1971 45 5388 {Items:[]} -- set
+            local damage = tonumber(string.match(k,"Damage: (%d+)")) or 0
+
 			if tag ~= nil then
 				id = id..","..tag
 			end
             --print(id.." : "..count)
             --start new parse here
-            itemTable = Utility.AddMcItemToTable(id,itemTable,count)
+            itemTable = Utility.AddMcItemToTable(id,itemTable,count, damage)
 		end
 		Utility.writeJsonFile(ResFile, itemTable)
 	end

@@ -2,8 +2,31 @@ local McAPI = {}
 local McVersion = 0 -- initialise to set version
 
 --Initialises the apis Minecraft version number to alternate some commands
-function McAPI.Init(version)
-    McVersion = version
+--12, 16, 20
+function McAPI.Init()
+    if McVersion < 12 then
+        McVersion = McAPI.CheckMcVersion()
+    end
+    return McVersion
+end
+
+-- outputs 0 for unknown, 12, 16 or 20  
+function McAPI.CheckMcVersion()
+    local version = nil
+    local x,y,z = gps.locate()
+    local a,b,c = commands.exec("blockdata "..x.." "..y.." "..z.." {}")
+    if string.match(b[1], "The data tag did not change") then
+        -- < 1.13
+        version = 12
+    else
+        local success, result = pcall(commands.locate.biome, "plains")
+        if success then
+            version = 20 -- 1.20.1 ish
+        else
+            version = 16 -- 1.16.5 ish
+        end
+    end
+    return version
 end
 
 -- Gets the Villager Count within a radius with the name not Villager
@@ -94,7 +117,7 @@ end
 -- Gets the scoreboard of a player on an objective, returns 0 if none found, handles unset objective
 function McAPI.ScoreGet(player, objective)
     local result, tableWithString, score = nil,nil,nil
-    if McVersion == 1 then
+    if McAPI.Init() ~= 12 then
         result, tableWithString, score = commands.scoreboard.players.get(player, objective)
             --print(result, tableWithString, score)
         if string.match(tableWithString[1], "Can't get value") then
@@ -123,7 +146,7 @@ end
 -- Sets the scoreboard of a player on an objective, handles unset objective
 function McAPI.ScoreSet(player, objective, score)
     local boolean, tableWithString, value = nil,nil,nil
-    if McVersion == 1 then
+    if McAPI.Init() ~= 12 then
         boolean, tableWithString, value = commands.scoreboard.players.set(player, objective, score)
     else
         boolean, tableWithString, value = commands.scoreboard("players","set", player, objective, score)
@@ -136,7 +159,7 @@ function McAPI.ScoreSet(player, objective, score)
 end
 
 function McAPI.ScoreObjSet(objective)
-    if McVersion == 1 then
+    if McAPI.Init() ~= 12 then
         commands.scoreboard.objectives.add(objective, "dummy")
     else
         commands.scoreboard("objectives","add", objective, "dummy")
@@ -209,7 +232,7 @@ end
 -- returns the biome, alternates commands based on initialised McVersion number
 function McAPI.LocateBiome(biome)
     local boolean, tableWithString, distance = nil,nil,nil
-    if McVersion == 1 then
+    if McAPI.Init() == 20 then
         boolean, tableWithString, distance = commands.locate.biome(biome)
     else
         boolean, tableWithString, distance = commands.locatebiome(biome)
@@ -242,6 +265,50 @@ function McAPI.Particle(particle,x,y,z, speed, count, ...)
         commands.particle(particle, select(1,...), x, y, z, 0, 0, 0,speed, count, "normal")
     else
         commands.particle("end_rod", x, y, z, 0, 0, 0,speed, count, "normal")
+    end
+end
+
+-- Returns sucess and result Item string from block
+function McAPI.GetBlockItems(x,y,z)
+    if McAPI.Init() == 12 then
+        local INq, INw = commands.blockdata(x, y, z, {})
+        local result = INw[1]:match('Items:%[(.-)%]')
+        local sucess = result ~= nil
+        return sucess, result
+    else
+        local INq,INw = commands.data.get.block(x,y,z,"Items")
+        local sucess, result = INq, INw[1]
+        return sucess, result
+    end
+end
+
+-- Empties block items (chest)
+function McAPI.SetBlockItemsEmpty(x,y,z)
+    if McAPI.Init() == 12 then
+        commands.blockdata(x,y,z, "{Items:[]}")
+    else
+        commands.data.modify.block(x,y,z, "Items set value []")
+    end
+end
+
+function McAPI.SetBlockItems(x,y,z,id,count,tag,damage)
+    local temp = ""
+    if McAPI.Init() == 12 then
+        if tag ~= "" then
+            temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,tag: {%s},Damage:%s}',0,id,count,tag,damage))
+        else
+            temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,Damage:%s}',0,id,count,damage))
+        end
+        commands.blockdata(x, y, z, "{Items:["..temp.."]}")
+    else
+        local temp = ""
+        if tag ~= "" then
+            temp = (string.format('{Slot:%sb,id: "%s",Count: %sb,tag: {%s}}',0,id,count,tag))
+        else
+            temp = (string.format('{Slot:%sb,id: "%s",Count: %sb}',0,id,count))
+        end
+        local export = "Items set value ["..temp.."]"
+        commands.data.modify.block(x,y,z, export)
     end
 end
 
