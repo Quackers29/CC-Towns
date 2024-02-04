@@ -345,8 +345,9 @@ end
 function McAPI.GetBlockItems(x,y,z)
     if McAPI.Init() == 12 then
         local INq, INw = commands.blockdata(x, y, z, {})
-        local result = INw[1]:match('Items:%[(.-)')
-        result = McAPI.removeFirstLevelSquareBrackets(result)[1]
+        local result = INw[1]:match('Items:%s*(.*)')
+        --result = McAPI.removeFirstLevelSquareBrackets(result)[1]
+        result = string.sub(string.match(result,"(%b{})"),2,-2)
         local sucess = result ~= nil
         return sucess, result
     else

@@ -1316,7 +1316,8 @@ function Utility.inputItems(INx,INy,INz)
 			local slot = string.match(k,"Slot:"..space.."(%d+)")
 			local id = string.sub(string.match(k,"id:"..space.."(.-.),"),2,-2)
 			local count = tonumber(string.match(k,"Count:"..space.."(%d+)"))
-			local tag = string.match(k,"tag:"..space.."{(.*).")
+            --local tag = string.match(k,"tag:"..space.."{(.*).")
+			local tag = string.sub(string.match(k,"tag:"..space.."(%b{})"),2,-2)
             local damage = tonumber(string.match(k,"Damage:"..space.."(%d+)")) or 0
 
 			if tag ~= nil then
