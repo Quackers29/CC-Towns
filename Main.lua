@@ -828,10 +828,10 @@ function ChestLoop()
         if Settings and Admin and Admin.main.packages.resources then
             local INx,INy,INz = Settings.resources.input.x,Settings.resources.input.y,Settings.resources.input.z
             local OUTx,OUTy,OUTz = Settings.resources.output.x,Settings.resources.output.y,Settings.resources.output.z
-            if Admin.main.version == 1 then
-                Utility.inputItems(INx,INy,INz,-64)
+            if Admin.main.version == 1 then -- could add overide height level here
+                Utility.inputItems(INx,INy,INz)
             else
-                Utility.inputItems(INx,INy,INz,0)
+                Utility.inputItems(INx,INy,INz)
             end
             Utility.checkItems(OUTx,OUTy,OUTz)
             os.sleep(Admin.town.chestRefresh)

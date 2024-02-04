@@ -317,4 +317,12 @@ function McAPI.SetBlockItems(x,y,z,id,count,tag,damage)
     end
 end
 
+function McAPI.GetWorldFloor()
+    if McAPI.Init() == 20 then
+        return -64
+    else
+        return 0
+    end
+end
+
 return McAPI
