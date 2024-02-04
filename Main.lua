@@ -982,7 +982,7 @@ function MainLoop()
                 else
                     Utility.TouristGen()
                 end
-                Utility.TouristTransfer(1, townName,townNames,x,y)
+                Utility.TouristTransfer(1, townName,townNames,x,z)
             end
             DrawButtonsForCurrentPage()
         end
