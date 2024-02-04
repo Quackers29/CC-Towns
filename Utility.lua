@@ -874,8 +874,9 @@ function Utility.OutputTourist(count, townName)
                 --3 attempts at finding a free spot
                 for i=1, 3 do
                     if Settings.tourist.output.method == "Line" then
+                        local mid = McAPI.Init() ~= 12
                         if Admin.town.gridSpacing then
-                            xo,zo = Utility.RoundHPointBetweenPoints(x,z,x2,z2, -1)
+                            xo,zo = Utility.RoundHPointBetweenPoints(x,z,x2,z2, -1, mid)
                         else
                             xo,zo = Utility.PointBetweenPoints(x,z,x2,z2, -1)
                         end
@@ -1141,13 +1142,20 @@ function Utility.RoundHalf(value)
 end
 
 -- Function to find a point between two points
-function Utility.RoundHPointBetweenPoints(x, z, x2, z2, factor)
+function Utility.RoundHPointBetweenPoints(x, z, x2, z2, factor, midpoint)
+    local midpoint = midpoint or true
     local t = factor
+    local x,z = 0,0
     if factor == -1 then
         t = math.random()  -- Random value between 0 and 1
     end
-    local x = Utility.RoundHalf((1 - t) * x + t * x2)  -- Round to the nearest 0.5
-    local z = Utility.RoundHalf((1 - t) * z + t * z2)  -- Round to the nearest 0.5
+    if midpoint then
+        x = Utility.RoundHalf((1 - t) * x + t * x2)  -- Round to the nearest 0.5
+        z = Utility.RoundHalf((1 - t) * z + t * z2)  -- Round to the nearest 0.5
+    else
+        x = Utility.round((1 - t) * x + t * x2)  -- Round to the nearest 0.5
+        z = Utility.round((1 - t) * z + t * z2)  -- Round to the nearest 0.5
+    end
     return x, z
 end
 
