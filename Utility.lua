@@ -881,7 +881,11 @@ function Utility.OutputTourist(count, townName)
                             xo,zo = Utility.PointBetweenPoints(x,z,x2,z2, -1)
                         end
                     end
-                    if McAPI.GetVillagerCount(xo,y,zo,(Admin.town.villagerSpacing or 1)) == 0 then-- spacing, min 0.7, safeish 0.8, 1 = 1 block
+                    local spacing = Admin.town.villagerSpacing or 1
+                    if McAPI.Init() == 12 then
+                        spacing = 0
+                    end
+                    if McAPI.GetVillagerCount(xo,y,zo,spacing) == 0 then-- spacing, min 0.7, safeish 0.8, 1 = 1 block
                         McAPI.SummonCustomVill(xo,y,zo,"(T)"..townName, "random",Admin.tourist.textColor,"Tourist")
                         Settings.tourist.touristCurrent = Settings.tourist.touristCurrent - 1
                         spawned = true
@@ -1143,9 +1147,7 @@ end
 
 -- Function to find a point between two points
 function Utility.RoundHPointBetweenPoints(x, z, x2, z2, factor, midpoint)
-    local midpoint = midpoint or true
     local t = factor
-    local x,z = 0,0
     if factor == -1 then
         t = math.random()  -- Random value between 0 and 1
     end
