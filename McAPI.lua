@@ -314,11 +314,39 @@ function McAPI.Particle(particle,x,y,z, speed, count, ...)
     end
 end
 
+function McAPI.removeFirstLevelSquareBrackets(input)
+	local result = {}
+	local level = 0
+	local current = ""
+	for char in input:gmatch(".") do
+		if char == "[" then
+			level = level + 1
+			if level > 1 then
+				current = current .. char
+			end
+		elseif char == "]" then
+			level = level - 1
+			if level == 0 then
+				table.insert(result, current)
+				current = ""
+			else
+				current = current .. char
+			end
+		else
+			if level ~= 0 then
+				current = current .. char
+			end
+		end
+	end
+	return result
+end
+
 -- Returns sucess and result Item string from block
 function McAPI.GetBlockItems(x,y,z)
     if McAPI.Init() == 12 then
         local INq, INw = commands.blockdata(x, y, z, {})
-        local result = INw[1]:match('Items:%[(.-)%]')
+        local result = INw[1]:match('Items:%[(.-)')
+        result = McAPI.removeFirstLevelSquareBrackets(result)[1]
         local sucess = result ~= nil
         return sucess, result
     else

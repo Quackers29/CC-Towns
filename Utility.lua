@@ -1297,7 +1297,7 @@ function Utility.inputItems(INx,INy,INz)
 	local itemTable = Utility.readJsonFile(ResFile)
 	local INq,INw = McAPI.GetBlockItems(INx,INy,INz)
     local cloneHeight = McAPI.GetWorldFloor()
-	if INq then
+	if INq and INw ~= "" then
 		-- Move chest using clone to preserve contents when reading it. 
         commands.clone(INx,INy,INz,INx,INy,INz,INx,cloneHeight,INz, "replace", "move")
         local INa,INb = McAPI.GetBlockItems(INx,cloneHeight,INz)
@@ -1308,12 +1308,16 @@ function Utility.inputItems(INx,INy,INz)
 
 		local output = Utility.removeFirstLevelBrackets(INb)
         --print("Output: "..output)
+        local space = " "
+        if McAPI.Init() == 12 then
+            space = ""
+        end
 		for _, k in ipairs(output) do
-			local slot = string.match(k,"Slot:(%d+)")
-			local id = string.sub(string.match(k,"id: (.-.),"),2,-2)
-			local count = tonumber(string.match(k,"Count:(%d+)"))
-			local tag = string.match(k,"tag: {(.*).")
-            local damage = tonumber(string.match(k,"Damage:(%d+)")) or 0
+			local slot = string.match(k,"Slot:"..space.."(%d+)")
+			local id = string.sub(string.match(k,"id:"..space.."(.-.),"),2,-2)
+			local count = tonumber(string.match(k,"Count:"..space.."(%d+)"))
+			local tag = string.match(k,"tag:"..space.."{(.*).")
+            local damage = tonumber(string.match(k,"Damage:"..space.."(%d+)")) or 0
 
 			if tag ~= nil then
 				id = id..","..tag
