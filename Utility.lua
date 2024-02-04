@@ -1321,6 +1321,7 @@ function Utility.inputItems(INx,INy,INz)
             local damage = tonumber(string.match(k,"Damage:"..space.."(%d+)")) or 0
 
 			if tag ~= nil then
+                tag = string.sub(tag,2,-2)
 				id = id..","..tag
 			end
             --print(id.." : "..count)
