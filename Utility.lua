@@ -1304,7 +1304,7 @@ function Utility.inputItems(INx,INy,INz)
 	local INq,INw = McAPI.GetBlockItems(INx,INy,INz)
     local cloneHeight = McAPI.GetWorldFloor()
 
-    if McAPI.Init() == 12 then
+    if INq and McAPI.Init() == 12 then
         --check for damaged items -- do not add chest
         for match in INw:gmatch('Damage:(%d+)') do
             local damage = tonumber(match)
@@ -1518,7 +1518,7 @@ function Utility.ChangeInputPop(ax,ay,az)
     local Admin = Utility.readJsonFile(AdminFile)
     local x,y,z = gps.locate()
     if Settings and Admin then
-        local PopRange = Admin.town.maxSpawnRange 
+        local PopRange = Admin.town.maxSpawnRange
         local PINx,PINy,PINz = Settings.tourist.input.x,Settings.tourist.input.y,Settings.tourist.input.z
         PINx = math.max(x - PopRange, math.min(PINx + ax, x + PopRange))
         PINy = math.max(y - PopRange, math.min(PINy + ay, y + PopRange))
