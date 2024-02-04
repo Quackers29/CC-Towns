@@ -132,13 +132,18 @@ function McAPI.ScoreGet(player, objective)
         end
     else
         result, tableWithString, score = commands.scoreboard("players","list", player)
-        local pattern = objective..": (%d+)"
-
-        local result = tableWithString[2]:match(pattern)
-        if result then
-            return tonumber(result)
-        else
+        if string.match(tableWithString[1], "no scores recorded") then
+            --No score set  
+            McAPI.ScoreObjSet(objective)
             return 0
+        else
+            local pattern = objective..": (%d+)"
+            local result = tableWithString[2]:match(pattern)
+            if result then
+                return tonumber(result)
+            else
+                return 0
+            end
         end
     end
 end
