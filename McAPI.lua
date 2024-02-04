@@ -192,7 +192,11 @@ function McAPI.SayNear(text,x,y,z,radius,color)
     if color == nil or color == "" then
         color = "green"
     end
-    commands.exec("/execute as @a[x="..x..",y="..y..",z="..z..",distance=.."..radius.."] run tellraw @s {\"text\":\""..text.."\",\"color\":\""..color.."\"}")
+    if McAPI.Init() ~= 12 then
+        commands.exec("/execute as @a[x="..x..",y="..y..",z="..z..",distance=.."..radius.."] run tellraw @s {\"text\":\""..text.."\",\"color\":\""..color.."\"}")
+    else
+        commands.exec("/execute @a[x="..x..",y="..y..",z="..z..",r=.."..radius.."] ~ ~ ~ /tellraw @s {\"text\":\""..text.."\",\"color\":\""..color.."\"}")
+    end
 end
 
 -- Summons a custom Villager, profession can be set to random
@@ -236,13 +240,13 @@ function McAPI.KillOtherVill(x,y,z,range,notName, tag)
         if McVersion ~= 12 then
             killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',limit=1]"
         else
-            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r="..range..",name=!Villager,name=!'"..notName.."',c=1]"
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r="..range..",name=!Villager,name=!"..notName..",c=1]"
         end
     else
         if McVersion ~= 12 then
             killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',tag="..tag..",limit=1]"
         else
-            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r="..range..",name=!Villager,name=!'"..notName.."',tag="..tag..",c=1]"
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r="..range..",name=!Villager,name=!"..notName..",tag="..tag..",c=1]"
         end
     end
     local boolean,table,count = commands.kill(killString)
@@ -257,13 +261,13 @@ function McAPI.KillExactVill(x,y,z,range,Name,tag)
         if McVersion ~= 12 then
             killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name='"..Name.."',limit=1]"
         else
-            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r="..range..",name='"..Name.."',c=1]"
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r="..range..",name="..Name..",c=1]"
         end
     else
         if McVersion ~= 12 then
             killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name='"..Name.."',tag="..tag..",limit=1]"
         else
-            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r="..range..",name='"..Name.."',tag="..tag..",c=1]"
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r="..range..",name="..Name..",tag="..tag..",c=1]"
         end
     end
     local boolean,table,count = commands.kill(killString)
