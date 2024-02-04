@@ -1299,11 +1299,11 @@ function Utility.inputItems(INx,INy,INz)
 		local output = Utility.removeFirstLevelBrackets(INb)
         --print("Output: "..output)
 		for _, k in ipairs(output) do
-			local slot = string.match(k,"Slot: (%d+)")
+			local slot = string.match(k,"Slot:(%d+)")
 			local id = string.sub(string.match(k,"id: (.-.),"),2,-2)
-			local count = tonumber(string.match(k,"Count: (%d+)"))
+			local count = tonumber(string.match(k,"Count:(%d+)"))
 			local tag = string.match(k,"tag: {(.*).")
-            local damage = tonumber(string.match(k,"Damage: (%d+)")) or 0
+            local damage = tonumber(string.match(k,"Damage:(%d+)")) or 0
 
 			if tag ~= nil then
 				id = id..","..tag

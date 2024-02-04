@@ -31,9 +31,14 @@ end
 
 -- Gets the Villager Count within a radius with the name not Villager
 function McAPI.GetVillagerCount(x,y,z, radius)
-    local boolean,message,count = commands.exec("/effect give @e[name=!Villager,type=minecraft:villager,x="..x..",y="..y..",z="..z..",distance=.."..radius.."] minecraft:slowness 1")
-    commands.exec("/effect clear @e[name=!Villager,type=minecraft:villager,x="..x..",y="..y..",z="..z..",distance=.."..radius.."]")
-    return count
+    if McAPI.Init() ~= 12 then
+        local boolean,message,count = commands.exec("/effect give @e[name=!Villager,type=minecraft:villager,x="..x..",y="..y..",z="..z..",distance=.."..radius.."] minecraft:slowness 1")
+        commands.exec("/effect clear @e[name=!Villager,type=minecraft:villager,x="..x..",y="..y..",z="..z..",distance=.."..radius.."]")
+        return count
+    else
+        local boolean,message,count = commands.exec("/effect @e[name=!Villager,type=minecraft:villager,x="..x..",y="..y..",z="..z..",r=.."..radius.."] minecraft:slowness 1")
+        return count
+    end
 end
 
 -- Sends a firework from a relative position with a type
@@ -192,29 +197,52 @@ end
 -- Summons a custom Villager, profession can be set to random
 -- Speed set to 0.001 (was 0.01)
 function McAPI.SummonCustomVill(x,y,z,name, profession, color, tag)
+    local McVersion = McAPI.Init()
     local color = color or "blue"
     local tag = tag or ""
-    if profession and profession == "random" then
-        local VilList = {
-            "armourer","butcher","cartographer","cleric","farmer",
-            "fisherman","fletcher","leatherworker","librarian",
-            "masons","shepherd","toolsmith","weaponsmith"
-            }
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.001}],VillagerData:{profession:"..VilList[math.random(1,#VilList)]..",level:6},Tags:[\""..tag.."\"]}")
-    elseif profession and profession ~= "" then
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.001}],VillagerData:{profession:"..profession..",level:6},Tags:[\""..tag.."\"]}")
+    if profession and profession ~= "" then
+        if profession == "random" then
+            if McVersion ~= 12 then
+                local VilList = {
+                    "armourer","butcher","cartographer","cleric","farmer",
+                    "fisherman","fletcher","leatherworker","librarian",
+                    "masons","shepherd","toolsmith","weaponsmith"
+                    }
+                profession = VilList[math.random(1,#VilList)]
+            else
+                profession = math.random(0,5)
+            end
+        end
+        if McVersion ~= 12 then
+            commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.001}],VillagerData:{profession:"..profession..",level:6},Tags:[\""..tag.."\"]}")
+        else
+            commands.summon("minecraft:villager",x,y,z,"{CustomName:"..name.."}',Attributes:[{Name:\"generic.movementSpeed\",Base:0.001}],Tags:[\""..tag.."\"],Offers:{},Profession:"..profession.."}")
+        end
     else
-        commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.001}],Tags:[\""..tag.."\"]}")
+        if McVersion ~= 12 then
+            commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.001}],Tags:[\""..tag.."\"]}")
+        else
+            commands.summon("minecraft:villager",x,y,z,"{CustomName:"..name.."}',Attributes:[{Name:\"generic.movementSpeed\",Base:0.001}],Tags:[\""..tag.."\"],Offers:{}}")
+        end
     end
 end
 
 -- Kills a custom villager with an optional notname and optional Name (Use the wildcard '*' i.e "(T)*" )
 function McAPI.KillOtherVill(x,y,z,range,notName, tag)
+    local McVersion = McAPI.Init()
     local killString = ""
     if tag == nil or tag == "" then
-        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',limit=1]"
+        if McVersion ~= 12 then
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',limit=1]"
+        else
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r=.."..range..",name=!Villager,name=!'"..notName.."',c=1]"
+        end
     else
-        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',tag="..tag..",limit=1]"
+        if McVersion ~= 12 then
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name=!Villager,name=!'"..notName.."',tag="..tag..",limit=1]"
+        else
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r=.."..range..",name=!Villager,name=!'"..notName.."',tag="..tag..",c=1]"
+        end
     end
     local boolean,table,count = commands.kill(killString)
     local result = string.match(table[1], "Killed (.+)")
@@ -225,9 +253,17 @@ end
 function McAPI.KillExactVill(x,y,z,range,Name,tag)
     local killString = ""
     if tag == nil or tag == "" then
-        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name='"..Name.."',limit=1]"
+        if McVersion ~= 12 then
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name='"..Name.."',limit=1]"
+        else
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r=.."..range..",name='"..Name.."',c=1]"
+        end
     else
-        killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name='"..Name.."',tag="..tag..",limit=1]"
+        if McVersion ~= 12 then
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",distance=.."..range..",name='"..Name.."',tag="..tag..",limit=1]"
+        else
+            killString = "@e[type=minecraft:villager,x="..tostring(x)..",y="..tostring(y)..",z="..tostring(z)..",r=.."..range..",name='"..Name.."',tag="..tag..",c=1]"
+        end
     end
     local boolean,table,count = commands.kill(killString)
     local result = string.match(table[1], "Killed (.+)")
