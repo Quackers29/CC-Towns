@@ -216,13 +216,13 @@ function McAPI.SummonCustomVill(x,y,z,name, profession, color, tag)
         if McVersion ~= 12 then
             commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.001}],VillagerData:{profession:"..profession..",level:6},Tags:[\""..tag.."\"]}")
         else
-            commands.summon("minecraft:villager",x,y,z,"{CustomName:"..name.."}',Attributes:[{Name:\"generic.movementSpeed\",Base:0.001}],Tags:[\""..tag.."\"],Offers:{},Profession:"..profession.."}")
+            commands.summon("minecraft:villager",x,y,z,"{CustomName:\""..name.."\",Attributes:[{Name:\"generic.movementSpeed\",Base:0.001}],Tags:[\""..tag.."\"],Offers:{},Profession:"..profession.."}")
         end
     else
         if McVersion ~= 12 then
             commands.summon("minecraft:villager",x,y,z,"{CustomName:'{\"text\":\""..name.."\",\"color\":\""..color.."\"}',Attributes:[{Name:\"generic.movement_speed\",Base:0.001}],Tags:[\""..tag.."\"]}")
         else
-            commands.summon("minecraft:villager",x,y,z,"{CustomName:"..name.."}',Attributes:[{Name:\"generic.movementSpeed\",Base:0.001}],Tags:[\""..tag.."\"],Offers:{}}")
+            commands.summon("minecraft:villager",x,y,z,"{CustomName:\""..name.."\",Attributes:[{Name:\"generic.movementSpeed\",Base:0.001}],Tags:[\""..tag.."\"],Offers:{}}")
         end
     end
 end
