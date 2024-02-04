@@ -323,7 +323,9 @@ function McAPI.GetBlockItems(x,y,z)
     if McAPI.Init() == 12 then
         local INq, INw = commands.blockdata(x, y, z, {})
         local result = INw[1]:match('Items:%s*(.*)')
-        result = string.match(result,"(%b[])")
+        if result ~= nil then
+            result = string.match(result,"(%b[])")
+        end
         if result ~= nil then
             result = string.sub(result,2,-2)
         end
