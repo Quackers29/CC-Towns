@@ -101,7 +101,7 @@ function Utility.AddMcItemToTable(itemString, itemTable, count, damage)-- option
     -- Parse the item string
     local parsedData = Utility.ParseMcItemString(itemString)
     local itemTable = itemTable or {}
-    local damage = damage or ""
+    local damage = damage or 0
     -- Check if the entry exists in the table
     local exists = false
     if count ~= 0 then 
@@ -843,9 +843,15 @@ function Utility.InputTourists(notName,townNames,townX,townZ)
 end
 
 function Utility.ParticleMarker(x,y,z)
-    McAPI.Particle("block_marker", x, y, z, 0.5, 10, "target") -- or chest
-    McAPI.Particle("end_rod", x, y, z, 0.03, 100)
-    McAPI.Particle("sonic_boom", x, y, z, 0.01, 1)
+    if McAPI.Init() ~= 12 then
+        McAPI.Particle("block_marker", x, y, z, 0.5, 10, "target") -- or chest
+        McAPI.Particle("end_rod", x, y, z, 0.03, 100)
+        McAPI.Particle("sonic_boom", x, y, z, 0.01, 1)
+    else
+        --McAPI.Particle("block_marker", x, y, z, 0.5, 10, "target") -- or chest
+        McAPI.Particle("end_rod", x, y, z, 0.03, 100)
+        McAPI.Particle("spell", x, y, z, 0.01, 1)
+    end
 end
 
 function Utility.OutputTourist(count, townName)
