@@ -1283,9 +1283,10 @@ function Utility.removeFirstLevelBrackets(input)
 	return result
 end
 
-function Utility.inputItems(INx,INy,INz, cloneHeight)
+function Utility.inputItems(INx,INy,INz)
 	local itemTable = Utility.readJsonFile(ResFile)
 	local INq,INw = McAPI.GetBlockItems(INx,INy,INz)
+    local cloneHeight = McAPI.GetWorldFloor()
 	if INq then
 		-- Move chest using clone to preserve contents when reading it. 
         commands.clone(INx,INy,INz,INx,INy,INz,INx,cloneHeight,INz, "replace", "move")
