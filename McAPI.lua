@@ -192,7 +192,7 @@ function McAPI.SayNear(text,x,y,z,radius,color)
     if color == nil or color == "" then
         color = "green"
     end
-    if McAPI.Init() ~= 12 then -- test
+    if McAPI.Init() ~= 12 then
         commands.exec("/execute as @a[x="..x..",y="..y..",z="..z..",distance=.."..radius.."] run tellraw @s {\"text\":\""..text.."\",\"color\":\""..color.."\"}")
     else
         commands.exec("/execute @a[x="..x..",y="..y..",z="..z..",r=.."..radius.."] ~ ~ ~ /tellraw @s {\"text\":\""..text.."\",\"color\":\""..color.."\"}")
