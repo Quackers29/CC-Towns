@@ -1297,6 +1297,17 @@ function Utility.inputItems(INx,INy,INz)
 	local itemTable = Utility.readJsonFile(ResFile)
 	local INq,INw = McAPI.GetBlockItems(INx,INy,INz)
     local cloneHeight = McAPI.GetWorldFloor()
+
+    if McAPI.Init() == 12 then
+        --check for damaged items -- do not add chest
+        for match in INw:gmatch('Damage:(%d+)') do
+            local damage = tonumber(match)
+            if damage > 0 then
+                INq = false
+            end
+        end
+    end
+
 	if INq and INw ~= "" then
 		-- Move chest using clone to preserve contents when reading it. 
         commands.clone(INx,INy,INz,INx,INy,INz,INx,cloneHeight,INz, "replace", "move")
@@ -1317,7 +1328,7 @@ function Utility.inputItems(INx,INy,INz)
 			local id = string.sub(string.match(k,"id:"..space.."(.-.),"),2,-2)
 			local count = tonumber(string.match(k,"Count:"..space.."(%d+)"))
             --local tag = string.match(k,"tag:"..space.."{(.*).")
-			local tag = string.sub(string.match(k,"tag:"..space.."(%b{})"),2,-2)
+			local tag = string.match(k,"tag:"..space.."(%b{})")
             local damage = tonumber(string.match(k,"Damage:"..space.."(%d+)")) or 0
 
 			if tag ~= nil then
