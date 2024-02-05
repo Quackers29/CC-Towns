@@ -332,8 +332,12 @@ function McAPI.GetBlockItems(x,y,z)
         local sucess = result ~= nil
         return sucess, result
     else
-        local INq,INw = commands.data.get.block(x,y,z,"Items")
-        local sucess, result = INq, INw[1]
+        local INq,INw = commands.data.get.block(x,y,z)
+        local result = INw[1]:match('Items:%s*(.*)')
+        local sucess = result ~= nil
+        if result ~= nil then
+            result = string.match(result,"(%b[])")
+        end
         return sucess, result
     end
 end
