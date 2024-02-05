@@ -338,6 +338,9 @@ function McAPI.GetBlockItems(x,y,z)
         if result ~= nil then
             result = string.match(result,"(%b[])")
         end
+        if result ~= nil then
+            result = string.sub(result,2,-2)
+        end
         return sucess, result
     end
 end
