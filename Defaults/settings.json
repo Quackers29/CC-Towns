@@ -27,8 +27,8 @@
       "minecraft:oak_log":2000,
       "minecraft:bread":1000
     },
-    "input": { "x": 0, "y": 0, "z": 0 },
-    "output": { "x": 0, "y": 0, "z": 0 },
+    "input": { "x": null, "y": 0, "z": 0 },
+    "output": { "x": null, "y": 0, "z": 0 },
     "continuousOutput":true
   },
   "lastRestarted": null,
