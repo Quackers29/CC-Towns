@@ -1461,13 +1461,11 @@ function Utility.InitInOut(x,y,z)
             inChest,outChest,inPop,outPop,outPop2 = {-3,1,-1},{-3,1,1},{-4,1,-3},{-2,1,-3},{-6,1,-3}
         end
 
-        if Settings.resources.input and math.abs(Settings.resources.input.x - x) <= ChestRange and math.abs(Settings.resources.input.y - y) <= ChestRange then
-        else
+        if Settings.resources.input.x == nil then
             Settings.resources.input.x, Settings.resources.input.y, Settings.resources.input.z = x+inChest[1],y+inChest[2],z+inChest[3]
         end
 
-        if Settings.resources.output and math.abs(Settings.resources.output.x - x) <= ChestRange and math.abs(Settings.resources.output.y - y) <= ChestRange then
-        else
+        if Settings.resources.output.x == nil then
             Settings.resources.output.x, Settings.resources.output.y, Settings.resources.output.z = x+outChest[1],y+outChest[2],z+outChest[3]
         end
 

@@ -130,6 +130,7 @@ local function RandomGen()
 end
 
 function Install()
+    print("Installing...")
     --get json
     shell.run("pastebin get 4nRg9CHU json")
     --get gitget
@@ -137,6 +138,8 @@ function Install()
     --use gitget to get repo
     shell.run("gitget Quackers29 CC-Towns main")
     --reboot
+    os.sleep(2)
+    startComputer()
     print("Rebooting...")
     os.sleep(2)
     os.reboot()
