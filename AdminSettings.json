@@ -60,6 +60,7 @@
     "payItem": "minecraft:emerald",
     "historyMax": 20,
     "milestonesEnabled": true,
+    "autoRideCreate": true,
     "milestones": {
       "50": [{ "item": "minecraft:cooked_beef", "quantity": 1 }],
       "100": [

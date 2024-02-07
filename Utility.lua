@@ -914,6 +914,9 @@ function Utility.TouristTransfer(count, townName,townNames,townX,townZ)
     if Settings and Admin and Settings.tourist.autoInput == true then
         Utility.MultiTouristInput(townName,townNames,townX,townZ)
     end
+    if Settings and Admin and Admin.tourist.autoRideCreate == true then
+        Utility.CreatePass("(T)"..townName)
+    end
 end
 
 -- Input/Output of tourist check
@@ -1588,6 +1591,39 @@ function Utility.ChangeName(newName)
         Utility.writeJsonFile(townNames,townNamesList)
     else
         print("Could not open files...")
+    end
+end
+
+--if there is a create train stopped in range, finds empty seats and mounts any villagers of the passenger name onto the seats
+function Utility.CreatePass(Passenger)
+    local Settings = Utility.readJsonFile(SettingsFile)
+    if Settings then
+        local x,y,z,range, max = Settings.tourist.output.x,Settings.tourist.output.y,Settings.tourist.output.z,Settings.tourist.output.radius, Settings.tourist.output.max
+        local Passenger = "@e[type=minecraft:villager,name="..Passenger..",limit=1,distance=.."..range..",nbt={OnGround:1b},x="..x..",y="..y..",z="..z.."]"
+        local boolean, table, count = commands.exec("data get entity @e[type=create:carriage_contraption,limit=1,nbt={Motion:[0.0d,0.0d,0.0d]},distance=.."..range..",x="..x..",y="..y..",z="..z.."] Contraption.Seats")
+        if boolean then
+            local FreeSeatsTable = {}
+            for i=1,count do
+                FreeSeatsTable[i-1] = i-1
+            end
+            local boolean, table, PassCount = commands.exec("data get entity @e[type=create:carriage_contraption,limit=1,nbt={Motion:[0.0d,0.0d,0.0d]},distance=.."..range..",x="..x..",y="..y..",z="..z.."] Contraption.Passengers")
+            local pboolean, result = pcall((function() textutils.unserialiseJSON(string.match(table[1],"(%b[])"),{nbt_style=true}) end))
+            if boolean and pboolean and PassCount < count then
+                result = textutils.unserialiseJSON(string.match(table[1],"(%b[])"),{nbt_style=true})
+                for i,v in ipairs(result) do
+                    FreeSeatsTable[v.Seat] = nil
+                end
+                local flag = true
+                for i,v in pairs(FreeSeatsTable) do
+                    if flag then
+                        local boolean, table, count = commands.exec("/create passenger "..Passenger.." @e[type=create:carriage_contraption,limit=1,nbt={Motion:[0.0d,0.0d,0.0d]},distance=.."..range..",x="..x..",y="..y..",z="..z.."] "..v)
+                        if not boolean then
+                            flag = false
+                        end
+                    end
+                end
+            end
+        end
     end
 end
 
