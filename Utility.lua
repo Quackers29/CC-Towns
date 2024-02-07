@@ -1599,7 +1599,7 @@ function Utility.CreatePass(Passenger)
     local Settings = Utility.readJsonFile(SettingsFile)
     if Settings then
         local x,y,z,range, max = Settings.tourist.output.x,Settings.tourist.output.y,Settings.tourist.output.z,Settings.tourist.output.radius, Settings.tourist.output.max
-        local Passenger = "@e[type=minecraft:villager,name="..Passenger..",limit=1,distance=.."..range..",nbt={OnGround:1b},x="..x..",y="..y..",z="..z.."]"
+        local Passenger = "@e[type=minecraft:villager,name=\""..Passenger.."\",limit=1,distance=.."..range..",nbt={OnGround:1b},x="..x..",y="..y..",z="..z.."]"
         local boolean, table, count = commands.exec("data get entity @e[type=create:carriage_contraption,limit=1,nbt={Motion:[0.0d,0.0d,0.0d]},distance=.."..range..",x="..x..",y="..y..",z="..z.."] Contraption.Seats")
         if boolean then
             local FreeSeatsTable = {}
@@ -1608,7 +1608,7 @@ function Utility.CreatePass(Passenger)
             end
             local boolean, table, PassCount = commands.exec("data get entity @e[type=create:carriage_contraption,limit=1,nbt={Motion:[0.0d,0.0d,0.0d]},distance=.."..range..",x="..x..",y="..y..",z="..z.."] Contraption.Passengers")
             local pboolean, result = pcall((function() textutils.unserialiseJSON(string.match(table[1],"(%b[])"),{nbt_style=true}) end))
-            if boolean and pboolean and PassCount < count then
+            if pboolean and PassCount < count then
                 result = textutils.unserialiseJSON(string.match(table[1],"(%b[])"),{nbt_style=true})
                 for i,v in ipairs(result) do
                     FreeSeatsTable[v.Seat] = nil
