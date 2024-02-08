@@ -753,14 +753,14 @@ function Utility.InputPop(notName,townNames,townX,townZ)
                             --distance has to be greater than minDistance
                             if distance >= Admin.tourist.payMinDist and Admin.tourist.payEnabled then
                                 local pay = Utility.round(distance / Admin.tourist.payDistPerItem)
-                                McAPI.SayNear(townString.." Tourist travelled: "..distance.."m, for: "..pay.."x "..Admin.tourist.payItem,x,y,z,100)
+                                McAPI.SayNear(townString.." Tourist travelled: "..distance.."m, for: "..pay.."x "..Admin.tourist.payItem,x,y,z,Admin.tourist.chatDistance)
                                 if Admin.tourist.dropReward then
                                     McAPI.SummonItem(x,y,z,Admin.tourist.payItem,pay)
                                 else
                                     Utility.ModifyRes(Admin.tourist.payItem,pay)
                                 end
                             else
-                                McAPI.SayNear(townString.." Tourist travelled: "..distance.."m (Min:"..Admin.tourist.payMinDist..")",x,y,z,100)
+                                McAPI.SayNear(townString.." Tourist travelled: "..distance.."m (Min:"..Admin.tourist.payMinDist..")",x,y,z,Admin.tourist.chatDistance)
                             end
                             local mileArray = {}
                             local mileCurrent = 0
@@ -779,10 +779,10 @@ function Utility.InputPop(notName,townNames,townX,townZ)
                                 for item,quantity in pairs(mileArray) do
                                     if Admin.tourist.dropReward then
                                         McAPI.SummonItem(x,y,z,item,quantity)
-                                        McAPI.SayNear(townString.." Milestone reward for "..distance.."m :"..quantity.."x "..item,x,y,z,100,"yellow")
+                                        McAPI.SayNear(townString.." Milestone reward for "..distance.."m :"..quantity.."x "..item,x,y,z,Admin.tourist.chatDistance,"yellow")
                                     else
                                         Utility.ModifyRes(item,quantity)
-                                        McAPI.SayNear(townString.." Milestone reward for "..distance.."m :"..quantity.."x "..item,x,y,z,100,"yellow")
+                                        McAPI.SayNear(townString.." Milestone reward for "..distance.."m :"..quantity.."x "..item,x,y,z,Admin.tourist.chatDistance,"yellow")
                                     end
                                 end
                             end
@@ -1020,7 +1020,7 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
             end
             local avgDist = Utility.round(totalDistance / tourists)
 
-            McAPI.SayNear(townString.." "..tourists.." Tourist(s) travelled (Min/Avg/Max): "..minDistance.."/"..avgDist.."/"..maxDistance.." m, for a total of: "..pay.."x "..Admin.tourist.payItem,x,y,z,100)
+            McAPI.SayNear(townString.." "..tourists.." Tourist(s) travelled (Min/Avg/Max): "..minDistance.."/"..avgDist.."/"..maxDistance.." m, for a total of: "..pay.."x "..Admin.tourist.payItem,x,y,z,Admin.tourist.chatDistance)
             if Admin.tourist.dropReward then
                 McAPI.SummonItem(x,y,z,Admin.tourist.payItem,pay)
             else
@@ -1074,11 +1074,11 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                 for mile,data in pairs(result) do
                     local tCount = data["-1"]
                     if tCount > 0 then
-                        McAPI.SayNear(townString.." Milestone reward for getting "..tCount.." Tourists >"..mile.."m :",x,y,z,100,"yellow")
+                        McAPI.SayNear(townString.." Milestone reward for getting "..tCount.." Tourists >"..mile.."m :",x,y,z,Admin.tourist.chatDistance,"yellow")
                         for item, quantity in pairs(data) do
                             if item ~= "-1" then
                                 local parsed = Utility.ParseMcItemString(item)
-                                McAPI.SayNear(" - "..quantity.."x "..parsed.item or item,x,y,z,100,"yellow")
+                                McAPI.SayNear(" - "..quantity.."x "..parsed.item or item,x,y,z,Admin.tourist.chatDistance,"yellow")
                                 if Admin.tourist.dropReward then
                                     McAPI.SummonItem(x,y,z,item,quantity)
                                 else
@@ -1089,7 +1089,7 @@ function Utility.MultiTouristInput(townName,townNames,townX,townZ)
                         
                     end
                 end
-                McAPI.SayNear(" ---------- ",x,y,z,100,"yellow")
+                McAPI.SayNear(" ---------- ",x,y,z,Admin.tourist.chatDistance,"yellow")
             end
 
             local Settings = Utility.readJsonFile(SettingsFile)
